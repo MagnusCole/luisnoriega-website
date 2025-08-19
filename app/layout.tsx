@@ -6,6 +6,7 @@ import RouteTransition from "@/components/RouteTransition";
 import SmoothScroll from "@/components/SmoothScroll";
 import CursorDot from "@/components/CursorDot";
 import BrandLoader from "@/components/BrandLoader";
+import WorkBanner from "@/components/WorkBanner";
 import "./globals.css";
 
 const inter = Inter({
@@ -140,6 +141,7 @@ export default function RootLayout({
       >
         <BrandLoader />
         <CursorDot />
+  <WorkBanner />
         <Navbar />
         <SmoothScroll>
           <main>
