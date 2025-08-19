@@ -3,11 +3,13 @@ import DealflowOrbitClient from "@/components/DealflowOrbitClient";
 import MetricsStrip from "@/components/MetricsStrip";
 import { Card } from "@/components/ui/Card";
 import BuyBuildScale from "@/components/BuyBuildScale";
+import GsapRevealClient from "@/components/GsapRevealClient";
 import ScrollScenes from "@/components/ScrollScenesClient";
 
 export default function Home() {
   return (
     <>
+  <GsapRevealClient />
       <Hero />
       <MetricsStrip />
       {/* Firma de interacción: Dealflow Orbit (desktop/no touch/PRM off) */}
@@ -26,22 +28,22 @@ export default function Home() {
       <section className="container py-16">
         <div className="grid gap-8 md:grid-cols-12">
           <div className="md:col-span-7">
-            <h2 className="h2">Sobre mí</h2>
+            <h2 className="h2 reveal">Sobre mí</h2>
             <p className="body mt-6 text-muted-foreground max-w-2xl">
               Opero y construyo negocios en LATAM. Combino producto, ejecución operativa y M&A para crear valor sostenido en el tiempo.
             </p>
           </div>
           <div className="md:col-span-5">
             <div className="grid gap-4">
-              <Card className="p-5">
+              <Card className="p-5 reveal">
                 <p className="caption">Producto</p>
                 <p className="mt-1 body text-muted-foreground">Construyo experiencias digitales enfocadas en negocio.</p>
               </Card>
-              <Card className="p-5">
+              <Card className="p-5 reveal">
                 <p className="caption">Operación</p>
                 <p className="mt-1 body text-muted-foreground">Ejecución, procesos y gobierno para escalar.</p>
               </Card>
-              <Card className="p-5">
+              <Card className="p-5 reveal">
                 <p className="caption">Adquisición</p>
                 <p className="mt-1 body text-muted-foreground">Parte de mi portafolio: AQXION y coinversiones.</p>
               </Card>
