@@ -19,7 +19,7 @@ const Button = forwardRef<HTMLButtonElement | HTMLAnchorElement, ButtonProps>(
       "inline-flex items-center justify-center rounded-full font-medium transition vf-hover vf-weight focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--accent)] focus-visible:ring-offset-2 ring-offset-[color:var(--background)]";
     const variantCls =
       variant === "primary"
-        ? "bg-accent text-white hover:opacity-90"
+        ? "bg-accent text-[color:var(--background)] hover:opacity-90"
         : variant === "outline"
         ? "border border-border hover:bg-white/5"
         : "hover:bg-white/5";

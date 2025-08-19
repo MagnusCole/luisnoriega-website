@@ -1,11 +1,11 @@
 {
   "$schema": "https://design-tokens.org",
   "color": {
-    "background": { "value": "#0A0E27" },
-    "foreground": { "value": "#E5E7EB" },
-    "muted": { "value": "#94A3B8" },
-    "border": { "value": "rgba(255,255,255,0.08)" },
-    "accent": { "value": "#3B82F6" }
+    "background": { "value": "#000000" },
+    "foreground": { "value": "#FFFFFF" },
+    "muted": { "value": "#9CA3AF" },
+    "border": { "value": "rgba(255,255,255,0.12)" },
+    "accent": { "value": "#FFFFFF" }
   },
   "typography": {
     "h1": { "value": "clamp(3rem, 8vw, 7rem)" },
