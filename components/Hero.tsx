@@ -13,6 +13,7 @@ gsap.registerPlugin(ScrollTrigger);
 export default function Hero() {
   const headlineRef = useRef<HTMLHeadingElement | null>(null);
   const [showVideo, setShowVideo] = useState(false);
+  const lightRef = useRef<HTMLDivElement | null>(null);
   useEffect(() => {
     if (!headlineRef.current) return;
     const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -53,8 +54,23 @@ export default function Hero() {
     return () => ctx.revert();
   }, []);
 
+  // Cursor-reactive soft light (desktop only)
+  useEffect(() => {
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const isDesktop = window.matchMedia('(min-width: 768px)').matches;
+    if (reduce || !isDesktop || !lightRef.current) return;
+    const el = lightRef.current;
+    const onMove = (e: MouseEvent) => {
+      const { clientX: x, clientY: y } = e;
+      el.style.background = `radial-gradient(240px 240px at ${x}px ${y}px, rgba(255,255,255,0.08), transparent 60%)`;
+    };
+    window.addEventListener('mousemove', onMove);
+    return () => window.removeEventListener('mousemove', onMove);
+  }, []);
+
   return (
     <section className="hero relative overflow-hidden border-b border-border">
+      <div ref={lightRef} className="pointer-events-none absolute inset-0 hidden md:block" aria-hidden />
       {/* Optional video background (desktop only) */}
       {showVideo && (
         <video
