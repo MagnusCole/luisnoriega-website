@@ -3,6 +3,9 @@
 import { useEffect, useRef } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import dynamic from "next/dynamic";
+
+const SpinTetra = dynamic(() => import("@/components/ui/SpinTetra"), { ssr: false });
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -27,6 +30,19 @@ export default function ScrollScenes({ scenes }: Props) {
       const sections = gsap.utils.toArray<HTMLElement>(".scene");
 
       sections.forEach((section, index) => {
+        // transition mask element
+        const mask = document.createElement('div');
+        mask.className = 'scene-mask';
+        section.prepend(mask);
+        Object.assign(mask.style, {
+          position: 'absolute',
+          inset: '0',
+          background: 'linear-gradient(90deg, rgba(255,255,255,0.06), transparent 30%, transparent 70%, rgba(255,255,255,0.06))',
+          mixBlendMode: 'overlay',
+          opacity: '0',
+          pointerEvents: 'none'
+        } as CSSStyleDeclaration);
+
         const tl = gsap.timeline({
           defaults: { ease: "power2.out" },
           scrollTrigger: {
@@ -46,7 +62,12 @@ export default function ScrollScenes({ scenes }: Props) {
           { yPercent: 30, opacity: 0 },
           { yPercent: 0, opacity: 0.7, duration: 1 },
           "<0.2"
-        );
+        ).fromTo(
+          mask,
+          { opacity: 0 },
+          { opacity: 1, duration: 0.2 },
+          0
+        ).to(mask, { opacity: 0, duration: 0.3 }, ">-0.2");
 
         // Slight parallax for background accent
         tl.to(
@@ -91,6 +112,12 @@ export default function ScrollScenes({ scenes }: Props) {
             <p className="scene-subtitle mt-6 max-w-2xl text-lg md:text-xl text-muted-foreground">
               {s.subtitle}
             </p>
+          )}
+          {/* Desktop-only micro 3D accent in middle scene */}
+          {i === 1 && (
+            <div className="absolute right-6 top-1/2 hidden -translate-y-1/2 md:block" aria-hidden>
+              <SpinTetra />
+            </div>
           )}
         </div>
       ))}

@@ -1,0 +1,64 @@
+🔑 Principios Clave de los Nominados (2025)
+1. Tipografía protagonista
+
+Titulares XXL que ocupan la pantalla completa.
+
+Uso de tipografía variable (peso y ancho que cambian dinámicamente).
+
+Contraste claro entre display fonts expresivas y sans-serif minimalistas.
+
+2. Diseño inmersivo e interactivo
+
+Scroll narrativo: el usuario descubre contenido a medida que baja, con transiciones fluidas.
+
+Microinteracciones en cada hover, clic o desplazamiento.
+
+Loaders creativos que refuerzan branding.
+
+3. Minimalismo sofisticado
+
+Paletas limpias (blanco, negro, neutros) con acentos vibrantes (gradientes, neón o colores cálidos).
+
+Mucho espacio en blanco que da aire y elegancia.
+
+Layouts asimétricos que rompen la grilla tradicional.
+
+4. Narrativa visual
+
+Uso de video full-screen o imágenes de gran impacto en el hero.
+
+Integración de motion graphics y animaciones 3D ligeras.
+
+Storytelling claro: cada sección tiene propósito (quiénes somos → qué hacemos → impacto).
+
+5. Tecnología avanzada
+
+WebGL / Three.js para efectos 3D y experiencias interactivas.
+
+Framer Motion / GSAP para transiciones suaves y microanimaciones.
+
+Scroll engines (Lenis, Locomotive Scroll) para experiencia fluida.
+
+6. Usabilidad y performance
+
+A pesar del show visual, mantienen:
+
+Carga rápida (optimización de imágenes, vídeos y assets).
+
+Responsive perfecto (mobile-first).
+
+Accesibilidad mínima (contraste, legibilidad).
+
+🎯 Características que podrías aplicar en luisnoriega.com
+
+Hero con tipografía XL → un mensaje central en 2–3 palabras que sea tu sello (“Buy. Build. Scale.”).
+
+Transiciones fluidas → al moverse entre secciones, que no sea un corte, sino una narración.
+
+Interacciones vivas → hover states que cambien tipografía, imágenes o colores.
+
+Paleta minimal + acento → base en blanco/negro, con un acento (ej. azul eléctrico o dorado).
+
+Micro 3D → un objeto giratorio o animación ligera que refuerce el branding.
+
+Performance top → optimizar con Next.js + Vercel, imágenes en AVIF/WebP, y Lighthouse 95+.

@@ -22,6 +22,7 @@
     "react-dom": "19.1.0",
     "react-hook-form": "^7.62.0",
     "split-type": "^0.3.4",
+    "three": "^0.179.1",
     "zod": "^4.0.17"
   },
   "devDependencies": {
@@ -30,6 +31,7 @@
     "@types/node": "^20.19.11",
     "@types/react": "^19.1.10",
     "@types/react-dom": "^19.1.7",
+    "@types/three": "^0.179.0",
     "eslint": "^9",
     "eslint-config-next": "15.4.7",
     "tailwindcss": "^4",
