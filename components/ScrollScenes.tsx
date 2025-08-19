@@ -23,6 +23,7 @@ export default function ScrollScenes({ scenes }: Props) {
     const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     if (prefersReduced) return; // Respect accessibility
     const ctx = gsap.context(() => {
+      const isDesktop = window.matchMedia("(min-width: 768px)").matches;
       const sections = gsap.utils.toArray<HTMLElement>(".scene");
 
       sections.forEach((section, index) => {
@@ -55,7 +56,7 @@ export default function ScrollScenes({ scenes }: Props) {
         );
 
         // Pin the middle section for emphasis
-        if (index === 1) {
+  if (isDesktop && index === 1) {
           ScrollTrigger.create({
             trigger: section,
             start: "top top+=20%",

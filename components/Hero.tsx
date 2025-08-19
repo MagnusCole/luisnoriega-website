@@ -1,6 +1,5 @@
 "use client";
 import { motion } from "framer-motion";
-import TextScramble from "@/components/ui/TextScramble";
 import MagneticButton from "@/components/ui/MagneticButton";
 import { useEffect, useRef } from "react";
 import SplitType from "split-type";
@@ -30,15 +29,15 @@ export default function Hero() {
     <section className="relative overflow-hidden border-b border-border">
       {/* Subtle gradient background */}
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(60%_60%_at_50%_0%,rgba(59,130,246,0.15),transparent_60%)]" />
-      <div className="container py-24 md:py-32 relative">
+      <div className="container py-28 md:py-40 relative">
         <motion.h1
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, ease: "easeOut" }}
-          className="text-4xl md:text-6xl font-semibold tracking-tight"
+          className="text-5xl md:text-7xl font-extrabold tracking-tight leading-[0.95]"
           ref={headlineRef}
         >
-          <TextScramble text="Adquiriendo el futuro de LATAM" />
+          COMPRAR. CONSTRUIR. ESCALAR.
         </motion.h1>
         <motion.p
           initial={{ opacity: 0, y: 12 }}
@@ -46,8 +45,7 @@ export default function Hero() {
           transition={{ duration: 0.7, ease: "easeOut", delay: 0.1 }}
           className="mt-6 max-w-2xl text-lg text-muted-foreground"
         >
-          Compramos, construimos y escalamos PYMES con potencial. Si consideras
-          vender o invertir, conectemos.
+          Compramos, construimos y escalamos PYMES con potencial. Si consideras vender o invertir, conectemos.
         </motion.p>
         <div className="mt-10 flex items-center gap-4">
           <MagneticButton href="/vender" className="inline-flex items-center justify-center rounded-full bg-accent px-6 py-3 font-medium text-white hover:opacity-90 transition">
