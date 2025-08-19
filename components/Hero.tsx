@@ -2,8 +2,30 @@
 import { motion } from "framer-motion";
 import TextScramble from "@/components/ui/TextScramble";
 import MagneticButton from "@/components/ui/MagneticButton";
+import { useEffect, useRef } from "react";
+import SplitType from "split-type";
+import gsap from "gsap";
 
 export default function Hero() {
+  const headlineRef = useRef<HTMLHeadingElement | null>(null);
+  useEffect(() => {
+    if (!headlineRef.current) return;
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (reduce) return;
+    const split = new SplitType(headlineRef.current, { types: "words,chars" });
+    const tl = gsap.timeline();
+    tl.from(split.chars, {
+      yPercent: 120,
+      opacity: 0,
+      stagger: 0.02,
+      ease: "power3.out",
+      duration: 0.6,
+    });
+    return () => {
+      split.revert();
+      tl.kill();
+    };
+  }, []);
   return (
     <section className="relative overflow-hidden border-b border-border">
       {/* Subtle gradient background */}
@@ -14,6 +36,7 @@ export default function Hero() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, ease: "easeOut" }}
           className="text-4xl md:text-6xl font-semibold tracking-tight"
+          ref={headlineRef}
         >
           <TextScramble text="Adquiriendo el futuro de LATAM" />
         </motion.h1>

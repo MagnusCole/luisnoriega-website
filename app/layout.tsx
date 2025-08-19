@@ -3,6 +3,8 @@ import { Inter, JetBrains_Mono } from "next/font/google";
 import Link from "next/link";
 import { Analytics } from "@vercel/analytics/react";
 import RouteTransition from "@/components/RouteTransition";
+import SmoothScroll from "@/components/SmoothScroll";
+import CursorDot from "@/components/CursorDot";
 import "./globals.css";
 
 const inter = Inter({
@@ -32,12 +34,28 @@ export const metadata: Metadata = {
     description:
       "Autoridad en M&A en LATAM. Compramos, construimos y escalamos PYMES.",
     siteName: "luisnoriega.com",
+    images: [
+      {
+        url: "/og",
+        width: 1200,
+        height: 630,
+        alt: "Luis Noriega — Acquisition Entrepreneur LATAM",
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
     title: "Luis Noriega — Acquisition Entrepreneur LATAM",
     description:
       "Autoridad en M&A en LATAM. Compramos, construimos y escalamos PYMES.",
+    images: [
+      {
+        url: "/og",
+        width: 1200,
+        height: 630,
+        alt: "Luis Noriega — Acquisition Entrepreneur LATAM",
+      },
+    ],
   },
 };
 
@@ -106,10 +124,13 @@ export default function RootLayout({
         />
       </head>
       <body className={`${inter.variable} ${jetbrains.variable} antialiased bg-background text-foreground`}> 
+        <CursorDot />
         <Navbar />
-        <main>
-          <RouteTransition>{children}</RouteTransition>
-        </main>
+        <SmoothScroll>
+          <main>
+            <RouteTransition>{children}</RouteTransition>
+          </main>
+        </SmoothScroll>
         <Footer />
         <Analytics />
       </body>

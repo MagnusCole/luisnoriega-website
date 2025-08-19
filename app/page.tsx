@@ -1,6 +1,7 @@
 import Hero from "@/components/Hero";
 import MetricsStrip from "@/components/MetricsStrip";
 import ScrollReveal from "@/components/ScrollReveal";
+import ScrollScenes from "@/components/ScrollScenes";
 
 export default function Home() {
   return (
@@ -23,6 +24,29 @@ export default function Home() {
           </ScrollReveal>
         </div>
       </section>
+
+      <ScrollScenes
+        scenes={[
+          {
+            id: "thesis",
+            title: "Compramos. Construimos. Escalamos.",
+            subtitle:
+              "Invertimos en PYMES rentables y las llevamos al siguiente nivel con procesos, tecnología y capital.",
+          },
+          {
+            id: "edge",
+            title: "Ejecución obsesiva.",
+            subtitle:
+              "Gobernanza, excelencia operativa y una cultura de mejora continua. Resultados compuestos en el tiempo.",
+          },
+          {
+            id: "invitation",
+            title: "¿Listo para hablar?",
+            subtitle:
+              "Si eres dueño y consideras vender o buscas coinvertir en LATAM, conectemos.",
+          },
+        ]}
+      />
     </>
   );
 }
