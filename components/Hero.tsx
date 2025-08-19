@@ -4,6 +4,10 @@ import MagneticButton from "@/components/ui/MagneticButton";
 import { useEffect, useRef } from "react";
 import SplitType from "split-type";
 import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+import GlossyOrb from "@/components/ui/GlossyOrb";
+
+gsap.registerPlugin(ScrollTrigger);
 
 export default function Hero() {
   const headlineRef = useRef<HTMLHeadingElement | null>(null);
@@ -25,10 +29,32 @@ export default function Hero() {
       tl.kill();
     };
   }, []);
+  useEffect(() => {
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (reduce) return;
+    const isDesktop = window.matchMedia('(min-width: 768px)').matches;
+    if (!isDesktop) return;
+
+    const ctx = gsap.context(() => {
+      gsap.to(".hero-parallax-1", {
+        yPercent: -8,
+        ease: "none",
+        scrollTrigger: { trigger: ".hero", start: "top bottom", end: "bottom top", scrub: true },
+      });
+      gsap.to(".hero-parallax-2", {
+        yPercent: -14,
+        ease: "none",
+        scrollTrigger: { trigger: ".hero", start: "top bottom", end: "bottom top", scrub: true },
+      });
+    });
+    return () => ctx.revert();
+  }, []);
+
   return (
-    <section className="relative overflow-hidden border-b border-border">
-      {/* Subtle gradient background */}
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(60%_60%_at_50%_0%,rgba(59,130,246,0.15),transparent_60%)]" />
+    <section className="hero relative overflow-hidden border-b border-border">
+      {/* Parallax accent layers */}
+      <div className="hero-parallax-1 pointer-events-none absolute inset-0 bg-[radial-gradient(60%_60%_at_50%_0%,rgba(59,130,246,0.15),transparent_60%)]" />
+      <div className="hero-parallax-2 pointer-events-none absolute -inset-x-10 inset-y-0 bg-[radial-gradient(40%_40%_at_80%_20%,rgba(167,139,250,0.12),transparent_60%)]" />
       <div className="container py-28 md:py-40 relative">
         <motion.h1
           initial={{ opacity: 0, y: 12 }}
@@ -54,6 +80,10 @@ export default function Hero() {
           <MagneticButton href="/aqxion" className="inline-flex items-center justify-center rounded-full border border-border px-6 py-3 font-medium hover:bg-white/5 transition">
             Invertir con AQXION
           </MagneticButton>
+        </div>
+        {/* Desktop-only glossy orb accent */}
+        <div className="pointer-events-none absolute right-0 top-1/2 hidden -translate-y-1/2 md:block" aria-hidden>
+          <GlossyOrb size={280} />
         </div>
       </div>
     </section>
