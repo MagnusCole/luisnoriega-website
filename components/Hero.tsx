@@ -1,5 +1,7 @@
 "use client";
 import { motion } from "framer-motion";
+import TextScramble from "@/components/ui/TextScramble";
+import MagneticButton from "@/components/ui/MagneticButton";
 
 export default function Hero() {
   return (
@@ -13,7 +15,7 @@ export default function Hero() {
           transition={{ duration: 0.6, ease: "easeOut" }}
           className="text-4xl md:text-6xl font-semibold tracking-tight"
         >
-          Adquiriendo el futuro de LATAM
+          <TextScramble text="Adquiriendo el futuro de LATAM" />
         </motion.h1>
         <motion.p
           initial={{ opacity: 0, y: 12 }}
@@ -25,18 +27,12 @@ export default function Hero() {
           vender o invertir, conectemos.
         </motion.p>
         <div className="mt-10 flex items-center gap-4">
-          <a
-            href="/vender"
-            className="inline-flex items-center justify-center rounded-full bg-accent px-6 py-3 font-medium text-white hover:opacity-90 transition"
-          >
+          <MagneticButton href="/vender" className="inline-flex items-center justify-center rounded-full bg-accent px-6 py-3 font-medium text-white hover:opacity-90 transition">
             Vender mi empresa
-          </a>
-          <a
-            href="/aqxion"
-            className="inline-flex items-center justify-center rounded-full border border-border px-6 py-3 font-medium hover:bg-white/5 transition"
-          >
+          </MagneticButton>
+          <MagneticButton href="/aqxion" className="inline-flex items-center justify-center rounded-full border border-border px-6 py-3 font-medium hover:bg-white/5 transition">
             Invertir con AQXION
-          </a>
+          </MagneticButton>
         </div>
       </div>
     </section>

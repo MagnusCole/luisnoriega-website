@@ -1,9 +1,22 @@
+"use client";
 import Link from "next/link";
 import type { Project } from "@/lib/portfolio";
 
 export default function ProjectCard({ project }: { project: Project }) {
   return (
-    <div className="rounded-xl border border-border p-6 hover:bg-white/5 transition">
+    <div
+      className="rounded-xl border border-border p-6 transition will-change-transform"
+      onMouseMove={(e) => {
+        const el = e.currentTarget as HTMLDivElement;
+        const r = el.getBoundingClientRect();
+        const x = ((e.clientX - r.left) / r.width) * 2 - 1;
+        const y = ((e.clientY - r.top) / r.height) * 2 - 1;
+        el.style.transform = `perspective(700px) rotateX(${(-y * 4).toFixed(2)}deg) rotateY(${(x * 6).toFixed(2)}deg)`;
+      }}
+      onMouseLeave={(e) => {
+        (e.currentTarget as HTMLDivElement).style.transform = "none";
+      }}
+    >
       <div className="flex items-start justify-between gap-4">
         <div>
           <h3 className="text-lg font-semibold">{project.title}</h3>

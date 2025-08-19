@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter, JetBrains_Mono } from "next/font/google";
 import Link from "next/link";
 import { Analytics } from "@vercel/analytics/react";
+import RouteTransition from "@/components/RouteTransition";
 import "./globals.css";
 
 const inter = Inter({
@@ -86,10 +87,29 @@ export default function RootLayout({
           data-domain="luisnoriega.com"
           src="https://plausible.io/js/script.js"
         />
+        {/* JSON-LD: Person & Organization */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "Person",
+              name: "Luis Noriega",
+              url: "https://luisnoriega.com",
+              jobTitle: "Acquisition Entrepreneur",
+              worksFor: {
+                "@type": "Organization",
+                name: "AQXION"
+              }
+            })
+          }}
+        />
       </head>
       <body className={`${inter.variable} ${jetbrains.variable} antialiased bg-background text-foreground`}> 
         <Navbar />
-        <main>{children}</main>
+        <main>
+          <RouteTransition>{children}</RouteTransition>
+        </main>
         <Footer />
         <Analytics />
       </body>
