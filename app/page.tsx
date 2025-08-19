@@ -1,6 +1,7 @@
 import Hero from "@/components/Hero";
 import MetricsStrip from "@/components/MetricsStrip";
 import ScrollReveal from "@/components/ScrollReveal";
+import { Card } from "@/components/ui/Card";
 import ScrollScenes from "@/components/ScrollScenes";
 
 export default function Home() {
@@ -10,17 +11,23 @@ export default function Home() {
       <MetricsStrip />
       <section className="container py-16">
         <div className="grid gap-6 md:grid-cols-3">
-          <ScrollReveal className="rounded-xl border border-border p-6">
-            <p className="text-sm text-muted-foreground">Buy</p>
-            <h3 className="mt-2 text-xl font-semibold">Adquirimos PYMES sólidas</h3>
+          <ScrollReveal>
+            <Card className="p-6">
+              <p className="caption">Buy</p>
+              <h3 className="h4 mt-2">Adquirimos PYMES sólidas</h3>
+            </Card>
           </ScrollReveal>
-          <ScrollReveal className="rounded-xl border border-border p-6">
-            <p className="text-sm text-muted-foreground">Build</p>
-            <h3 className="mt-2 text-xl font-semibold">Operamos y profesionalizamos</h3>
+          <ScrollReveal>
+            <Card className="p-6">
+              <p className="caption">Build</p>
+              <h3 className="h4 mt-2">Operamos y profesionalizamos</h3>
+            </Card>
           </ScrollReveal>
-          <ScrollReveal className="rounded-xl border border-border p-6">
-            <p className="text-sm text-muted-foreground">Scale</p>
-            <h3 className="mt-2 text-xl font-semibold">Escalamos con tecnología</h3>
+          <ScrollReveal>
+            <Card className="p-6">
+              <p className="caption">Scale</p>
+              <h3 className="h4 mt-2">Escalamos con tecnología</h3>
+            </Card>
           </ScrollReveal>
         </div>
       </section>

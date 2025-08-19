@@ -7,13 +7,13 @@ export const metadata = { title: "Portafolio" };
 export default function Portafolio() {
   return (
     <section className="container py-16">
-      <h1 className="text-3xl md:text-5xl font-semibold tracking-tight">Portafolio</h1>
-      <p className="mt-6 max-w-2xl text-muted-foreground">
+      <h1 className="h2">Portafolio</h1>
+      <p className="body mt-6 max-w-2xl text-muted-foreground">
         Pequeños proyectos, experimentos y certificaciones que reflejan mi ejecución y aprendizaje continuo.
       </p>
 
       <div className="mt-10">
-        <h2 className="text-xl font-semibold">Proyectos</h2>
+        <h2 className="h4">Proyectos</h2>
         <div className="mt-4 grid gap-6 md:grid-cols-2">
           {projects.map((p) => (
             <ProjectCard key={p.slug} project={p} />
@@ -22,7 +22,7 @@ export default function Portafolio() {
       </div>
 
       <div className="mt-12">
-        <h2 className="text-xl font-semibold">Certificados & Logros</h2>
+        <h2 className="h4">Certificados & Logros</h2>
         <div className="mt-2">
           {achievements.map((a, i) => (
             <AchievementItem key={i} item={a} />
