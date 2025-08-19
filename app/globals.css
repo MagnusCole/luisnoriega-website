@@ -57,3 +57,12 @@ body {
   letter-spacing: 0.02em;
   opacity: 0.9;
 }
+
+/* Variable weight hover (requires variable Inter) */
+.vf-weight {
+  transition: font-variation-settings 200ms ease, transform 200ms ease;
+  font-variation-settings: "wght" 540;
+}
+.vf-weight:hover {
+  font-variation-settings: "wght" 680;
+}

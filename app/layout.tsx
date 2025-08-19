@@ -70,37 +70,37 @@ function Navbar() {
         <nav className="flex items-center gap-6 text-sm">
           <Link
             href="/about"
-            className="vf-hover hover:opacity-80 transition will-change-transform [text-wrap:balance]"
+            className="vf-hover vf-weight hover:opacity-80 transition will-change-transform [text-wrap:balance]"
           >
             About
           </Link>
           <Link
             href="/ma-lab"
-            className="vf-hover hover:opacity-80 transition will-change-transform"
+            className="vf-hover vf-weight hover:opacity-80 transition will-change-transform"
           >
             M&A
           </Link>
           <Link
             href="/portafolio"
-            className="vf-hover hover:opacity-80 transition will-change-transform"
+            className="vf-hover vf-weight hover:opacity-80 transition will-change-transform"
           >
             Portafolio
           </Link>
           <Link
             href="/aqxion"
-            className="vf-hover hover:opacity-80 transition will-change-transform"
+            className="vf-hover vf-weight hover:opacity-80 transition will-change-transform"
           >
             AQXION
           </Link>
           <Link
             href="/vender"
-            className="vf-hover hover:opacity-80 transition will-change-transform"
+            className="vf-hover vf-weight hover:opacity-80 transition will-change-transform"
           >
             Vender tu empresa
           </Link>
           <Link
             href="/contacto"
-            className="vf-hover hover:opacity-80 transition will-change-transform"
+            className="vf-hover vf-weight hover:opacity-80 transition will-change-transform"
           >
             Contacto
           </Link>

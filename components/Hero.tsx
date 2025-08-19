@@ -1,7 +1,7 @@
 "use client";
 import { motion } from "framer-motion";
 import MagneticButton from "@/components/ui/MagneticButton";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import SplitType from "split-type";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -11,10 +11,12 @@ gsap.registerPlugin(ScrollTrigger);
 
 export default function Hero() {
   const headlineRef = useRef<HTMLHeadingElement | null>(null);
+  const [showVideo, setShowVideo] = useState(false);
   useEffect(() => {
     if (!headlineRef.current) return;
     const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if (reduce) return;
+    const desktop = window.matchMedia('(min-width: 768px)').matches;
+    if (!reduce && desktop) setShowVideo(true);
     const split = new SplitType(headlineRef.current, { types: "words,chars" });
     const tl = gsap.timeline();
     tl.from(split.chars, {
@@ -52,6 +54,20 @@ export default function Hero() {
 
   return (
     <section className="hero relative overflow-hidden border-b border-border">
+      {/* Optional video background (desktop only) */}
+      {showVideo && (
+        <video
+          className="absolute inset-0 h-full w-full object-cover opacity-[0.08]"
+          autoPlay
+          playsInline
+          muted
+          loop
+          preload="none"
+          aria-hidden
+        >
+          <source src="/hero-loop.mp4" type="video/mp4" />
+        </video>
+      )}
       {/* Parallax accent layers */}
       <div className="hero-parallax-1 pointer-events-none absolute inset-0 bg-[radial-gradient(60%_60%_at_50%_0%,rgba(59,130,246,0.15),transparent_60%)]" />
       <div className="hero-parallax-2 pointer-events-none absolute -inset-x-10 inset-y-0 bg-[radial-gradient(40%_40%_at_80%_20%,rgba(167,139,250,0.12),transparent_60%)]" />
@@ -75,10 +91,10 @@ export default function Hero() {
           Compramos, construimos y escalamos PYMES con potencial. Si consideras vender o invertir, conectemos.
         </motion.p>
         <div className="mt-10 flex items-center gap-4">
-          <MagneticButton href="/vender" className="vf-hover inline-flex items-center justify-center rounded-full bg-accent px-6 py-3 font-medium text-white hover:opacity-90 transition">
+          <MagneticButton href="/vender" className="vf-hover vf-weight inline-flex items-center justify-center rounded-full bg-accent px-6 py-3 font-medium text-white hover:opacity-90 transition">
             Vender mi empresa
           </MagneticButton>
-          <MagneticButton href="/aqxion" className="vf-hover inline-flex items-center justify-center rounded-full border border-border px-6 py-3 font-medium hover:bg-white/5 transition">
+          <MagneticButton href="/aqxion" className="vf-hover vf-weight inline-flex items-center justify-center rounded-full border border-border px-6 py-3 font-medium hover:bg-white/5 transition">
             Invertir con AQXION
           </MagneticButton>
         </div>

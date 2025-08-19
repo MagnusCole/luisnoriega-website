@@ -98,6 +98,7 @@ export default function ScrollScenes({ scenes }: Props) {
         <div
           key={s.id}
           className="scene container py-28 md:py-40 border-t border-border relative overflow-hidden"
+          style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '1.5rem' }}
         >
           <div className="scene-bg absolute inset-0 pointer-events-none opacity-20" style={{
             background:
@@ -105,14 +106,26 @@ export default function ScrollScenes({ scenes }: Props) {
                 ? "radial-gradient(600px 200px at 20% 30%, rgba(255,255,255,0.06), transparent)"
                 : "radial-gradient(600px 200px at 80% 40%, rgba(255,255,255,0.06), transparent)",
           }} />
-          <h2 className="scene-title text-5xl md:text-7xl font-extrabold tracking-tight leading-[0.95]">
-            {s.title}
-          </h2>
-          {s.subtitle && (
-            <p className="scene-subtitle mt-6 max-w-2xl text-lg md:text-xl text-muted-foreground">
-              {s.subtitle}
-            </p>
-          )}
+          <div className={`relative md:grid md:grid-cols-2 md:items-center md:gap-12 ${i % 2 === 0 ? '' : 'md:[&>*:first-child]:order-2'}`}>
+            <div>
+              <h2 className="scene-title text-5xl md:text-7xl font-extrabold tracking-tight leading-[0.95]">
+                {s.title}
+              </h2>
+              {s.subtitle && (
+                <p className="scene-subtitle mt-6 max-w-2xl text-lg md:text-xl text-muted-foreground">
+                  {s.subtitle}
+                </p>
+              )}
+            </div>
+            <div className="relative min-h-40">
+              {/* space for media/3D/imagery */}
+              {i === 1 && (
+                <div className="absolute right-0 top-1/2 hidden -translate-y-1/2 md:block" aria-hidden>
+                  <SpinTetra />
+                </div>
+              )}
+            </div>
+          </div>
           {/* Desktop-only micro 3D accent in middle scene */}
           {i === 1 && (
             <div className="absolute right-6 top-1/2 hidden -translate-y-1/2 md:block" aria-hidden>
