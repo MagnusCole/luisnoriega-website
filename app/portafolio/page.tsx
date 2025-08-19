@@ -37,6 +37,23 @@ export default function Portafolio() {
               </ul>
             </div>
           </div>
+          <div className="mt-6 flex gap-4 text-sm">
+            <a
+              className="vf-hover vf-weight underline underline-offset-4 hover:opacity-80"
+              href={`https://twitter.com/intent/tweet?text=${encodeURIComponent("AQXION — Holding de adquisición")}&url=${encodeURIComponent("https://luisnoriega.com/portafolio#caso-aqxion")}`}
+              target="_blank" rel="noopener noreferrer"
+            >
+              Compartir en X
+            </a>
+            <a
+              className="vf-hover vf-weight underline underline-offset-4 hover:opacity-80"
+              href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent("https://luisnoriega.com/portafolio#caso-aqxion")}`}
+              target="_blank" rel="noopener noreferrer"
+            >
+              Compartir en LinkedIn
+            </a>
+            <a className="text-muted-foreground hover:opacity-80" href={`/og?title=${encodeURIComponent("AQXION Holding")}&kpi=${encodeURIComponent("2 Empresas")}`} target="_blank" rel="noopener noreferrer">Ver OG</a>
+          </div>
         </section>
 
         <section id="caso-b2b" className="border-t border-border pt-10">
@@ -60,6 +77,23 @@ export default function Portafolio() {
                 </li>
               </ul>
             </div>
+          </div>
+          <div className="mt-6 flex gap-4 text-sm">
+            <a
+              className="vf-hover vf-weight underline underline-offset-4 hover:opacity-80"
+              href={`https://twitter.com/intent/tweet?text=${encodeURIComponent("Lead‑Gen B2B — Automatización")}&url=${encodeURIComponent("https://luisnoriega.com/portafolio#caso-b2b")}`}
+              target="_blank" rel="noopener noreferrer"
+            >
+              Compartir en X
+            </a>
+            <a
+              className="vf-hover vf-weight underline underline-offset-4 hover:opacity-80"
+              href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent("https://luisnoriega.com/portafolio#caso-b2b")}`}
+              target="_blank" rel="noopener noreferrer"
+            >
+              Compartir en LinkedIn
+            </a>
+            <a className="text-muted-foreground hover:opacity-80" href={`/og?title=${encodeURIComponent("Lead‑Gen B2B")}&kpi=${encodeURIComponent("+35% SQL")}`} target="_blank" rel="noopener noreferrer">Ver OG</a>
           </div>
         </section>
       </div>
