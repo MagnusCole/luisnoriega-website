@@ -81,7 +81,7 @@ export default function Hero() {
           className="text-5xl md:text-7xl font-extrabold tracking-tight leading-[0.95]"
           ref={headlineRef}
         >
-          COMPRAR. CONSTRUIR. ESCALAR.
+          PORTAFOLIO. OPERACIÓN. ADQUISICIÓN.
         </motion.h1>
         <motion.p
           initial={{ opacity: 0, y: 12 }}
@@ -89,7 +89,7 @@ export default function Hero() {
           transition={{ duration: 0.7, ease: "easeOut", delay: 0.1 }}
           className="mt-6 max-w-2xl text-lg text-muted-foreground"
         >
-          Compramos, construimos y escalamos PYMES con potencial. Si consideras vender o invertir, conectemos.
+          Presento lo que construyo: producto, operación y adquisiciones. Si quieres colaborar o coinvertir, conversemos.
         </motion.p>
         <div className="mt-10 flex items-center gap-4">
           <Button href="/vender" variant="primary">

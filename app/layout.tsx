@@ -23,38 +23,36 @@ const jetbrains = JetBrains_Mono({
 export const metadata: Metadata = {
   metadataBase: new URL("https://luisnoriega.com"),
   title: {
-    default: "Luis Noriega — Acquisition Entrepreneur LATAM",
-    template: "%s · Luis Noriega",
+  default: "Luis Noriega — Portafolio & M&A",
+  template: "%s · Luis Noriega",
   },
   description:
-    "Autoridad en M&A en LATAM. Compramos, construimos y escalamos PYMES. Conecta si consideras vender o invertir.",
+  "Portfolio personal, adquisiciones y producto. Opero y construyo empresas en LATAM.",
   openGraph: {
     type: "website",
     url: "https://luisnoriega.com",
-    title: "Luis Noriega — Acquisition Entrepreneur LATAM",
-    description:
-      "Autoridad en M&A en LATAM. Compramos, construimos y escalamos PYMES.",
+  title: "Luis Noriega — Portafolio & M&A",
+  description: "Portfolio personal, adquisiciones y producto.",
     siteName: "luisnoriega.com",
     images: [
       {
         url: "/og",
         width: 1200,
         height: 630,
-        alt: "Luis Noriega — Acquisition Entrepreneur LATAM",
+    alt: "Luis Noriega — Portafolio & M&A",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Luis Noriega — Acquisition Entrepreneur LATAM",
-    description:
-      "Autoridad en M&A en LATAM. Compramos, construimos y escalamos PYMES.",
+  title: "Luis Noriega — Portafolio & M&A",
+  description: "Portfolio personal, adquisiciones y producto.",
     images: [
       {
         url: "/og",
         width: 1200,
         height: 630,
-        alt: "Luis Noriega — Acquisition Entrepreneur LATAM",
+    alt: "Luis Noriega — Portafolio & M&A",
       },
     ],
   },
@@ -69,18 +67,6 @@ function Navbar() {
         </Link>
         <nav className="flex items-center gap-6 text-sm">
           <Link
-            href="/about"
-            className="vf-hover vf-weight hover:opacity-80 transition will-change-transform [text-wrap:balance]"
-          >
-            About
-          </Link>
-          <Link
-            href="/ma-lab"
-            className="vf-hover vf-weight hover:opacity-80 transition will-change-transform"
-          >
-            M&A
-          </Link>
-          <Link
             href="/portafolio"
             className="vf-hover vf-weight hover:opacity-80 transition will-change-transform"
           >
@@ -93,10 +79,16 @@ function Navbar() {
             AQXION
           </Link>
           <Link
-            href="/vender"
+            href="/ma-lab"
             className="vf-hover vf-weight hover:opacity-80 transition will-change-transform"
           >
-            Vender tu empresa
+            M&A
+          </Link>
+          <Link
+            href="/about"
+            className="vf-hover vf-weight hover:opacity-80 transition will-change-transform [text-wrap:balance]"
+          >
+            About
           </Link>
           <Link
             href="/contacto"
@@ -124,6 +116,9 @@ function Footer() {
           </a>
           <a className="hover:opacity-80" href="/terms">
             Términos
+          </a>
+          <a className="hover:opacity-80" href="/vender">
+            Vender tu empresa
           </a>
         </div>
       </div>
