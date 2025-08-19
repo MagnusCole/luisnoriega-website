@@ -21,6 +21,11 @@ export default function ProjectCard({ project }: { project: Project }) {
         <div>
           <h3 className="text-lg font-semibold">{project.title}</h3>
           <p className="mt-1 text-sm text-muted-foreground">{project.excerpt}</p>
+          {project.owned && (
+            <span className="mt-2 inline-flex items-center gap-1 rounded-full bg-white/10 px-2.5 py-0.5 text-xs text-foreground">
+              Dueños
+            </span>
+          )}
         </div>
         <span className="text-xs text-muted-foreground">{project.year}</span>
       </div>

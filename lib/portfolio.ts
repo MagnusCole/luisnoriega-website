@@ -5,6 +5,7 @@ export type Project = {
   tags: string[];
   year: number;
   link?: string;
+  owned?: boolean; // true si somos dueños
 };
 
 export type Achievement = {
@@ -15,6 +16,15 @@ export type Achievement = {
 };
 
 export const projects: Project[] = [
+  {
+    slug: "aqxion",
+    title: "AQXION",
+    excerpt: "Holding de adquisición: dueños operadores de PYMES selectas en LATAM.",
+    tags: ["Holding", "M&A", "Operación"],
+    year: 2025,
+    link: "/aqxion",
+    owned: true,
+  },
   {
     slug: "valuador-pyme",
     title: "Valuador PYME",
