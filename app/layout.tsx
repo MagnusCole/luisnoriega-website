@@ -72,18 +72,6 @@ function Navbar() {
           >
             Portafolio
           </Link>
-          <Link
-            href="/aqxion"
-            className="vf-hover vf-weight hover:opacity-80 transition will-change-transform"
-          >
-            AQXION
-          </Link>
-          <Link
-            href="/ma-lab"
-            className="vf-hover vf-weight hover:opacity-80 transition will-change-transform"
-          >
-            M&A
-          </Link>
         </nav>
       </div>
     </header>
@@ -99,15 +87,12 @@ function Footer() {
           reservados.
         </p>
         <div className="flex items-center gap-4">
-          <a className="hover:opacity-80" href="/privacy">
-            Privacidad
-          </a>
-          <a className="hover:opacity-80" href="/terms">
-            Términos
-          </a>
-          <a className="hover:opacity-80" href="/vender">
-            Vender tu empresa
-          </a>
+          <Link className="hover:opacity-80" href="/">
+            Home
+          </Link>
+          <Link className="hover:opacity-80" href="/portafolio">
+            Portafolio
+          </Link>
         </div>
       </div>
     </footer>
@@ -140,8 +125,12 @@ export default function RootLayout({
               jobTitle: "Acquisition Entrepreneur",
               worksFor: {
                 "@type": "Organization",
-                name: "AQXION",
+                name: "ADQUISICIÓN",
               },
+              owns: [
+                { "@type": "Organization", name: "ADQUISICIÓN", url: "https://luisnoriega.com" },
+                { "@type": "Organization", name: "AQXION", url: "https://luisnoriega.com/portafolio" }
+              ],
             }),
           }}
         />
