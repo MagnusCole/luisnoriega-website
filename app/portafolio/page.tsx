@@ -2,6 +2,7 @@ import ProjectCard from "@/components/portfolio/ProjectCard";
 import AchievementItem from "@/components/portfolio/AchievementItem";
 import { projects, achievements } from "@/lib/portfolio";
 import { Card } from "@/components/ui/Card";
+import Counter from "@/components/ui/Counter";
 
 export const metadata = { title: "Portafolio" };
 
@@ -28,11 +29,11 @@ export default function Portafolio() {
               <ul className="grid grid-cols-2 gap-4">
                 <li>
                   <p className="caption">Holdings</p>
-                  <p className="h5">1</p>
+                  <p className="h5"><Counter to={1} /></p>
                 </li>
                 <li>
                   <p className="caption">Empresas</p>
-                  <p className="h5">2</p>
+                  <p className="h5"><Counter to={2} /></p>
                 </li>
               </ul>
             </div>
@@ -69,11 +70,11 @@ export default function Portafolio() {
               <ul className="grid grid-cols-2 gap-4">
                 <li>
                   <p className="caption">SQL</p>
-                  <p className="h5">+35%</p>
+                  <p className="h5"><Counter to={35} suffix="%" prefix="+" /></p>
                 </li>
                 <li>
                   <p className="caption">CAC</p>
-                  <p className="h5">−18%</p>
+                  <p className="h5"><Counter to={18} suffix="%" prefix="-" /></p>
                 </li>
               </ul>
             </div>

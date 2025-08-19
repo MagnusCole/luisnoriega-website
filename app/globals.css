@@ -6,6 +6,11 @@
   --muted: #9CA3AF; /* Gray-400 */
   --border: rgba(255,255,255,0.12);
   --accent: #FFFFFF; /* Accent = White for black canvas */
+  /* Motion tokens */
+  --motion-dur-fast: 200ms;
+  --motion-dur-med: 300ms;
+  --motion-dur-page: 600ms;
+  --motion-ease-smooth: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 @theme inline {
@@ -87,6 +92,24 @@ body {
   color: var(--foreground);
 }
 
+/* Accessibility: Skip link */
+.skip-link {
+  position: absolute;
+  top: -40px;
+  left: 0;
+  background: #fff;
+  color: #000;
+  padding: 8px 12px;
+  border-radius: 8px;
+  z-index: 100;
+  transition: transform var(--motion-dur-fast) var(--motion-ease-smooth);
+  transform: translateY(-8px);
+}
+.skip-link:focus {
+  top: 8px;
+  transform: translateY(0);
+}
+
 .container {
   max-width: 80rem; /* 7xl */
   margin-left: auto;
@@ -117,7 +140,7 @@ body {
 
 /* Variable-font inspired hover for Inter */
 .vf-hover {
-  transition: letter-spacing 200ms ease, transform 200ms ease, opacity 200ms ease;
+  transition: letter-spacing var(--motion-dur-fast) ease, transform var(--motion-dur-fast) ease, opacity var(--motion-dur-fast) ease;
 }
 .vf-hover:hover {
   letter-spacing: 0.02em;
@@ -126,7 +149,7 @@ body {
 
 /* Variable weight hover (requires variable Inter) */
 .vf-weight {
-  transition: font-variation-settings 200ms ease, transform 200ms ease;
+  transition: font-variation-settings var(--motion-dur-fast) ease, transform var(--motion-dur-fast) ease;
   font-variation-settings: "wght" 540;
 }
 .vf-weight:hover {

@@ -139,12 +139,13 @@ export default function RootLayout({
       <body
         className={`${inter.variable} ${jetbrains.variable} antialiased bg-background text-foreground`}
       >
+        <a href="#contenido" className="skip-link">Saltar al contenido</a>
         <BrandLoader />
         <CursorDot />
   <WorkBanner />
         <Navbar />
         <SmoothScroll>
-          <main>
+          <main id="contenido">
             <RouteTransition>{children}</RouteTransition>
           </main>
         </SmoothScroll>
