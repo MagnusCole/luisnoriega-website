@@ -84,18 +84,6 @@ function Navbar() {
           >
             M&A
           </Link>
-          <Link
-            href="/about"
-            className="vf-hover vf-weight hover:opacity-80 transition will-change-transform [text-wrap:balance]"
-          >
-            About
-          </Link>
-          <Link
-            href="/contacto"
-            className="vf-hover vf-weight hover:opacity-80 transition will-change-transform"
-          >
-            Contacto
-          </Link>
         </nav>
       </div>
     </header>
