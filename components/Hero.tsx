@@ -95,8 +95,8 @@ export default function Hero() {
           <Button href="/portafolio" variant="primary">
             Ver portafolio
           </Button>
-          <MagneticButton href="/aqxion" className="vf-hover vf-weight inline-flex items-center justify-center rounded-full border border-border px-6 py-3 font-medium hover:bg-white/5 transition">
-            AQXION
+          <MagneticButton href="/portafolio#caso-b2b" className="vf-hover vf-weight inline-flex items-center justify-center rounded-full border border-border px-6 py-3 font-medium hover:bg-white/5 transition">
+            Lead‑Gen B2B
           </MagneticButton>
         </div>
         {/* Desktop-only glossy orb accent */}
