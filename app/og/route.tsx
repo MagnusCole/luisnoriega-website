@@ -2,9 +2,11 @@ import { ImageResponse } from "next/og";
 
 export const runtime = "edge";
 
-export async function GET() {
+export async function GET(req: Request) {
   // Use a system font to avoid remote fetch & Buffer on Edge
-  const title = "Luis Noriega — Portafolio & M&A";
+  const { searchParams } = new URL(req.url);
+  const title = searchParams.get("title") || "Luis Noriega — Portafolio & M&A";
+  const kpi = searchParams.get("kpi");
 
   return new ImageResponse(
     (
@@ -13,6 +15,11 @@ export async function GET() {
         <div style={{ margin: "auto", padding: 64, maxWidth: 980, width: "100%", fontFamily: 'Inter, system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, sans-serif' }}>
           <div style={{ fontSize: 24, opacity: 0.8 }}>luisnoriega.com</div>
           <div style={{ fontSize: 88, fontWeight: 800, lineHeight: 1.05, letterSpacing: -0.5 }}>{title}</div>
+          {kpi && (
+            <div style={{ marginTop: 16, fontSize: 36, opacity: 0.85 }}>
+              {kpi}
+            </div>
+          )}
         </div>
       </div>
     ),

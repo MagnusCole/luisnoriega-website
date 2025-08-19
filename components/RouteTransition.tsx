@@ -10,26 +10,18 @@ export default function RouteTransition({ children }: { children: React.ReactNod
     if (typeof window === "undefined") return;
     setReduced(window.matchMedia("(prefers-reduced-motion: reduce)").matches);
   }, []);
+  const duration = 0.6;
+  const easing: [number, number, number, number] = [0.16, 1, 0.3, 1];
   return (
     <AnimatePresence mode="wait">
       <motion.div
         key={pathname}
-        initial={{ opacity: 0, y: 8 }}
-        animate={{ opacity: 1, y: 0 }}
-        exit={{ opacity: 0, y: -8 }}
-        transition={{ duration: 0.28, ease: "easeOut" }}
+        initial={reduced ? { opacity: 0 } : { clipPath: "inset(0 100% 0 0)", opacity: 1 }}
+        animate={reduced ? { opacity: 1 } : { clipPath: "inset(0 0% 0 0)" }}
+        exit={reduced ? { opacity: 0 } : { clipPath: "inset(0 0 0 100%)" }}
+        transition={{ duration, ease: easing }}
+        style={{ willChange: "clip-path, opacity" }}
       >
-        {!reduced && (
-          <motion.div
-            key={pathname + "-line"}
-            className="fixed left-0 right-0 top-0 z-[60] h-px bg-white/80"
-            initial={{ scaleX: 0, originX: 0 }}
-            animate={{ scaleX: 1 }}
-            exit={{ scaleX: 0, originX: 1 }}
-            transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-            aria-hidden
-          />
-        )}
         {children}
       </motion.div>
     </AnimatePresence>
