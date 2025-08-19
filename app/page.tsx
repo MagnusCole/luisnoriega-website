@@ -81,6 +81,24 @@ export default function Home() {
           },
         ]}
       />
+        {/* Timeline */}
+        <section className="container py-16">
+          <h2 className="h4">Timeline</h2>
+          <ol className="mt-6 space-y-4 border-l border-border pl-6">
+            <li>
+              <span className="caption">2025</span>
+              <p className="body text-muted-foreground">AQXION — estructura de holding y primeras adquisiciones.</p>
+            </li>
+            <li>
+              <span className="caption">2024</span>
+              <p className="body text-muted-foreground">QLA — pipeline de deals y playbooks operativos.</p>
+            </li>
+            <li>
+              <span className="caption">Antes</span>
+              <p className="body text-muted-foreground">Producto y operación en múltiples industrias.</p>
+            </li>
+          </ol>
+        </section>
     </>
   );
 }

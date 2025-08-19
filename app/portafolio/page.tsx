@@ -1,6 +1,7 @@
 import ProjectCard from "@/components/portfolio/ProjectCard";
 import AchievementItem from "@/components/portfolio/AchievementItem";
 import { projects, achievements } from "@/lib/portfolio";
+import { Card } from "@/components/ui/Card";
 
 export const metadata = { title: "Portafolio" };
 
@@ -12,10 +13,24 @@ export default function Portafolio() {
         Pequeños proyectos, experimentos y certificaciones que reflejan mi ejecución y aprendizaje continuo.
       </p>
 
+      {/* Destacado: empresas propias */}
+      {projects.some((p) => p.owned) && (
+        <div className="mt-10">
+          <h2 className="h4">Empresas propias</h2>
+          <div className="mt-4">
+            {projects.filter((p) => p.owned).map((p) => (
+              <Card key={p.slug} className="p-6">
+                <ProjectCard project={p} />
+              </Card>
+            ))}
+          </div>
+        </div>
+      )}
+
       <div className="mt-10">
         <h2 className="h4">Proyectos</h2>
         <div className="mt-4 grid gap-6 md:grid-cols-2">
-          {projects.map((p) => (
+          {projects.filter((p) => !p.owned).map((p) => (
             <ProjectCard key={p.slug} project={p} />
           ))}
         </div>
