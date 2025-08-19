@@ -26,32 +26,22 @@ export const projects: Project[] = [
     owned: true,
   },
   {
-    slug: "valuador-pyme",
-    title: "Valuador PYME",
-    excerpt: "Calculadora de valuación simple para dueños de negocios en LATAM.",
-    tags: ["Next.js", "TypeScript", "Product"],
-    year: 2025,
-    link: "/vender",
-  },
-  {
-    slug: "aqxion-portal",
-    title: "AQXION Investor Portal",
-    excerpt: "Dashboard privado para inversores con métricas en tiempo real.",
-    tags: ["Next.js", "Supabase", "Analytics"],
-    year: 2025,
+  slug: "b2b-leadgen-automation",
+  title: "Automatización B2B de generación de leads",
+  excerpt: "Pipelines multicanal con scraping ético, enriquecimiento y scoring para SDRs y growth.",
+  tags: ["Automation", "Lead Gen", "B2B"],
+  year: 2025,
   },
 ];
 
 export const achievements: Achievement[] = [
-  {
-    title: "Certificate: M&A Fundamentals",
-    issuer: "Coursera",
-    date: "2024-06",
-    link: "https://coursera.org",
-  },
-  {
-    title: "QLA Implementation — Deal Pipeline",
-    issuer: "AQXION",
-    date: "2025-03",
-  },
+  { title: "Measure and Optimize Social Media Marketing Campaigns", issuer: "Meta", date: "2025-08" },
+  { title: "Advertising with Meta", issuer: "Meta", date: "2025-08" },
+  { title: "Fundamentals of Social Media Advertising", issuer: "Meta", date: "2025-08" },
+  { title: "Social Media Management", issuer: "Meta", date: "2025-08" },
+  { title: "Introduction to Social Media Marketing", issuer: "Meta", date: "2025-08" },
+  { title: "Generative AI: Prompt Engineering Basics", issuer: "IBM", date: "2025-08" },
+  { title: "Fundamentals of Customer Acquisition Management", issuer: "Coursera Instructor Network", date: "2025-08" },
+  { title: "Grow with AI: Your AI-driven Growth Marketing strategy", issuer: "Starweaver", date: "2025-08" },
+  { title: "Trello for Beginners", issuer: "Coursera Project Network", date: "2022-04" },
 ];
