@@ -1,14 +1,27 @@
 import Hero from "@/components/Hero";
+import DealflowOrbitClient from "@/components/DealflowOrbitClient";
 import MetricsStrip from "@/components/MetricsStrip";
-import ScrollReveal from "@/components/ScrollReveal";
 import { Card } from "@/components/ui/Card";
-import ScrollScenes from "@/components/ScrollScenes";
+import BuyBuildScale from "@/components/BuyBuildScale";
+import ScrollScenes from "@/components/ScrollScenesClient";
 
 export default function Home() {
   return (
     <>
       <Hero />
       <MetricsStrip />
+      {/* Firma de interacción: Dealflow Orbit (desktop/no touch/PRM off) */}
+      <section className="container py-10 md:py-16">
+        <div className="hidden items-center justify-between md:flex">
+          <div>
+            <h2 className="h3">Dealflow Orbit</h2>
+            <p className="mt-2 text-muted-foreground max-w-md">Etapas de adquisición orbitando un centro: origen → análisis → due diligence → cierre.</p>
+          </div>
+          <div className="opacity-80" aria-hidden>
+            <DealflowOrbitClient />
+          </div>
+        </div>
+      </section>
       {/* Sobre mí breve */}
       <section className="container py-16">
         <div className="grid gap-8 md:grid-cols-12">
@@ -36,30 +49,9 @@ export default function Home() {
           </div>
         </div>
       </section>
-      <section className="container py-16">
-        <div className="grid gap-6 md:grid-cols-3">
-          <ScrollReveal>
-            <Card className="p-6">
-              <p className="caption">Buy</p>
-              <h3 className="h4 mt-2">Adquirimos PYMES sólidas</h3>
-            </Card>
-          </ScrollReveal>
-          <ScrollReveal>
-            <Card className="p-6">
-              <p className="caption">Build</p>
-              <h3 className="h4 mt-2">Operamos y profesionalizamos</h3>
-            </Card>
-          </ScrollReveal>
-          <ScrollReveal>
-            <Card className="p-6">
-              <p className="caption">Scale</p>
-              <h3 className="h4 mt-2">Escalamos con tecnología</h3>
-            </Card>
-          </ScrollReveal>
-        </div>
-      </section>
+  <BuyBuildScale />
 
-      <ScrollScenes
+  <ScrollScenes
         scenes={[
           {
             id: "thesis",
