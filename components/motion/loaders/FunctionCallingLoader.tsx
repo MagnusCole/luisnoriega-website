@@ -242,10 +242,10 @@ export default function FunctionCallingLoader({ onComplete }: FunctionCallingLoa
           gsap.set(resultLineRef.current, { willChange: 'transform' });
           Flip.from(state, { duration: cfg.flip.duration, ease: "power2.inOut", onComplete: () => { if (resultLineRef.current) gsap.set(resultLineRef.current, { willChange: 'auto' }); } });
 
-          // Keep the Result: label visible through FLIP; start typing shortly after
+          // Start hero typing with caret only after FLIP
           if (nameRef.current) nameRef.current.textContent = "";
           if (caretRef.current) {
-            gsap.set(caretRef.current, { opacity: 1 });
+            gsap.set(caretRef.current, { visibility: 'visible', opacity: 1 });
             resultCaretBlinking.current = true;
             gsap.to(caretRef.current, { opacity: 0.25, duration: cfg.caretBlink, repeat: -1, yoyo: true, ease: "none" });
           }
@@ -268,7 +268,11 @@ export default function FunctionCallingLoader({ onComplete }: FunctionCallingLoa
           }
 
           gsap.delayedCall(acc + 0.15, () => {
-            if (caretRef.current) { resultCaretBlinking.current = false; gsap.to(caretRef.current, { opacity: 0, duration: 0.35, ease: "power1.out" }); }
+            if (caretRef.current) {
+              resultCaretBlinking.current = false;
+              gsap.killTweensOf(caretRef.current);
+              gsap.to(caretRef.current, { opacity: 0, duration: 0.35, ease: "power1.out", onComplete: () => { if (caretRef.current) gsap.set(caretRef.current, { visibility: 'hidden' }); } });
+            }
             // Fade out the Result line gracefully at the end
             if (resultLineRef.current) gsap.to(resultLineRef.current, { opacity: 0, duration: 0.4, ease: "power2.out", onComplete: () => { if (resultLineRef.current) resultLineRef.current.remove(); } });
             if (originals.length) gsap.to(originals, { opacity: 1, duration: 0.4, ease: "power2.out" });
@@ -295,7 +299,9 @@ export default function FunctionCallingLoader({ onComplete }: FunctionCallingLoa
   .add(() => { setPhase(locale === "es" ? "Compilando" : "Compiling"); })
   .to(compilingRef.current, { text: `${timeLabel} ${T.compiling}`, duration: cfg.phases.compiling })
         .to(check1Ref.current,    { text: T.fetched, duration: cfg.phases.check, onStart: () => { if (check1Ref.current) { gsap.fromTo(check1Ref.current, { scale: 1.08 }, { scale: 1, duration: cfg.phases.bounce, ease: "power2.out" }); } } })
-        .to(check2Ref.current,    { text: T.composed, duration: cfg.phases.check, onStart: () => { if (check2Ref.current) { gsap.fromTo(check2Ref.current, { scale: 1.08 }, { scale: 1, duration: cfg.phases.bounce, ease: "power2.out" }); } } })
+  .to(check2Ref.current,    { text: T.composed, duration: cfg.phases.check, onStart: () => { if (check2Ref.current) { gsap.fromTo(check2Ref.current, { scale: 1.08 }, { scale: 1, duration: cfg.phases.bounce, ease: "power2.out" }); } } })
+  .to(experienceRef.current, { text: T.validatedExperience, duration: cfg.phases.check, onStart: () => { if (experienceRef.current) { gsap.fromTo(experienceRef.current, { scale: 1.08 }, { scale: 1, duration: cfg.phases.bounce, ease: 'power2.out' }); } } })
+  .to(projectsRef.current, { text: T.projectsFound, duration: cfg.phases.check, onStart: () => { if (projectsRef.current) { gsap.fromTo(projectsRef.current, { scale: 1.08 }, { scale: 1, duration: cfg.phases.bounce, ease: 'power2.out' }); } } })
   .to(metaRef.current, { text: locale === 'es' ? 'modelo: concierge‑v1.2 • seguridad activa' : 'model: concierge‑v1.2 • safety on', duration: 0.4 })
   .to(safetyRef.current, { text: locale === 'es' ? 'verificando SEO y accesibilidad…' : 'validating SEO and accessibility…', duration: 0.4 })
   .to(experienceRef.current, { text: T.validatedExperience, duration: cfg.phases.check, onStart: () => { if (experienceRef.current) { gsap.fromTo(experienceRef.current, { scale: 1.08 }, { scale: 1, duration: cfg.phases.bounce, ease: 'power2.out' }); } } })
@@ -408,6 +414,8 @@ export default function FunctionCallingLoader({ onComplete }: FunctionCallingLoa
                   <p ref={compilingRef} className="mt-2" />
                   <p ref={check1Ref} />
                   <p ref={check2Ref} />
+                  <p ref={experienceRef} />
+                  <p ref={projectsRef} />
                   <p ref={metaRef} className="text-white/70" />
                   <p ref={safetyRef} className="text-white/70" />
                   <p ref={experienceRef} />
@@ -418,7 +426,7 @@ export default function FunctionCallingLoader({ onComplete }: FunctionCallingLoa
 
                   {/* Result line – used for Flip */}
                   <div ref={resultLineRef} className="mt-2 text-center">
-                    <span ref={caretRef} aria-hidden className="inline-block opacity-0 select-none">|</span>
+                    <span ref={caretRef} aria-hidden className="inline-block opacity-0 select-none" style={{ visibility: 'hidden' }}>|</span>
                     <span ref={nameRef} className="inline-block ml-2 text-3xl font-black tracking-wide" style={{ fontFamily: 'var(--font-work-sans)' }} />
                   </div>
                   
