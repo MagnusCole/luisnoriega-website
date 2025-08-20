@@ -1,1 +1,2 @@
-export { default } from "@/components/motion/ScrollScenes";
+throw new Error("Deprecated import: use '@/components/motion/ScrollScenes' instead.");
+export {};

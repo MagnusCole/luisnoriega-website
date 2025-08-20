@@ -1,1 +1,2 @@
-export { default } from "@/components/motion/SmoothScroll";
+throw new Error("Deprecated import: use '@/components/motion/SmoothScroll' instead.");
+export {};

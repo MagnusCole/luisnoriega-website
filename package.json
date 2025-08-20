@@ -8,7 +8,7 @@
   "start": "next start",
   "lint": "eslint . --ext .ts,.tsx",
   "typecheck": "tsc --noEmit",
-  "qa": "npm run typecheck && npm run lint",
+  "qa": "npm run typecheck && npm run lint && npm run depcruise",
   "unused": "npx knip",
   "depcruise": "npx dependency-cruiser --config .depcruise.js .",
   "analyze": "cross-env ANALYZE=true next build",

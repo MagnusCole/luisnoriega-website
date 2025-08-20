@@ -57,7 +57,7 @@ export default function CursorDot() {
       ref={dotRef}
       aria-hidden
       className="fixed left-0 top-0 z-[9999] h-2 w-2 rounded-full bg-foreground/70 pointer-events-none hidden md:block mix-blend-difference"
-      style={{ transform: "translate3d(-9999px, -9999px, 0)", transition: "transform 0.05s linear, width 120ms ease, height 120ms ease, opacity 120ms ease" }}
+  style={{ transform: "translate3d(-9999px, -9999px, 0)", willChange: "transform", transition: "transform 0.05s linear, width 120ms ease, height 120ms ease, opacity 120ms ease" }}
     />
   );
 }

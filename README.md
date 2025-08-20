@@ -1,6 +1,6 @@
 # luisnoriega.com — MVP
 
-Next.js 15 (App Router) + TailwindCSS + Framer Motion. Enfocado en autoridad M&A y conversión de leads.
+Next.js 15 (App Router) + TailwindCSS + GSAP (ScrollTrigger) + Lenis. Enfocado en autoridad M&A y conversión de leads.
 
 ## Rutas
 
@@ -30,8 +30,14 @@ npm run build ; npm run start
 - Vercel Analytics (`@vercel/analytics`)
 - Plausible via script tag (configurar dominio en producción)
 
+## Stack de motion
+
+- GSAP 3 (singleton y registro centralizado en `lib/motion/gsap`)
+- ScrollTrigger (desde el wrapper anterior)
+- Lenis (suave, PRM-aware, sincronizado con ScrollTrigger)
+
 ## TODO corto plazo
 
 - Integrar CRM (HubSpot/Resend/n8n) en `/api/lead`
-- Motion design avanzado (GSAP timelines)
-- Componentes de métricas en vivo y timeline interactivo
+- Afinar budgets de motion por contratos (`lib/motion/contracts`)
+- Lighthouse/axe baseline y CI

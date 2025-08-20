@@ -91,7 +91,7 @@ export default function Hero() {
 					playsInline
 					muted
 					loop
-					preload="none"
+					preload="metadata"
 					aria-hidden
 				>
 					<source src="/hero-loop.mp4" type="video/mp4" />

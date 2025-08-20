@@ -5,14 +5,19 @@ module.exports = {
       name: "no-three-outside",
       comment: "three solo en components/three",
       severity: "warn",
-      from: { pathNot: "^components/three" },
-      to: { path: "node_modules/three" }
+      from: { path: "^(app|components|lib)/", pathNot: "^components/three" },
+      to: { path: "^node_modules/three(|/.*)$" }
     },
     {
-      name: "no-motion-outside",
-      comment: "ScrollTrigger/gsap solo via lib/motion",
+      name: "no-gsap-raw",
+      comment: "gsap/ScrollTrigger solo se permite importarse directamente desde lib/motion/gsap.ts",
       severity: "error",
-      to: { path: "gsap|ScrollTrigger", pathNot: "lib/motion" }
+      from: { path: "^(app|components|lib)/", pathNot: "^lib/motion/gsap\\.ts$" },
+      to: { path: "^node_modules/gsap(|/.*)$" }
     }
-  ]
+  ],
+  options: {
+    exclude: "^(node_modules|\.next)/",
+    doNotFollow: { path: "node_modules" }
+  }
 };
