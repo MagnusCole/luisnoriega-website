@@ -22,12 +22,17 @@ export default function FunctionCallingLoader({ onComplete }: FunctionCallingLoa
   const compilingRef = useRef<HTMLParagraphElement>(null);
   const check1Ref = useRef<HTMLParagraphElement>(null);
   const check2Ref = useRef<HTMLParagraphElement>(null);
+  const loadingRef = useRef<HTMLParagraphElement>(null);
+  const metaRef = useRef<HTMLParagraphElement>(null);
+  const safetyRef = useRef<HTMLParagraphElement>(null);
+  const experienceRef = useRef<HTMLParagraphElement>(null);
+  const projectsRef = useRef<HTMLParagraphElement>(null);
   const phaseRef = useRef<HTMLDivElement>(null);
   const resultLineRef = useRef<HTMLDivElement>(null);
-  const resultLabelRef = useRef<HTMLSpanElement>(null);
   const caretRef = useRef<HTMLSpanElement>(null);
   const nameRef = useRef<HTMLSpanElement>(null);
   const typingRef = useRef<HTMLSpanElement>(null);
+  // no placeholder needed; we keep loading line in panel
   // Blink state trackers
   const resultCaretBlinking = useRef(false);
   const promptCaretBlinking = useRef(false);
@@ -37,13 +42,12 @@ export default function FunctionCallingLoader({ onComplete }: FunctionCallingLoa
   const promptBarCaretRef = useRef<HTMLSpanElement>(null);
 
   const [isVisible, setIsVisible] = useState(true);
-  const [logsOpen, setLogsOpen] = useState(false);
 
   // Presets wired inside effect to avoid deps warning
 
   const locale: Locale = useMemo(() => (typeof navigator !== "undefined" && navigator.language?.startsWith("es") ? "es" : "en"), []);
   const T = useMemo(() => {
-    return locale === "es" ? {
+  return locale === "es" ? {
       headerRole: "Agente • Concierge",
       prompt: "Quiero ver el portafolio de Luis Noriega",
       planning: "Entendido. Preparando…",
@@ -51,7 +55,10 @@ export default function FunctionCallingLoader({ onComplete }: FunctionCallingLoa
       compiling: "assistant: Compilando vista…",
       fetched: "✓ datos obtenidos",
       composed: "✓ vista compuesta",
-      result: "Result:",
+  rendering: "Renderizando…",
+  loading: "cargando…",
+      validatedExperience: "✓ experiencia validada",
+      projectsFound: "✓ proyectos encontrados",
       tool: "tool",
       reduce: "(modo rápido)"
     } : {
@@ -62,7 +69,10 @@ export default function FunctionCallingLoader({ onComplete }: FunctionCallingLoa
       compiling: "assistant: Compiling view…",
       fetched: "✓ data fetched",
       composed: "✓ view composed",
-      result: "Result:",
+  rendering: "Rendering…",
+  loading: "loading…",
+      validatedExperience: "✓ experience validated",
+      projectsFound: "✓ projects found",
       tool: "tool",
       reduce: "(fast mode)"
     };
@@ -107,6 +117,8 @@ export default function FunctionCallingLoader({ onComplete }: FunctionCallingLoa
       if (!containerRef.current || !promptBarRef.current) return;
       const h = promptBarRef.current.offsetHeight || 0;
       containerRef.current.style.paddingBottom = `${h + 8}px`;
+      // expose as CSS var so inner panel can compute full height
+      containerRef.current.style.setProperty('--ln-pb', `${h}px`);
     };
     applyBottomReserve();
     const onResize = () => requestAnimationFrame(applyBottomReserve);
@@ -118,7 +130,7 @@ export default function FunctionCallingLoader({ onComplete }: FunctionCallingLoa
       prompt: { base: 0.044, jitter: 0.022, pauseSemantic: 0.09 },
       panel: { delay: 0.12, entrance: 0.36 },
       phases: { planning: 0.42, calling: 0.62, tool: 0.56, compiling: 0.56, check: 0.25, bounce: 0.18 },
-      resultHold: 0.95,
+      resultHold: 1.25,
       flip: { duration: 0.68 },
       hero: { base: 0.06, jitter: 0.05, pauseSeparator: 0.08 },
       overlay: { fade: 0.5, delayAfterType: 0.1 },
@@ -128,7 +140,7 @@ export default function FunctionCallingLoader({ onComplete }: FunctionCallingLoa
       prompt: { base: 0.03, jitter: 0.015, pauseSemantic: 0.05 },
       panel: { delay: 0.08, entrance: 0.28 },
       phases: { planning: 0.32, calling: 0.42, tool: 0.4, compiling: 0.4, check: 0.2, bounce: 0.12 },
-      resultHold: 0.4,
+      resultHold: 0.6,
       flip: { duration: 0.55 },
       hero: { base: 0.035, jitter: 0.015, pauseSeparator: 0.05 },
       overlay: { fade: 0.35, delayAfterType: 0.06 },
@@ -165,14 +177,16 @@ export default function FunctionCallingLoader({ onComplete }: FunctionCallingLoa
       // Fast path for Save-Data: show final state quickly
   if (saveData) {
         // Reduced logging fast mode
-        setPhase("Result");
+  setPhase(T.rendering);
         if (planningRef.current) planningRef.current.textContent = `${T.planning} ${T.reduce}`;
         if (callRef.current) callRef.current.textContent = T.calling;
         if (toolBlockRef.current) toolBlockRef.current.textContent = prettyJSON;
         if (compilingRef.current) compilingRef.current.textContent = T.compiling;
         if (check1Ref.current) check1Ref.current.textContent = T.fetched;
         if (check2Ref.current) check2Ref.current.textContent = T.composed;
-        if (resultLabelRef.current) resultLabelRef.current.textContent = T.result;
+  if (loadingRef.current) loadingRef.current.textContent = T.loading;
+        if (experienceRef.current) experienceRef.current.textContent = T.validatedExperience;
+        if (projectsRef.current) projectsRef.current.textContent = T.projectsFound;
         if (nameRef.current) nameRef.current.textContent = "LUIS NORIEGA";
         if (promptBarTextRef.current) promptBarTextRef.current.textContent = T.prompt;
         if (promptBarCaretRef.current) gsap.set(promptBarCaretRef.current, { opacity: 0 });
@@ -210,10 +224,10 @@ export default function FunctionCallingLoader({ onComplete }: FunctionCallingLoa
         }
       });
 
-      const tl = gsap.timeline({ defaults: { ease: "none" } , onComplete: () => {
+  const tl = gsap.timeline({ defaults: { ease: "none" } , onComplete: () => {
         const hero = document.getElementById("hero-title");
         const finalize = () => {
-      gsap.to(containerRef.current, { opacity: 0, duration: cfg.overlay.fade, delay: cfg.overlay.delayAfterType, ease: "power2.inOut", onComplete: () => { setIsVisible(false); onComplete?.(); } });
+  gsap.to(containerRef.current, { opacity: 0, duration: cfg.overlay.fade, delay: cfg.overlay.delayAfterType, ease: "power2.inOut", onComplete: () => { setIsVisible(false); onComplete?.(); } });
         };
 
         if (hero && resultLineRef.current) {
@@ -221,6 +235,8 @@ export default function FunctionCallingLoader({ onComplete }: FunctionCallingLoa
           if (originals.length) gsap.set(originals, { opacity: 0 });
 
           const state = Flip.getState(resultLineRef.current);
+          // stop loading pulse and hide it softly before FLIP
+          if (loadingRef.current) { gsap.killTweensOf(loadingRef.current); gsap.to(loadingRef.current, { opacity: 0, duration: 0.25, ease: "power1.out" }); }
           hero.appendChild(resultLineRef.current);
           // will-change during FLIP for smoother paint
           gsap.set(resultLineRef.current, { willChange: 'transform' });
@@ -252,7 +268,7 @@ export default function FunctionCallingLoader({ onComplete }: FunctionCallingLoa
           }
 
           gsap.delayedCall(acc + 0.15, () => {
-            if (caretRef.current) { resultCaretBlinking.current = false; gsap.to(caretRef.current, { opacity: 0, duration: 0.2 }); }
+            if (caretRef.current) { resultCaretBlinking.current = false; gsap.to(caretRef.current, { opacity: 0, duration: 0.35, ease: "power1.out" }); }
             // Fade out the Result line gracefully at the end
             if (resultLineRef.current) gsap.to(resultLineRef.current, { opacity: 0, duration: 0.4, ease: "power2.out", onComplete: () => { if (resultLineRef.current) resultLineRef.current.remove(); } });
             if (originals.length) gsap.to(originals, { opacity: 1, duration: 0.4, ease: "power2.out" });
@@ -266,6 +282,7 @@ export default function FunctionCallingLoader({ onComplete }: FunctionCallingLoa
       // Wait for bottom typing to finish, then start AI bubble above (no prompt echo)
       tl.to({}, { duration: accP })
         .to({}, { duration: cfg.panel.delay })
+        .set(aiRef.current, { visibility: 'visible' })
         .fromTo(aiRef.current, { opacity: 0, y: 8 }, { opacity: 1, y: 0, duration: cfg.panel.entrance, ease: "power2.out" })
         .add(() => { setPhase(locale === "es" ? "Pensando" : "Thinking"); showTyping(true); })
         .to(planningRef.current, { text: T.planning, duration: cfg.phases.planning })
@@ -274,19 +291,18 @@ export default function FunctionCallingLoader({ onComplete }: FunctionCallingLoa
         .add(() => showTyping(true), "+=0.08")
         .add(() => { setPhase(locale === "es" ? "Recibiendo" : "Receiving"); })
         .to(toolBadgeRef.current, { opacity: 1, duration: 0.2 })
-        .to(toolBlockRef.current, { text: prettyJSON, duration: cfg.phases.tool })
-        .add(() => { setPhase(locale === "es" ? "Compilando" : "Compiling"); })
-        .to(compilingRef.current, { text: `${timeLabel} ${T.compiling}`, duration: cfg.phases.compiling })
+    .to(toolBlockRef.current, { text: prettyJSON, duration: cfg.phases.tool })
+  .add(() => { setPhase(locale === "es" ? "Compilando" : "Compiling"); })
+  .to(compilingRef.current, { text: `${timeLabel} ${T.compiling}`, duration: cfg.phases.compiling })
         .to(check1Ref.current,    { text: T.fetched, duration: cfg.phases.check, onStart: () => { if (check1Ref.current) { gsap.fromTo(check1Ref.current, { scale: 1.08 }, { scale: 1, duration: cfg.phases.bounce, ease: "power2.out" }); } } })
         .to(check2Ref.current,    { text: T.composed, duration: cfg.phases.check, onStart: () => { if (check2Ref.current) { gsap.fromTo(check2Ref.current, { scale: 1.08 }, { scale: 1, duration: cfg.phases.bounce, ease: "power2.out" }); } } })
-        .add(() => { setPhase("Result"); showTyping(false); })
-        .to(resultLabelRef.current, { text: T.result, duration: 0.35 })
-        .add(() => {
-          if (caretRef.current) {
-            gsap.set(caretRef.current, { opacity: 1 });
-            gsap.to(caretRef.current, { opacity: 0.2, duration: gsap.utils.random(0.38, 0.6), repeat: -1, yoyo: true, ease: "none" });
-          }
-        })
+  .to(metaRef.current, { text: locale === 'es' ? 'modelo: concierge‑v1.2 • seguridad activa' : 'model: concierge‑v1.2 • safety on', duration: 0.4 })
+  .to(safetyRef.current, { text: locale === 'es' ? 'verificando SEO y accesibilidad…' : 'validating SEO and accessibility…', duration: 0.4 })
+  .to(experienceRef.current, { text: T.validatedExperience, duration: cfg.phases.check, onStart: () => { if (experienceRef.current) { gsap.fromTo(experienceRef.current, { scale: 1.08 }, { scale: 1, duration: cfg.phases.bounce, ease: 'power2.out' }); } } })
+  .to(projectsRef.current, { text: T.projectsFound, duration: cfg.phases.check, onStart: () => { if (projectsRef.current) { gsap.fromTo(projectsRef.current, { scale: 1.08 }, { scale: 1, duration: cfg.phases.bounce, ease: 'power2.out' }); } } })
+  .add(() => { setPhase(T.rendering); showTyping(false); })
+  .to(loadingRef.current, { text: T.loading, duration: 0.3 })
+  .add(() => { if (loadingRef.current) { gsap.set(loadingRef.current, { opacity: 0.7 }); gsap.to(loadingRef.current, { opacity: 0.3, duration: 0.8, repeat: -1, yoyo: true, ease: "sine.inOut" }); } })
   // Hold on result before transitioning to hero typing
   .to({}, { duration: cfg.resultHold });
 
@@ -355,8 +371,8 @@ export default function FunctionCallingLoader({ onComplete }: FunctionCallingLoa
         aria-label={locale === 'es' ? 'Repetir (tecla R)' : 'Re-run (key R)'}
       >Re-run</button>
 
-  <div className="w-full max-w-2xl px-6">
-        <div className="border border-white/10 rounded-xl overflow-hidden">
+  <div className="w-full max-w-2xl px-6" style={{ height: 'calc(100vh - var(--ln-pb, 0px) - 16px)' }}>
+        <div className="border border-white/10 rounded-xl overflow-hidden h-full flex flex-col" style={{ opacity: 0, transform: 'translateY(12px)' }} ref={aiRef}>
           {/* Header */}
           <div className="px-5 py-3 border-b border-white/10 flex items-center gap-3 text-white/70 text-sm">
             <div className="w-2 h-2 rounded-full bg-white/40" aria-hidden />
@@ -364,9 +380,9 @@ export default function FunctionCallingLoader({ onComplete }: FunctionCallingLoa
           </div>
 
           {/* Chat area */}
-          <div className="p-5 space-y-5">
+          <div className="p-5 space-y-5 flex-1 overflow-auto">
             {/* AI bubble with monospace code block */}
-            <div ref={aiRef} className="flex justify-start">
+            <div className="flex justify-start">
               <div className="rounded-lg px-4 py-3 text-sm bg-black border border-white/15 w-full max-w-[90%]">
                 <div className="font-mono text-white/90 space-y-1" role="log" aria-live="polite">
                   {/* Phase */}
@@ -392,29 +408,35 @@ export default function FunctionCallingLoader({ onComplete }: FunctionCallingLoa
                   <p ref={compilingRef} className="mt-2" />
                   <p ref={check1Ref} />
                   <p ref={check2Ref} />
+                  <p ref={metaRef} className="text-white/70" />
+                  <p ref={safetyRef} className="text-white/70" />
+                  <p ref={experienceRef} />
+                  <p ref={projectsRef} />
+
+                  {/* Persistent loading line */}
+                  <p ref={loadingRef} className="mt-1 text-white/60" />
 
                   {/* Result line – used for Flip */}
                   <div ref={resultLineRef} className="mt-2 text-center">
-                    <span ref={resultLabelRef} className="inline" />
-                    <span ref={caretRef} aria-hidden className="inline-block ml-1 opacity-0 select-none">|</span>
+                    <span ref={caretRef} aria-hidden className="inline-block opacity-0 select-none">|</span>
                     <span ref={nameRef} className="inline-block ml-2 text-3xl font-black tracking-wide" style={{ fontFamily: 'var(--font-work-sans)' }} />
                   </div>
-
-                  {/* Logs toggle */}
-                  <div className="mt-3 text-center">
-                    <button type="button" onClick={() => setLogsOpen(v => !v)} className="text-[11px] text-white/60 underline underline-offset-2">
-                      {logsOpen ? (locale === 'es' ? 'Ocultar logs' : 'Hide logs') : (locale === 'es' ? 'Ver logs' : 'Show logs')}
-                    </button>
-                  </div>
+                  
                 </div>
 
-                {/* Collapsible extra logs */}
-                {logsOpen && (
-                  <div className="font-mono text-[12px] text-white/60 mt-2 border-t border-white/10 pt-2">
-                    <div>{timeLabel} plan → call → tool → compile → result</div>
-                    <div>{locale === 'es' ? 'Modo' : 'Mode'}: {typeof navigator !== 'undefined' && (navigator as Navigator & { connection?: { saveData?: boolean } }).connection?.saveData ? T.reduce : 'full'}</div>
-                  </div>
-                )}
+                {/* Details panel */}
+                <div className="font-mono text-[12px] text-white/60 mt-2 border-t border-white/10 pt-2 grid grid-cols-1 sm:grid-cols-2 gap-y-1">
+                  <div>{locale === 'es' ? 'Modelo' : 'Model'}: Concierge v1.2</div>
+                  <div>{locale === 'es' ? 'Acción' : 'Action'}: generatePortfolio</div>
+                  <div>{locale === 'es' ? 'Herramientas' : 'Tools'}: SplitText, Flip, Text</div>
+                  <div>{locale === 'es' ? 'Seguridad' : 'Safety'}: PRM + Save-Data</div>
+                  <div>{locale === 'es' ? 'Pasos' : 'Steps'}: plan → call → tool → compile → result</div>
+                  <div>{locale === 'es' ? 'Latencia' : 'Latency'}: ~{(Math.random()*0.4+0.6).toFixed(2)}s</div>
+                  <div>{locale === 'es' ? 'Verificaciones' : 'Checks'}: 2/2 {locale === 'es' ? 'aprobadas' : 'passed'}</div>
+                  <div>ID: run-{Math.floor(Math.random()*90000)+10000}</div>
+                  <div>{locale === 'es' ? 'Modo' : 'Mode'}: {typeof navigator !== 'undefined' && (navigator as Navigator & { connection?: { saveData?: boolean } }).connection?.saveData ? T.reduce : 'full'}</div>
+                  <div>{locale === 'es' ? 'Atajos' : 'Shortcuts'}: S={locale === 'es' ? 'saltar' : 'skip'}, R={locale === 'es' ? 'repetir' : 're-run'}</div>
+                </div>
 
               </div>
             </div>
