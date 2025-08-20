@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { gsap, Flip } from "@/lib/motion/gsap";
+import { gsap } from "@/lib/motion/gsap";
 import { PRM } from "@/lib/a11y/prm";
 
 interface FunctionCallingLoaderProps {
@@ -28,13 +28,8 @@ export default function FunctionCallingLoader({ onComplete }: FunctionCallingLoa
   const experienceRef = useRef<HTMLParagraphElement>(null);
   const projectsRef = useRef<HTMLParagraphElement>(null);
   const phaseRef = useRef<HTMLDivElement>(null);
-  const resultLineRef = useRef<HTMLDivElement>(null);
-  const caretRef = useRef<HTMLSpanElement>(null);
-  const nameRef = useRef<HTMLSpanElement>(null);
   const typingRef = useRef<HTMLSpanElement>(null);
-  // no placeholder needed; we keep loading line in panel
   // Blink state trackers
-  const resultCaretBlinking = useRef(false);
   const promptCaretBlinking = useRef(false);
   // Prompt input (bottom bar)
   const promptBarRef = useRef<HTMLDivElement>(null);
@@ -131,8 +126,6 @@ export default function FunctionCallingLoader({ onComplete }: FunctionCallingLoa
       panel: { delay: 0.12, entrance: 0.36 },
       phases: { planning: 0.42, calling: 0.62, tool: 0.56, compiling: 0.56, check: 0.25, bounce: 0.18 },
       resultHold: 1.25,
-      flip: { duration: 0.68 },
-      hero: { base: 0.06, jitter: 0.05, pauseSeparator: 0.08 },
       overlay: { fade: 0.5, delayAfterType: 0.1 },
       caretBlink: 0.5,
     } as const;
@@ -141,8 +134,6 @@ export default function FunctionCallingLoader({ onComplete }: FunctionCallingLoa
       panel: { delay: 0.08, entrance: 0.28 },
       phases: { planning: 0.32, calling: 0.42, tool: 0.4, compiling: 0.4, check: 0.2, bounce: 0.12 },
       resultHold: 0.6,
-      flip: { duration: 0.55 },
-      hero: { base: 0.035, jitter: 0.015, pauseSeparator: 0.05 },
       overlay: { fade: 0.35, delayAfterType: 0.06 },
       caretBlink: 0.45,
     } as const;
@@ -185,9 +176,8 @@ export default function FunctionCallingLoader({ onComplete }: FunctionCallingLoa
         if (check1Ref.current) check1Ref.current.textContent = T.fetched;
         if (check2Ref.current) check2Ref.current.textContent = T.composed;
   if (loadingRef.current) loadingRef.current.textContent = T.loading;
-        if (experienceRef.current) experienceRef.current.textContent = T.validatedExperience;
-        if (projectsRef.current) projectsRef.current.textContent = T.projectsFound;
-        if (nameRef.current) nameRef.current.textContent = "LUIS NORIEGA";
+  if (experienceRef.current) experienceRef.current.textContent = T.validatedExperience;
+  if (projectsRef.current) projectsRef.current.textContent = T.projectsFound;
         if (promptBarTextRef.current) promptBarTextRef.current.textContent = T.prompt;
         if (promptBarCaretRef.current) gsap.set(promptBarCaretRef.current, { opacity: 0 });
   gsap.to(containerRef.current, { opacity: 0, duration: cfg.overlay.fade, delay: cfg.overlay.delayAfterType, onComplete: () => { setIsVisible(false); onComplete?.(); } });
@@ -224,64 +214,12 @@ export default function FunctionCallingLoader({ onComplete }: FunctionCallingLoa
         }
       });
 
-  const tl = gsap.timeline({ defaults: { ease: "none" } , onComplete: () => {
-        const hero = document.getElementById("hero-title");
-        const finalize = () => {
-  gsap.to(containerRef.current, { opacity: 0, duration: cfg.overlay.fade, delay: cfg.overlay.delayAfterType, ease: "power2.inOut", onComplete: () => { setIsVisible(false); onComplete?.(); } });
-        };
-
-        if (hero && resultLineRef.current) {
-          const originals = Array.from(hero.children).filter(el => (el as HTMLElement).tagName === 'SPAN' && !(el as HTMLElement).classList.contains('sr-only')) as HTMLElement[];
-          if (originals.length) gsap.set(originals, { opacity: 0 });
-
-          const state = Flip.getState(resultLineRef.current);
-          // stop loading pulse and hide it softly before FLIP
-          if (loadingRef.current) { gsap.killTweensOf(loadingRef.current); gsap.to(loadingRef.current, { opacity: 0, duration: 0.25, ease: "power1.out" }); }
-          hero.appendChild(resultLineRef.current);
-          // will-change during FLIP for smoother paint
-          gsap.set(resultLineRef.current, { willChange: 'transform' });
-          Flip.from(state, { duration: cfg.flip.duration, ease: "power2.inOut", onComplete: () => { if (resultLineRef.current) gsap.set(resultLineRef.current, { willChange: 'auto' }); } });
-
-          // Start hero typing with caret only after FLIP
-          if (nameRef.current) nameRef.current.textContent = "";
-          if (caretRef.current) {
-            gsap.set(caretRef.current, { visibility: 'visible', opacity: 1 });
-            resultCaretBlinking.current = true;
-            gsap.to(caretRef.current, { opacity: 0.25, duration: cfg.caretBlink, repeat: -1, yoyo: true, ease: "none" });
-          }
-
-          const typed = "L-U-I-S N-O-R-I-E-G-A";
-          const base = cfg.hero.base;
-          const jitter = cfg.hero.jitter;
-          let acc = 0;
-          // slight delay after FLIP before typing for smoother handoff
-          acc += 0.06;
-          for (let i = 0; i < typed.length; i++) {
-            const ch = typed[i];
-            let d = base + Math.random() * jitter;
-            if (ch === "-" || ch === " ") d += cfg.hero.pauseSeparator; // micro pause on separators
-            acc += d;
-            gsap.delayedCall(acc, () => {
-              if (!nameRef.current) return;
-              nameRef.current.textContent = (nameRef.current.textContent || "") + ch;
-            });
-          }
-
-          gsap.delayedCall(acc + 0.15, () => {
-            if (caretRef.current) {
-              resultCaretBlinking.current = false;
-              gsap.killTweensOf(caretRef.current);
-              gsap.to(caretRef.current, { opacity: 0, duration: 0.35, ease: "power1.out", onComplete: () => { if (caretRef.current) gsap.set(caretRef.current, { visibility: 'hidden' }); } });
-            }
-            // Fade out the Result line gracefully at the end
-            if (resultLineRef.current) gsap.to(resultLineRef.current, { opacity: 0, duration: 0.4, ease: "power2.out", onComplete: () => { if (resultLineRef.current) resultLineRef.current.remove(); } });
-            if (originals.length) gsap.to(originals, { opacity: 1, duration: 0.4, ease: "power2.out" });
-            finalize();
-          });
-        } else {
-          finalize();
-        }
-      }});
+  const finalize = () => {
+        // stop loading pulse and fade out overlay
+        if (loadingRef.current) { gsap.killTweensOf(loadingRef.current); }
+        gsap.to(containerRef.current, { opacity: 0, duration: cfg.overlay.fade, delay: cfg.overlay.delayAfterType, ease: "power2.inOut", onComplete: () => { setIsVisible(false); onComplete?.(); } });
+      };
+  const tl = gsap.timeline({ defaults: { ease: "none" } });
 
       // Wait for bottom typing to finish, then start AI bubble above (no prompt echo)
       tl.to({}, { duration: accP })
@@ -304,13 +242,13 @@ export default function FunctionCallingLoader({ onComplete }: FunctionCallingLoa
   .to(projectsRef.current, { text: T.projectsFound, duration: cfg.phases.check, onStart: () => { if (projectsRef.current) { gsap.fromTo(projectsRef.current, { scale: 1.08 }, { scale: 1, duration: cfg.phases.bounce, ease: 'power2.out' }); } } })
   .to(metaRef.current, { text: locale === 'es' ? 'modelo: concierge‑v1.2 • seguridad activa' : 'model: concierge‑v1.2 • safety on', duration: 0.4 })
   .to(safetyRef.current, { text: locale === 'es' ? 'verificando SEO y accesibilidad…' : 'validating SEO and accessibility…', duration: 0.4 })
-  .to(experienceRef.current, { text: T.validatedExperience, duration: cfg.phases.check, onStart: () => { if (experienceRef.current) { gsap.fromTo(experienceRef.current, { scale: 1.08 }, { scale: 1, duration: cfg.phases.bounce, ease: 'power2.out' }); } } })
-  .to(projectsRef.current, { text: T.projectsFound, duration: cfg.phases.check, onStart: () => { if (projectsRef.current) { gsap.fromTo(projectsRef.current, { scale: 1.08 }, { scale: 1, duration: cfg.phases.bounce, ease: 'power2.out' }); } } })
+  // experience/projects lines already set above; avoid duplicate steps
   .add(() => { setPhase(T.rendering); showTyping(false); })
   .to(loadingRef.current, { text: T.loading, duration: 0.3 })
   .add(() => { if (loadingRef.current) { gsap.set(loadingRef.current, { opacity: 0.7 }); gsap.to(loadingRef.current, { opacity: 0.3, duration: 0.8, repeat: -1, yoyo: true, ease: "sine.inOut" }); } })
   // Hold on result before transitioning to hero typing
-  .to({}, { duration: cfg.resultHold });
+  .to({}, { duration: cfg.resultHold })
+  .add(() => finalize());
 
     }, containerRef);
 
@@ -333,17 +271,12 @@ export default function FunctionCallingLoader({ onComplete }: FunctionCallingLoa
           gsap.killTweensOf(promptBarCaretRef.current);
           gsap.set(promptBarCaretRef.current, { opacity: 0 });
         }
-        if (resultCaretBlinking.current && caretRef.current) {
-          gsap.killTweensOf(caretRef.current);
-          gsap.set(caretRef.current, { opacity: 0 });
-        }
+  // no result caret anymore
       } else {
         if (promptCaretBlinking.current && promptBarCaretRef.current) {
           gsap.to(promptBarCaretRef.current, { opacity: 0.25, duration: 0.5, repeat: -1, yoyo: true, ease: "none" });
         }
-        if (resultCaretBlinking.current && caretRef.current) {
-          gsap.to(caretRef.current, { opacity: 0.25, duration: 0.5, repeat: -1, yoyo: true, ease: "none" });
-        }
+  // no result caret anymore
       }
     };
 
@@ -418,17 +351,11 @@ export default function FunctionCallingLoader({ onComplete }: FunctionCallingLoa
                   <p ref={projectsRef} />
                   <p ref={metaRef} className="text-white/70" />
                   <p ref={safetyRef} className="text-white/70" />
-                  <p ref={experienceRef} />
-                  <p ref={projectsRef} />
 
                   {/* Persistent loading line */}
                   <p ref={loadingRef} className="mt-1 text-white/60" />
 
-                  {/* Result line – used for Flip */}
-                  <div ref={resultLineRef} className="mt-2 text-center">
-                    <span ref={caretRef} aria-hidden className="inline-block opacity-0 select-none" style={{ visibility: 'hidden' }}>|</span>
-                    <span ref={nameRef} className="inline-block ml-2 text-3xl font-black tracking-wide" style={{ fontFamily: 'var(--font-work-sans)' }} />
-                  </div>
+                  {/* Result line removed: we skip Flip and fade out directly */}
                   
                 </div>
 
