@@ -21,7 +21,7 @@ export default function Home() {
             <h2 className="h3">Dealflow Orbit</h2>
             <p className="mt-2 text-muted-foreground max-w-md">Etapas de adquisición orbitando un centro: origen → análisis → due diligence → cierre.</p>
           </div>
-          <div className="opacity-80" aria-hidden>
+          <div className="opacity-80" aria-label="Etapas del dealflow: Búsqueda, Evaluación, Due Diligence, Cierre" role="img">
             <DealflowOrbitClient />
           </div>
         </div>

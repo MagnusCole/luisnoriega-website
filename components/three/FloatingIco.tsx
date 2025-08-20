@@ -18,8 +18,13 @@ export default function FloatingIco({ size = 260 }: { size?: number }) {
       camera.position.z = 3.4;
 
       const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-      renderer.setSize(size, size);
+      const setSize = (w: number, h: number) => {
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        renderer.setSize(w, h);
+        camera.aspect = w / h;
+        camera.updateProjectionMatrix();
+      };
+      setSize(size, size);
       mount.appendChild(renderer.domElement);
 
       const geometry = new THREE.IcosahedronGeometry(1.1, 1);
@@ -39,18 +44,36 @@ export default function FloatingIco({ size = 260 }: { size?: number }) {
 
       let raf = 0;
       const clock = new THREE.Clock();
+      let paused = false;
       const animate = () => {
         const t = clock.getElapsedTime();
-        mesh.rotation.x += 0.0035;
-        mesh.rotation.y += 0.0045;
-        mesh.position.y = Math.sin(t * 0.9) * 0.08;
-        renderer.render(scene, camera);
+        if (!paused) {
+          mesh.rotation.x += 0.0035;
+          mesh.rotation.y += 0.0045;
+          mesh.position.y = Math.sin(t * 0.9) * 0.08;
+          renderer.render(scene, camera);
+        }
         raf = requestAnimationFrame(animate);
       };
       raf = requestAnimationFrame(animate);
 
+      const onVis = () => { paused = document.hidden; };
+      document.addEventListener('visibilitychange', onVis);
+
+      const ro = new ResizeObserver((entries) => {
+        for (const entry of entries) {
+          const cr = entry.contentRect;
+          const w = Math.round(cr.width) || size;
+          const h = Math.round(cr.height) || size;
+          setSize(w, h);
+        }
+      });
+      ro.observe(mount);
+
       cleanup = () => {
         cancelAnimationFrame(raf);
+        document.removeEventListener('visibilitychange', onVis);
+        ro.disconnect();
         renderer.dispose();
         geometry.dispose();
         material.dispose();

@@ -21,7 +21,8 @@ export default function RouteTransition({ children }: { children: React.ReactNod
     el.style.zIndex = "9999";
     el.style.background = "black";
     el.style.clipPath = "inset(0 100% 0 0)";
-    el.style.pointerEvents = "none";
+  el.style.pointerEvents = "none";
+  el.style.willChange = "clip-path";
     document.body.appendChild(el);
     overlayRef.current = el;
     return () => {
@@ -37,6 +38,8 @@ export default function RouteTransition({ children }: { children: React.ReactNod
     if (!overlayRef.current) return;
     const { cancel } = maskTransition({
       overlayEl: overlayRef.current,
+      durationIn: 0.45,
+      durationOut: 0.4,
       onComplete: () => { window.plausible?.("motion:route-transition"); },
     });
     return () => cancel();

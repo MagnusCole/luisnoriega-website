@@ -7,7 +7,8 @@ import { PRM } from "@/lib/a11y/prm";
 export default function SmoothScroll({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     if (PRM()) return;
-    const lenis = new Lenis({ lerp: 0.08, smoothWheel: true });
+  const isMobile = matchMedia("(max-width: 767px)").matches;
+  const lenis = new Lenis({ lerp: isMobile ? 0.07 : 0.08, smoothWheel: true });
     let raf = 0;
     const loop = (time: number) => {
       lenis.raf(time);

@@ -31,7 +31,7 @@ export default function MagneticButton({ href, children, className = "", ...prop
     return (
       <Link
         href={href}
-        className={`inline-block ${className}`}
+        className={`inline-block focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--accent)] focus-visible:ring-offset-2 ring-offset-[color:var(--background)] ${className}`}
         onMouseMove={(e) => onMouseMove(e as unknown as React.MouseEvent<HTMLButtonElement>)}
         onMouseLeave={reset}
       >
@@ -45,7 +45,7 @@ export default function MagneticButton({ href, children, className = "", ...prop
       ref={ref}
       onMouseMove={onMouseMove}
       onMouseLeave={reset}
-      className={className}
+      className={`focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--accent)] focus-visible:ring-offset-2 ring-offset-[color:var(--background)] ${className}`}
       {...props}
     >
       {children}

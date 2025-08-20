@@ -58,12 +58,12 @@ export default function Hero() {
 
 		const ctx = gsap.context(() => {
 			gsap.to(".hero-parallax-1", {
-				yPercent: -8,
+				yPercent: -6,
 				ease: "none",
 				scrollTrigger: { trigger: ".hero", start: "top bottom", end: "bottom top", scrub: true },
 			});
 			gsap.to(".hero-parallax-2", {
-				yPercent: -14,
+				yPercent: -10,
 				ease: "none",
 				scrollTrigger: { trigger: ".hero", start: "top bottom", end: "bottom top", scrub: true },
 			});
@@ -88,7 +88,7 @@ export default function Hero() {
 	return (
 		<section className="hero relative overflow-hidden border-b border-border">
 			{canDecorate && (
-				<NeonGradient className="pointer-events-none absolute inset-0 opacity-[0.18] mix-blend-screen" />
+				<NeonGradient className="pointer-events-none absolute inset-0 opacity-[0.14] mix-blend-screen" />
 			)}
 			<div ref={lightRef} className="pointer-events-none absolute inset-0 hidden md:block" aria-hidden />
 			{/* Optional video background (desktop only) */}
