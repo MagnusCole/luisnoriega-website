@@ -11,16 +11,19 @@ type Props = {
   reactToCursor?: boolean; // attract/repel subtle
   influenceRadius?: number; // px
   linkLines?: boolean; // draw faint lines between nearby particles
+  lineWidth?: number; // px, ensure ≤ 0.12 by default
 };
 
-export default function Particles2D({ className, density = 0.08, speed = 0.25, color = "#ffffff", opacity = 0.12, reactToCursor = true, influenceRadius = 120, linkLines = true }: Props) {
+export default function Particles2D({ className, density = 0.08, speed = 0.25, color = "#ffffff", opacity = 0.12, reactToCursor = true, influenceRadius = 120, linkLines = true, lineWidth = 0.12 }: Props) {
   const ref = useRef<HTMLCanvasElement | null>(null);
   const animRef = useRef<number | null>(null);
   const pausedRef = useRef(false);
   const cursorRef = useRef<{ x: number; y: number; active: boolean }>({ x: 0, y: 0, active: false });
 
   useEffect(() => {
-  if (PRM() || !isDesktop()) return;
+  type NavigatorWithConnection = Navigator & { connection?: { saveData?: boolean } };
+  const saveData = (navigator as NavigatorWithConnection).connection?.saveData === true;
+  if (PRM() || !isDesktop() || saveData) return;
     const canvas = ref.current;
     if (!canvas) return;
     const context = canvas.getContext("2d", { alpha: true });
@@ -94,6 +97,7 @@ export default function Particles2D({ className, density = 0.08, speed = 0.25, c
         ctx.save();
         ctx.globalAlpha = Math.min(opacity, 0.08);
         ctx.strokeStyle = color;
+        ctx.lineWidth = lineWidth;
         for (let i = 0; i < particles.length; i++) {
           for (let j = i + 1; j < particles.length; j++) {
             const a = particles[i];
@@ -143,7 +147,7 @@ export default function Particles2D({ className, density = 0.08, speed = 0.25, c
     canvas.removeEventListener("pointermove", onPointerMove);
     canvas.removeEventListener("pointerleave", onPointerLeave);
     };
-  }, [density, speed, color, opacity, reactToCursor, influenceRadius, linkLines]);
+  }, [density, speed, color, opacity, reactToCursor, influenceRadius, linkLines, lineWidth]);
 
   return <canvas ref={ref} className={className} aria-hidden />;
 }

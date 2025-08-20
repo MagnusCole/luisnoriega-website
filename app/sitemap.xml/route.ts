@@ -3,8 +3,7 @@ import { NextResponse } from "next/server";
 export const dynamic = "force-static";
 
 const pages = [
-  { loc: "https://luisnoriega.com/", priority: 1.0 },
-  { loc: "https://luisnoriega.com/portafolio", priority: 0.8 },
+  { loc: "https://www.luisnoriega.com/", priority: 1.0 },
 ];
 
 export async function GET() {

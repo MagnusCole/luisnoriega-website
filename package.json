@@ -14,7 +14,7 @@
   "lint:strict": "eslint . --max-warnings=0",
   "qa:preflight": "npm run typecheck && npm run lint:strict",
   "analyze:deps": "npx dependency-cruiser --config .depcruise.js app components lib || exit 0",
-  "analyze:bundle": "cross-env NEXT_TELEMETRY_DISABLED=1 next build && npx nextjs-bundle-analysis",
+  "analyze:bundle": "cross-env NEXT_TELEMETRY_DISABLED=1 next build",
   "unused": "npx knip",
   "depcruise": "npx dependency-cruiser --config .depcruise.js app components lib",
   "analyze": "cross-env ANALYZE=true next build",

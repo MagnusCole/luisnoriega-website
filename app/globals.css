@@ -1,18 +1,40 @@
 @import "tailwindcss";
 
+/* ===============================
+   🎨 Design Tokens
+   =============================== */
 :root {
   --background: #000000; /* Black */
   --foreground: #FFFFFF; /* White */
   --muted: #9CA3AF; /* Gray-400 */
   --border: rgba(255,255,255,0.12);
   --accent: #FFFFFF; /* Accent = White for black canvas */
+
   /* Motion tokens */
   --motion-dur-fast: 200ms;
   --motion-dur-med: 300ms;
   --motion-dur-page: 600ms;
   --motion-ease-smooth: cubic-bezier(0.16, 1, 0.3, 1);
+
+  /* Z-index scale */
+  --z-header: 40;
+  --z-overlay: 50;
+  --z-modal: 100;
+  --z-tooltip: 110;
 }
 
+/* Light mode overrides */
+@media (prefers-color-scheme: light) {
+  :root {
+    --background: #FFFFFF;
+    --foreground: #000000; /* Black text */
+    --muted: #374151; /* Gray-700 (better contrast) */
+    --border: rgba(0,0,0,0.12);
+    --accent: #000000; /* Black on white canvas */
+  }
+}
+
+/* Tailwind theme extension */
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -73,23 +95,19 @@
   --shadow-elevated: 0 4px 10px rgba(0,0,0,0.2), 0 20px 40px rgba(0,0,0,0.25);
 }
 
-@media (prefers-color-scheme: light) {
-  :root {
-  --background: #FFFFFF;
-  --foreground: #000000; /* Black text */
-  --muted: #4B5563; /* Gray-600 */
-  --border: rgba(0,0,0,0.12);
-  --accent: #000000; /* Accent = Black on white canvas */
-  }
-}
-
+/* ===============================
+   🌍 Global resets
+   =============================== */
 html, body {
   height: 100%;
 }
-
 body {
   background: var(--background);
   color: var(--foreground);
+  font-family: var(--font-sans), system-ui, sans-serif;
+}
+html {
+  scroll-behavior: smooth;
 }
 
 /* Accessibility: Skip link */
@@ -101,7 +119,7 @@ body {
   color: #000;
   padding: 8px 12px;
   border-radius: 8px;
-  z-index: 100;
+  z-index: var(--z-tooltip);
   transition: transform var(--motion-dur-fast) var(--motion-ease-smooth);
   transform: translateY(-8px);
 }
@@ -110,20 +128,22 @@ body {
   transform: translateY(0);
 }
 
+/* Responsive container */
 .container {
-  max-width: 80rem; /* 7xl */
-  margin-left: auto;
-  margin-right: auto;
-  padding-left: 1.5rem; /* px-6 */
-  padding-right: 1.5rem;
+  max-width: 80rem; /* 1280px */
+  margin-inline: auto;
+  padding-inline: 1.5rem;
+}
+@media (min-width: 768px) {
+  .container { padding-inline: 2rem; }
+}
+@media (min-width: 1280px) {
+  .container { padding-inline: 3rem; }
 }
 
-/* Header scrolled state border emphasis */
-header[data-scroll="true"] {
-  border-color: rgba(255,255,255,0.2);
-}
-
-/* Typographic utilities using the tokens above */
+/* ===============================
+   🖋 Typography Utilities
+   =============================== */
 .h1 { font-size: var(--text-h1); line-height: var(--leading-h1); font-weight: 800; letter-spacing: -0.01em; }
 .h2 { font-size: var(--text-h2); line-height: var(--leading-h2); font-weight: 700; letter-spacing: -0.01em; }
 .h3 { font-size: var(--text-h3); line-height: var(--leading-h3); font-weight: 700; }
@@ -134,31 +154,63 @@ header[data-scroll="true"] {
 .body { font-size: var(--text-body); line-height: var(--leading-body); }
 .caption { font-size: var(--text-caption); line-height: 1.4; color: var(--muted); }
 
-/* Subtle noise overlay utility */
+/* ===============================
+   ✨ Visual Effects
+   =============================== */
+
+/* Noise overlay */
 .noise-overlay {
   position: absolute;
   inset: 0;
   pointer-events: none;
   opacity: 0.05;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120' viewBox='0 0 120 120'%3E%3Cfilter id='n'%3E%3CfeTurbulence baseFrequency='0.65' stitchTiles='stitch' type='fractalNoise'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.6'/%3E%3C/svg%3E");
+  animation: noiseShift 6s infinite linear;
+}
+@keyframes noiseShift {
+  0% { transform: translate(0,0); }
+  50% { transform: translate(-5%, 5%); }
+  100% { transform: translate(0,0); }
 }
 
-/* Variable-font inspired hover for Inter */
+/* Subtle background slow pan */
+@keyframes slowpan {
+  0% { transform: translate3d(0, 0, 0) scale(1.02); }
+  50% { transform: translate3d(-1.5%, 1.5%, 0) scale(1.02); }
+  100% { transform: translate3d(0, 0, 0) scale(1.02); }
+}
+
+/* Hover utilities */
 .vf-hover {
-  transition: letter-spacing var(--motion-dur-fast) ease, transform var(--motion-dur-fast) ease, opacity var(--motion-dur-fast) ease;
+  transition: letter-spacing var(--motion-dur-fast) ease,
+              transform var(--motion-dur-fast) ease,
+              opacity var(--motion-dur-fast) ease;
 }
 .vf-hover:hover {
   letter-spacing: 0.02em;
   opacity: 0.9;
 }
-
-/* Variable weight hover (requires variable Inter) */
 .vf-weight {
-  transition: font-variation-settings var(--motion-dur-fast) ease, transform var(--motion-dur-fast) ease;
+  transition: font-variation-settings var(--motion-dur-fast) ease,
+              transform var(--motion-dur-fast) ease;
   font-variation-settings: "wght" 540;
 }
 .vf-weight:hover {
   font-variation-settings: "wght" 680;
 }
 
+/* Header scrolled state */
+header[data-scroll="true"] {
+  border-color: rgba(255,255,255,0.2);
+}
 
+/* ===============================
+   ♿ Reduced Motion
+   =============================== */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
+}
