@@ -214,3 +214,14 @@ header[data-scroll="true"] {
     scroll-behavior: auto !important;
   }
 }
+
+/* ===============================
+   🧭 ScrollSmoother structure
+   =============================== */
+#smooth-wrapper {
+  min-height: 100dvh;
+  position: relative;
+}
+#smooth-content {
+  will-change: transform;
+}

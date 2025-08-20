@@ -3,6 +3,7 @@ import { Inter, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import { SiteHeader } from "@/components/layout/SiteHeader";
 import { SiteFooter } from "@/components/layout/SiteFooter";
+import SmoothScroller from "@/components/motion/SmoothScroller";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -90,11 +91,17 @@ export default function RootLayout({
           Saltar al contenido
         </a>
 
-        <SiteHeader />
-        <main id="contenido" role="main">
-          {children}
-        </main>
-        <SiteFooter />
+        <div id="smooth-wrapper">
+          <div id="smooth-content">
+            <SmoothScroller>
+              <SiteHeader />
+              <main id="contenido" role="main">
+                {children}
+              </main>
+              <SiteFooter />
+            </SmoothScroller>
+          </div>
+        </div>
       </body>
     </html>
   );
