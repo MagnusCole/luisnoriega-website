@@ -22,7 +22,7 @@ const jetbrains = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://luisnoriega.com"),
+  metadataBase: new URL("https://www.luisnoriega.com"),
   title: {
   default: "Luis Noriega — Portafolio & M&A",
   template: "%s · Luis Noriega",
@@ -31,10 +31,10 @@ export const metadata: Metadata = {
   "Portfolio personal, adquisiciones y producto. Opero y construyo empresas en LATAM.",
   openGraph: {
     type: "website",
-    url: "https://luisnoriega.com",
+  url: "https://www.luisnoriega.com",
   title: "Luis Noriega — Portafolio & M&A",
   description: "Portfolio personal, adquisiciones y producto.",
-    siteName: "luisnoriega.com",
+  siteName: "www.luisnoriega.com",
     images: [
       {
         url: "/og",
@@ -140,15 +140,15 @@ export default function RootLayout({
               "@context": "https://schema.org",
               "@type": "Person",
               name: "Luis Noriega",
-              url: "https://luisnoriega.com",
+              url: "https://www.luisnoriega.com",
               jobTitle: "Acquisition Entrepreneur",
               worksFor: {
                 "@type": "Organization",
                 name: "ADQUISICIÓN",
               },
               owns: [
-                { "@type": "Organization", name: "ADQUISICIÓN", url: "https://luisnoriega.com" },
-                { "@type": "Organization", name: "AQXION", url: "https://luisnoriega.com/portafolio" }
+                { "@type": "Organization", name: "ADQUISICIÓN", url: "https://www.luisnoriega.com" },
+                { "@type": "Organization", name: "AQXION", url: "https://www.luisnoriega.com/portafolio" }
               ],
             }),
           }}
