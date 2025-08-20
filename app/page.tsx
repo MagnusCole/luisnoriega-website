@@ -6,14 +6,23 @@ import BuyBuildScale from "@/components/BuyBuildScale";
 import GsapRevealIdle from "@/components/motion/GsapRevealIdle";
 import ScrollScenesLazy from "@/components/motion/ScrollScenesLazy";
 import Why from "@/components/blocks/Why";
+import SacredGeometry from "@/components/blocks/SacredGeometry";
+import Manifesto from "@/components/blocks/Manifesto";
+import CosmosGraph from "@/components/blocks/CosmosGraph";
+import CallToCreate from "@/components/blocks/CallToCreate";
 import LeadFormLazy from "@/components/ui/LeadFormLazy";
+import IntroCosmos from "@/components/motion/IntroCosmos";
 
 export default function Home() {
   return (
     <>
+  <IntroCosmos />
   <GsapRevealIdle />
       <Hero />
   <MetricsStripLazy />
+  <SacredGeometry />
+  <Manifesto />
+  <CosmosGraph />
       {/* Firma de interacción: Dealflow Orbit (desktop/no touch/PRM off) */}
       <section className="container py-10 md:py-16">
         <div className="hidden items-center justify-between md:flex">
@@ -55,6 +64,7 @@ export default function Home() {
         </div>
       </section>
   <BuyBuildScale />
+  <CallToCreate />
 
   <ScrollScenesLazy
         scenes={[
