@@ -18,13 +18,16 @@ export default function PortfolioStories() {
     const ctx = gsap.context(() => {
       mm.add("(min-width: 768px)", () => {
         document.querySelectorAll<HTMLElement>(".story").forEach((el) => {
-          ScrollTrigger.create({
-            trigger: el,
-            start: "top top+=10%",
-            end: "+=120%",
-            pin: true,
-            pinSpacing: true,
-          });
+          const isFirst = el.id === "caso-aqxion";
+          if (isFirst) {
+            ScrollTrigger.create({
+              trigger: el,
+              start: "top top+=10%",
+              end: "+=80%",
+              pin: true,
+              pinSpacing: true,
+            });
+          }
           gsap.fromTo(
             el.querySelector(".story-title"),
             { yPercent: 20, opacity: 0 },
@@ -82,6 +85,7 @@ export default function PortfolioStories() {
               fill
               sizes="(min-width: 768px) 640px, 100vw"
               priority={false}
+                loading="lazy"
               style={{ objectFit: "cover" }}
             />
           </div>
@@ -113,6 +117,7 @@ export default function PortfolioStories() {
               fill
               sizes="(min-width: 768px) 640px, 100vw"
               priority={false}
+                loading="lazy"
               style={{ objectFit: "cover" }}
             />
           </div>

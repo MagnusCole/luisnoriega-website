@@ -1,6 +1,6 @@
 "use client";
-import { useEffect, useState } from "react";
-import ScrollReveal from "@/components/ScrollReveal";
+import ScrollReveal from "@/components/motion/ScrollReveal";
+import Counter from "@/components/ui/Counter";
 
 type Metric = { label: string; value: number; suffix?: string };
 
@@ -10,26 +10,7 @@ const METRICS: Metric[] = [
   { label: "ROI promedio", value: 27, suffix: "%" },
 ];
 
-function Counter({ to, suffix }: { to: number; suffix?: string }) {
-  const [n, setN] = useState(0);
-  useEffect(() => {
-    const d = 900;
-    const start = performance.now();
-    let raf = 0;
-    const step = (t: number) => {
-      const p = Math.min(1, (t - start) / d);
-      setN(Math.floor(p * to));
-      if (p < 1) raf = requestAnimationFrame(step);
-    };
-    raf = requestAnimationFrame(step);
-    return () => cancelAnimationFrame(raf);
-  }, [to]);
-  return (
-    <span>
-      {n.toLocaleString()} {suffix}
-    </span>
-  );
-}
+// use shared Counter for consistent easing/PRM
 
 export default function MetricsStrip() {
   return (

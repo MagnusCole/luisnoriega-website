@@ -118,6 +118,11 @@ body {
   padding-right: 1.5rem;
 }
 
+/* Header scrolled state border emphasis */
+header[data-scroll="true"] {
+  border-color: rgba(255,255,255,0.2);
+}
+
 /* Typographic utilities using the tokens above */
 .h1 { font-size: var(--text-h1); line-height: var(--leading-h1); font-weight: 800; letter-spacing: -0.01em; }
 .h2 { font-size: var(--text-h2); line-height: var(--leading-h2); font-weight: 700; letter-spacing: -0.01em; }

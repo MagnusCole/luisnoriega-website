@@ -6,7 +6,11 @@ import SplitType from "split-type";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import NeonGradient from "@/components/ui/NeonGradient";
-import FloatingIco from "@/components/ui/FloatingIco";
+import FloatingIco from "@/components/three/FloatingIco";
+
+declare global {
+  interface Window { plausible?: (event: string, options?: Record<string, unknown>) => void }
+}
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -111,10 +115,10 @@ export default function Hero() {
           Adquirimos y profesionalizamos PYMES en LATAM para continuidad, valor y crecimiento sostenido.
         </p>
         <div className="mt-10 flex items-center gap-4">
-          <Button href="/portafolio" variant="primary">
+          <Button href="/portafolio" variant="primary" onClick={() => { window.plausible?.("cta:hero:ver-portafolio"); }}>
             Ver portafolio
           </Button>
-          <MagneticButton href="/portafolio#caso-b2b" className="vf-hover vf-weight inline-flex items-center justify-center rounded-full border border-border px-6 py-3 font-medium hover:bg-white/5 transition">
+          <MagneticButton href="/portafolio#caso-b2b" className="vf-hover vf-weight inline-flex items-center justify-center rounded-full border border-border px-6 py-3 font-medium hover:bg-white/5 transition" onClick={() => { window.plausible?.("cta:hero:lead-gen-b2b"); }}>
             Lead‑Gen B2B
           </MagneticButton>
         </div>

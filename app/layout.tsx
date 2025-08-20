@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import { Inter, JetBrains_Mono } from "next/font/google";
 import Link from "next/link";
 import { Analytics } from "@vercel/analytics/react";
-import RouteTransition from "@/components/RouteTransition";
-import SmoothScroll from "@/components/SmoothScroll";
+import RouteTransition from "@/components/motion/RouteTransition";
+import SmoothScroll from "@/components/motion/SmoothScroll";
 import CursorDot from "@/components/CursorDot";
 import BrandLoader from "@/components/BrandLoader";
 import WorkBanner from "@/components/WorkBanner";
@@ -61,7 +61,7 @@ export const metadata: Metadata = {
 
 function Navbar() {
   return (
-    <header className="sticky top-0 z-40 backdrop-blur supports-[backdrop-filter]:bg-background/70 border-b border-border">
+    <header className="sticky top-0 z-40 backdrop-blur supports-[backdrop-filter]:bg-background/70 border-b border-border data-[scroll=true]:backdrop-saturate-150 data-[scroll=true]:bg-background/80">
       <div className="mx-auto max-w-7xl px-6 py-4 flex items-center justify-between">
         <Link href="/" className="font-semibold tracking-tight text-lg">
           Luis Noriega
@@ -73,6 +73,18 @@ function Navbar() {
           >
             Portafolio
           </Link>
+          <a
+            href="#sobre-mi"
+            className="vf-hover vf-weight hover:opacity-80 transition will-change-transform hidden md:inline"
+          >
+            About
+          </a>
+          <a
+            href="#hablemos"
+            className="vf-hover vf-weight hover:opacity-80 transition will-change-transform"
+          >
+            Hablemos
+          </a>
         </nav>
       </div>
     </header>
@@ -144,6 +156,19 @@ export default function RootLayout({
         <CursorDot />
   <WorkBanner />
         <Navbar />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(() => {
+              const header = document.querySelector('header');
+              if (!header) return;
+              const onScroll = () => {
+                header.setAttribute('data-scroll', window.scrollY > 6 ? 'true' : 'false');
+              };
+              onScroll();
+              window.addEventListener('scroll', onScroll, { passive: true });
+            })();`
+          }}
+        />
         <SmoothScroll>
           <main id="contenido">
             <RouteTransition>{children}</RouteTransition>

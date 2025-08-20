@@ -3,15 +3,19 @@ import Link from "next/link";
 import type { Project } from "@/lib/portfolio";
 
 export default function ProjectCard({ project }: { project: Project }) {
+  let raf = 0;
   return (
     <div
-      className="rounded-xl border border-border p-6 transition will-change-transform"
+      className="rounded-xl border border-border p-6 transition will-change-transform transform-gpu"
       onMouseMove={(e) => {
         const el = e.currentTarget as HTMLDivElement;
         const r = el.getBoundingClientRect();
         const x = ((e.clientX - r.left) / r.width) * 2 - 1;
         const y = ((e.clientY - r.top) / r.height) * 2 - 1;
-        el.style.transform = `perspective(700px) rotateX(${(-y * 4).toFixed(2)}deg) rotateY(${(x * 6).toFixed(2)}deg)`;
+        if (raf) cancelAnimationFrame(raf);
+        raf = requestAnimationFrame(() => {
+          el.style.transform = `perspective(700px) rotateX(${(-y * 4).toFixed(2)}deg) rotateY(${(x * 6).toFixed(2)}deg)`;
+        });
       }}
       onMouseLeave={(e) => {
         (e.currentTarget as HTMLDivElement).style.transform = "none";

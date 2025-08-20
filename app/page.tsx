@@ -1,11 +1,11 @@
-import Hero from "@/components/Hero";
-import DealflowOrbitClient from "@/components/DealflowOrbitClient";
+import Hero from "@/components/blocks/Hero";
+import DealflowOrbitClient from "@/components/motion/DealflowOrbitClient";
 import MetricsStrip from "@/components/MetricsStrip";
 import { Card } from "@/components/ui/Card";
 import BuyBuildScale from "@/components/BuyBuildScale";
-import GsapRevealClient from "@/components/GsapRevealClient";
+import GsapRevealClient from "@/components/motion/GsapRevealClient";
 import ScrollScenes from "@/components/ScrollScenesClient";
-import Why from "@/components/Why";
+import Why from "@/components/blocks/Why";
 
 export default function Home() {
   return (
@@ -26,8 +26,8 @@ export default function Home() {
         </div>
       </section>
   <Why />
-      {/* Sobre mí breve */}
-      <section className="container py-16">
+  {/* Sobre mí breve */}
+  <section id="sobre-mi" className="container py-16">
         <div className="grid gap-8 md:grid-cols-12">
           <div className="md:col-span-7">
             <h2 className="h2 reveal">Sobre mí</h2>
@@ -77,8 +77,8 @@ export default function Home() {
           },
         ]}
       />
-        {/* Timeline */}
-        <section className="container py-16">
+  {/* Timeline */}
+  <section className="container py-16">
           <h2 className="h4">Timeline</h2>
           <ol className="mt-6 space-y-4 border-l border-border pl-6">
             <li>
@@ -94,6 +94,16 @@ export default function Home() {
               <p className="body text-muted-foreground">Producto y operación en múltiples industrias.</p>
             </li>
           </ol>
+        </section>
+        {/* Hablemos */}
+        <section id="hablemos" className="container py-16 border-t border-border">
+          <div className="flex flex-wrap items-center justify-between gap-4">
+            <div>
+              <h2 className="h3">Hablemos</h2>
+              <p className="mt-2 text-muted-foreground">Si piensas retirarte o quieres coinvertir en LATAM, conversemos.</p>
+            </div>
+            <a href="mailto:hola@luisnoriega.com" className="vf-hover vf-weight inline-flex items-center justify-center rounded-full border border-border px-6 py-3 font-medium hover:bg-white/5 transition">Escríbeme</a>
+          </div>
         </section>
     </>
   );

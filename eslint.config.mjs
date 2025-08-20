@@ -11,6 +11,17 @@ const compat = new FlatCompat({
 
 const eslintConfig = [
   ...compat.extends("next/core-web-vitals", "next/typescript"),
+  {
+    rules: {
+      // Hint: use shared Counter component
+      "no-restricted-imports": ["warn", {
+        paths: [
+          { name: "three", message: "Importa three sólo desde components/ui/* para 3D encapsulado." },
+        ],
+      }],
+    },
+    files: ["**/*.ts", "**/*.tsx"],
+  },
 ];
 
 export default eslintConfig;
