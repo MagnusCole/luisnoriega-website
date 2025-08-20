@@ -1,13 +1,5 @@
 import type { Metadata } from "next";
 import { Inter, JetBrains_Mono } from "next/font/google";
-import Link from "next/link";
-import Navbar from "@/components/Navbar";
-import { Analytics } from "@vercel/analytics/react";
-import RouteTransition from "@/components/motion/RouteTransition";
-import SmoothScroll from "@/components/motion/SmoothScroll";
-import CursorDot from "@/components/CursorDot";
-import BrandLoader from "@/components/BrandLoader";
-import WorkBanner from "@/components/WorkBanner";
 import "./globals.css";
 
 const inter = Inter({
@@ -60,28 +52,7 @@ export const metadata: Metadata = {
   },
 };
 
-// Navbar moved to components/Navbar with aria-current detection
-
-function Footer() {
-  return (
-    <footer className="border-t border-border mt-16">
-      <div className="mx-auto max-w-7xl px-6 py-10 text-sm text-muted-foreground flex flex-col md:flex-row items-center justify-between gap-4">
-        <p>
-          © {new Date().getFullYear()} Luis Noriega. Todos los derechos
-          reservados.
-        </p>
-        <div className="flex items-center gap-4">
-          <Link className="hover:opacity-80" href="/">
-            Home
-          </Link>
-          <Link className="hover:opacity-80" href="/portafolio">
-            Portafolio
-          </Link>
-        </div>
-      </div>
-    </footer>
-  );
-}
+// Minimal layout shell
 
 export default function RootLayout({
   children,
@@ -97,7 +68,7 @@ export default function RootLayout({
           data-domain="luisnoriega.com"
           src="https://plausible.io/js/script.js"
         />
-        {/* JSON-LD: Person & Organizations */}
+    {/* JSON-LD: Person */}
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
@@ -107,28 +78,7 @@ export default function RootLayout({
               name: "Luis Noriega",
               url: "https://www.luisnoriega.com",
               jobTitle: "Acquisition Entrepreneur",
-              worksFor: {
-                "@type": "Organization",
-                name: "ADQUISICIÓN",
-              },
-              owns: [
-                { "@type": "Organization", name: "ADQUISICIÓN", url: "https://www.luisnoriega.com" },
-                { "@type": "Organization", name: "AQXION", url: "https://www.luisnoriega.com/portafolio" }
-              ],
-            }),
-          }}
-        />
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify({
-              "@context": "https://schema.org",
-              "@type": "Organization",
-              name: "AQXION",
-              url: "https://www.luisnoriega.com/portafolio",
-              sameAs: [
-                "https://www.luisnoriega.com/portafolio"
-              ]
+      worksFor: undefined,
             }),
           }}
         />
@@ -136,31 +86,7 @@ export default function RootLayout({
       <body
         className={`${inter.variable} ${jetbrains.variable} antialiased bg-background text-foreground`}
       >
-        <a href="#contenido" className="skip-link">Saltar al contenido</a>
-  <BrandLoader />
-  <CursorDot />
-  {process.env.NODE_ENV !== "production" && <WorkBanner />}
-  <Navbar />
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `(() => {
-              const header = document.querySelector('header');
-              if (!header) return;
-              const onScroll = () => {
-                header.setAttribute('data-scroll', window.scrollY > 6 ? 'true' : 'false');
-              };
-              onScroll();
-              window.addEventListener('scroll', onScroll, { passive: true });
-            })();`
-          }}
-        />
-        <SmoothScroll>
-          <main id="contenido">
-            <RouteTransition>{children}</RouteTransition>
-          </main>
-        </SmoothScroll>
-        <Footer />
-        <Analytics />
+  <main id="contenido">{children}</main>
       </body>
     </html>
   );
