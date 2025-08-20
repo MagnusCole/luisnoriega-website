@@ -63,5 +63,5 @@ if (typeof window !== "undefined" && !registered) {
 	registered = true;
 }
 
-export { gsap, useGSAP, ScrollTrigger, ScrollSmoother };
+export { gsap, useGSAP, ScrollTrigger, ScrollSmoother, SplitText };
 

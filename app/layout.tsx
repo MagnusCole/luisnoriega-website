@@ -1,12 +1,12 @@
 import type { Metadata } from "next";
-import { Inter, JetBrains_Mono } from "next/font/google";
+import { Work_Sans, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import { SiteHeader } from "@/components/layout/SiteHeader";
 import { SiteFooter } from "@/components/layout/SiteFooter";
 import SmoothScroller from "@/components/motion/SmoothScroller";
 
-const inter = Inter({
-  variable: "--font-inter",
+const workSans = Work_Sans({
+  variable: "--font-sans",
   subsets: ["latin"],
   display: "swap",
 });
@@ -16,6 +16,8 @@ const jetbrains = JetBrains_Mono({
   subsets: ["latin"],
   display: "swap",
 });
+
+// Headlines will also use Work Sans via CSS token mapping.
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://www.luisnoriega.com"),
@@ -84,7 +86,7 @@ export default function RootLayout({
         />
       </head>
       <body
-        className={`${inter.variable} ${jetbrains.variable} antialiased bg-background text-foreground`}
+        className={`${workSans.variable} ${jetbrains.variable} antialiased bg-background text-foreground`}
       >
         {/* Skip to content, visible on focus */}
         <a href="#contenido" className="skip-link">
