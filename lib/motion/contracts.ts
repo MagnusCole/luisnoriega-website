@@ -127,8 +127,9 @@ type MaskOptions = {
 export function maskTransition(opts: MaskOptions = {}): { cancel: () => void } {
   const reduce = PRM();
   const fastExit = opts.fastExit ?? (typeof document !== "undefined" && document.visibilityState === "hidden");
-  const durationIn = Math.min(opts.durationIn ?? 0.45, 0.8);
-  const durationOut = Math.min(opts.durationOut ?? (fastExit ? 0.1 : 0.45), 0.8);
+  // Defaults tuned to stay under the 800ms route-transition budget (0.4 + 0.35 = 0.75s)
+  const durationIn = Math.min(opts.durationIn ?? 0.4, 0.8);
+  const durationOut = Math.min(opts.durationOut ?? (fastExit ? 0.1 : 0.35), 0.8);
   const ease = opts.ease ?? "power3.inOut";
 
   if (reduce) {

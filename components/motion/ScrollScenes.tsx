@@ -1,14 +1,12 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { gsap } from "@/lib/motion/gsap";
 import { pinOnce } from "@/lib/motion/contracts";
 import dynamic from "next/dynamic";
 
-const SpinTetra = dynamic(() => import("@/components/ui/SpinTetra"), { ssr: false });
+const SpinTetra = dynamic(() => import("@/components/three/SpinTetra"), { ssr: false });
 
-gsap.registerPlugin(ScrollTrigger);
 
 type Scene = {
   id: string;

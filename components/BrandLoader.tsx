@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import gsap from "gsap";
+import { gsap } from "@/lib/motion/gsap";
 
 export default function BrandLoader() {
   const [show, setShow] = useState(false);

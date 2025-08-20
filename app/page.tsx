@@ -4,7 +4,7 @@ import MetricsStrip from "@/components/MetricsStrip";
 import { Card } from "@/components/ui/Card";
 import BuyBuildScale from "@/components/BuyBuildScale";
 import GsapRevealClient from "@/components/motion/GsapRevealClient";
-import ScrollScenes from "@/components/ScrollScenesClient";
+import ScrollScenes from "@/components/motion/ScrollScenesClient";
 import Why from "@/components/blocks/Why";
 
 export default function Home() {

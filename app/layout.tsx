@@ -68,6 +68,12 @@ function Navbar() {
         </Link>
         <nav className="flex items-center gap-6 text-sm">
           <Link
+            href="/"
+            className="vf-hover vf-weight hover:opacity-80 transition will-change-transform"
+          >
+            Home
+          </Link>
+          <Link
             href="/portafolio"
             className="vf-hover vf-weight hover:opacity-80 transition will-change-transform"
           >

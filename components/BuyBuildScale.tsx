@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useRef } from "react";
-import gsap from "gsap";
+import { gsap } from "@/lib/motion/gsap";
 
 export default function BuyBuildScale() {
   const ref = useRef<HTMLDivElement | null>(null);

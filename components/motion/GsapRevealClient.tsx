@@ -1,7 +1,11 @@
 "use client";
-import { useGsapReveal } from "@/lib/useGsapReveal";
+import { useEffect } from "react";
+import { reveal } from "@/lib/motion/contracts";
 
 export default function GsapRevealClient() {
-  useGsapReveal(".reveal");
+  useEffect(() => {
+    const cleanup = reveal(".reveal", { y: 12, duration: 0.28, once: true });
+    return () => cleanup();
+  }, []);
   return null;
 }

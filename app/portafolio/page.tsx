@@ -2,7 +2,7 @@ import ProjectCard from "@/components/portfolio/ProjectCard";
 import AchievementItem from "@/components/portfolio/AchievementItem";
 import { projects, achievements } from "@/lib/portfolio";
 import { Card } from "@/components/ui/Card";
-import PortfolioStories from "@/components/PortfolioStories";
+import PortfolioStories from "@/components/blocks/PortfolioStories";
 
 export const metadata = { title: "Portafolio" };
 

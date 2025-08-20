@@ -6,9 +6,12 @@
   "dev": "next dev",
   "build": "next build",
   "start": "next start",
-  "lint": "next lint",
+  "lint": "eslint . --ext .ts,.tsx",
   "typecheck": "tsc --noEmit",
   "qa": "npm run typecheck && npm run lint",
+  "unused": "npx knip",
+  "depcruise": "npx dependency-cruiser --config .depcruise.js .",
+  "analyze": "cross-env ANALYZE=true next build",
   "perf:lh": "echo \"Run Lighthouse against local preview URL\""
   },
   "dependencies": {

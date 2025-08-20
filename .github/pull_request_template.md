@@ -6,6 +6,8 @@
 - [ ] Route-mask ≤ 800ms (medido; sin lag innecesario)
 - [ ] Navbar mantiene Home / Portafolio / Hablemos visibles
 - [ ] Lighthouse móvil ≥ 90; axe sin críticos
+- [ ] No hay imports directos de `gsap`/`gsap/ScrollTrigger` fuera de `lib/motion/gsap`
+- [ ] No hay imports de `three` fuera de `components/three/*`
 
 ## Resumen del cambio
 
