@@ -212,7 +212,6 @@ Tips con ScrollSmoother + ScrollTrigger:
 
 - Parallax + reveal (Hero): `components/motion/hero/TitleRevealParallax.tsx`
 - Hover premium (Hero): `components/motion/hero/HoverLuxuryTitle.tsx`
-- Loop de fondo sutil: `components/motion/BackgroundSlowGradient.tsx`
 - Smoother global: `components/motion/SmoothScroller.tsx`
 
 Todos siguen: imports centralizados, gating PRM/Save‑Data y cleanup estricto.

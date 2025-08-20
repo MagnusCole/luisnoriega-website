@@ -12,44 +12,63 @@ type Props = {
 type NetworkInformationLite = { saveData?: boolean };
 type NavigatorConnection = { connection?: NetworkInformationLite };
 type ScrollSmootherInstance = { kill?: () => void };
+type ScrollSmootherStatic = {
+  get?: () => ScrollSmootherInstance | null;
+  create: (opts: Record<string, unknown>) => ScrollSmootherInstance;
+  refresh?: (force?: boolean) => void;
+};
 
 export default function SmoothScroller({ children }: Props) {
   useEffect(() => {
-    // respect user preferences
+    // Respect user preferences
     const saveData =
       typeof navigator !== "undefined" &&
       (navigator as Navigator & NavigatorConnection).connection?.saveData === true;
-
     if (PRM() || saveData) return;
 
-  let smoother: ScrollSmootherInstance | null = null;
+    // Ensure wrapper/content exist
+    const wrapper = document.querySelector('#smooth-wrapper');
+    const content = document.querySelector('#smooth-content');
+    if (!wrapper || !content) return;
 
-    let cancelled = false;
+    // Avoid duplicate instances
+  const Smoother = ScrollSmoother as unknown as ScrollSmootherStatic;
+  let smoother = Smoother.get?.() ?? null;
+    if (smoother) {
+      return; // already initialized elsewhere
+    }
 
-    (async () => {
-      try {
-        if (cancelled || !ScrollSmoother) return;
-        smoother = ScrollSmoother.create({
-          wrapper: "#smooth-wrapper",
-          content: "#smooth-content",
-          smooth: 1.15,
-          normalizeScroll: true,
-          effects: true,
-          smoothTouch: 0.1,
-        }) as unknown as ScrollSmootherInstance;
-      } catch {
-        // Plugin missing or unsupported - no-op
-      }
-    })();
+    // Touch detection
+    const isTouch = matchMedia('(pointer: coarse)').matches;
 
-    return () => {
-      cancelled = true;
-      try {
-        if (smoother && typeof smoother.kill === "function") {
-          smoother.kill();
-        }
-      } catch {}
-    };
+    try {
+  smoother = Smoother.create({
+        wrapper: '#smooth-wrapper',
+        content: '#smooth-content',
+        smooth: 1.1, // slightly reduced for stability
+        smoothTouch: isTouch ? 0.2 : 0, // softer on touch, off on desktop
+        normalizeScroll: true,
+        effects: true,
+        // reduce overhead
+        ignoreMobileResize: true,
+      }) as unknown as ScrollSmootherInstance;
+
+      // Refresh handling
+      const onResize = () => {
+        try {
+          Smoother.refresh?.(true);
+        } catch {}
+      };
+      window.addEventListener('resize', onResize, { passive: true });
+
+      return () => {
+        window.removeEventListener('resize', onResize);
+  try { smoother?.kill?.(); } catch {}
+      };
+    } catch {
+      // Plugin missing or unsupported - no-op
+      return;
+    }
   }, []);
 
   return <>{children}</>;

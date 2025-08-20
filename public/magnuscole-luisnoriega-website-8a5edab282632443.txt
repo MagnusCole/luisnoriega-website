@@ -1,0 +1,1942 @@
+Directory structure:
+└── magnuscole-luisnoriega-website/
+    ├── README.md
+    ├── __tmp_delete_marker
+    ├── eslint.config.mjs
+    ├── next.config.ts
+    ├── package.json
+    ├── postcss.config.mjs
+    ├── tsconfig.json
+    ├── .depcruise.js
+    ├── app/
+    │   ├── globals.css
+    │   ├── layout.tsx
+    │   ├── page.tsx
+    │   ├── og/
+    │   │   └── route.tsx
+    │   ├── robots.txt/
+    │   │   └── route.ts
+    │   └── sitemap.xml/
+    │       └── route.ts
+    ├── components/
+    │   ├── Footer.tsx
+    │   ├── Header.tsx
+    │   ├── Hero.tsx
+    │   ├── layout/
+    │   │   ├── index.ts
+    │   │   ├── SiteFooter.tsx
+    │   │   └── SiteHeader.tsx
+    │   └── motion/
+    │       ├── BackgroundSlowGradient.tsx
+    │       ├── CursorSpotlight.tsx
+    │       ├── SmoothScroller.tsx
+    │       └── hero/
+    │           ├── HoverLuxuryTitle.tsx
+    │           └── TitleRevealParallax.tsx
+    ├── instructions/
+    │   ├── estructure.instructions.md
+    │   ├── gsap-usage.instructions.md
+    │   └── quality.instructions.md
+    └── lib/
+        ├── a11y/
+        │   └── prm.ts
+        ├── motion/
+        │   └── gsap.ts
+        └── utils/
+            └── index.ts
+
+================================================
+FILE: README.md
+================================================
+# luisnoriega.com — MVP (Hero mínimo)
+
+Next.js 15 (App Router) + React 19 + TypeScript + TailwindCSS + GSAP (ScrollTrigger). Sitio reducido a un Hero animado, monocromo y accesible.
+
+## Rutas activas
+
+- `/` Home (única vista)
+- `/og` Open Graph image (route handler)
+- `/robots.txt` Robots
+- `/sitemap.xml` Sitemap
+
+Rutas legacy (about, work, contact, portafolio, API lead) fueron eliminadas para dejar el proyecto mínimo.
+
+## Desarrollo
+
+```powershell
+npm run dev
+```
+
+Abrir http://localhost:3000
+
+## Build
+
+```powershell
+npm run build ; npm run start
+```
+
+## Stack actual
+
+- UI: TailwindCSS utility-first
+- App Router: Next.js 15 (TypeScript estricto)
+- Motion: GSAP 3 + ScrollTrigger (registro centralizado en `lib/motion/gsap`)
+- A11y/Perf: PRM y helpers (`lib/a11y/prm`) para gating de animaciones y decoraciones
+- Canvas: `components/canvas/Particles2D` (ligero, DPR-aware) con fondo cósmico (`components/motion/CosmicBackground`)
+- UI mínima: `components/ui/Button`, `components/ui/MagneticButton`
+- Analytics: Plausible via script tag en `app/layout.tsx` (configurar dominio)
+
+No se usa Lenis ni contratos de motion en esta versión mínima.
+
+## Archivos clave
+
+- `app/page.tsx`: Renderiza solo `<Hero />`
+- `components/Hero.tsx`: Hero con GSAP (SplitType on-demand, reveal y parallax sutil)
+- `components/motion/CosmicBackground.tsx` y `components/canvas/Particles2D.tsx`: fondo de partículas
+- `lib/motion/gsap.ts`: inicialización GSAP/ScrollTrigger
+- `lib/a11y/prm.ts`: PRM/isTouch/isDesktop helpers
+
+## Personalización rápida
+
+- Copys del Hero: editar `components/Hero.tsx`
+- Intensidad de fondo/partículas: `CosmicBackground.tsx` / `Particles2D.tsx`
+- Tipografía/tema: `app/globals.css` y clases Tailwind in-file
+
+## TODO breve
+
+- Opcional: reintroducir `/api/lead` y CRM (HubSpot/Resend/n8n) cuando se amplíe el MVP
+- Añadir CI básica (typecheck + lint + Lighthouse/axe) cuando se estabilice
+
+
+
+================================================
+FILE: __tmp_delete_marker
+================================================
+cleanup
+
+
+
+================================================
+FILE: eslint.config.mjs
+================================================
+import { dirname } from "path";
+import { fileURLToPath } from "url";
+import { FlatCompat } from "@eslint/eslintrc";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
+const compat = new FlatCompat({
+  baseDirectory: __dirname,
+});
+
+const eslintConfig = [
+  // Ignore compiled and vendor outputs
+  {
+    ignores: ["**/.next/**", "**/node_modules/**", "**/dist/**", "**/build/**"],
+  },
+  ...compat.extends("next/core-web-vitals", "next/typescript"),
+  {
+    files: ["**/*.{ts,tsx}"],
+    rules: {
+      "no-restricted-imports": ["error", {
+        paths: [
+          { name: "gsap", message: "Usa `lib/motion/gsap`" },
+          { name: "gsap/ScrollTrigger", message: "Usa `lib/motion/gsap`" },
+          { name: "three", message: "Importa Three solo desde components/three/*" },
+          { name: "three/*", message: "Importa Three solo desde components/three/*" }
+        ]
+      }]
+    }
+  },
+  // Allow the wrapper itself to import gsap/ScrollTrigger
+  {
+    files: ["lib/motion/gsap.ts"],
+    rules: {
+      "no-restricted-imports": "off"
+    }
+  },
+];
+
+export default eslintConfig;
+
+
+
+================================================
+FILE: next.config.ts
+================================================
+import type { NextConfig } from "next";
+
+const nextConfig: NextConfig = {
+  experimental: {
+    optimizePackageImports: ["gsap", "three"],
+  },
+  poweredByHeader: false,
+  compress: true,
+  images: {
+    formats: ["image/avif", "image/webp"],
+    remotePatterns: [
+      // { protocol: "https", hostname: "images.ctfassets.net" },
+    ],
+  },
+  headers: async () => [
+    {
+      source: "/(.*)",
+      headers: [
+        { key: "X-Content-Type-Options", value: "nosniff" },
+        { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
+        { key: "Permissions-Policy", value: "camera=(), microphone=(), geolocation=()" },
+        // Consider enabling CSP when external sources are well known.
+        // { key: "Content-Security-Policy", value: "default-src 'self'; img-src 'self' data: blob:; media-src 'self' blob:; script-src 'self'; style-src 'self' 'unsafe-inline'; font-src 'self'; connect-src 'self' https://plausible.io; frame-ancestors 'none';" },
+      ],
+    },
+  ],
+};
+
+export default nextConfig;
+
+
+
+================================================
+FILE: package.json
+================================================
+{
+  "name": "luisnoriega-website",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "lint:next": "next lint",
+    "lint:fix": "eslint . --ext .ts,.tsx --fix",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "qa": "npm run typecheck && npm run lint && npm run depcruise",
+    "lint:strict": "eslint . --max-warnings=0",
+    "qa:preflight": "npm run typecheck && npm run lint:strict",
+    "analyze:deps": "npx dependency-cruiser --config .depcruise.js app components lib || exit 0",
+    "analyze:bundle": "cross-env NEXT_TELEMETRY_DISABLED=1 next build",
+    "unused": "npx knip",
+    "depcruise": "npx dependency-cruiser --config .depcruise.js app components lib",
+    "analyze": "cross-env ANALYZE=true next build",
+    "perf:lh": "echo \"Run Lighthouse against local preview URL\""
+  },
+  "dependencies": {
+    "@gsap/react": "^2.1.2",
+    "@hookform/resolvers": "^5.2.1",
+    "@vercel/analytics": "^1.5.0",
+    "gsap": "^3.13.0",
+    "lenis": "^1.3.8",
+    "next": "15.4.7",
+    "next-plausible": "^3.12.4",
+    "react": "^19.1.0",
+    "react-dom": "19.1.0",
+    "react-hook-form": "^7.62.0",
+    "split-type": "^0.3.4",
+    "three": "^0.179.1",
+    "zod": "^4.0.17"
+  },
+  "devDependencies": {
+    "@eslint/eslintrc": "^3",
+    "@tailwindcss/postcss": "^4",
+    "@types/node": "^20.19.11",
+    "@types/react": "^19.1.10",
+    "@types/react-dom": "^19.1.7",
+    "@types/three": "^0.179.0",
+    "cross-env": "^7.0.3",
+    "eslint": "^9",
+    "eslint-config-next": "15.4.7",
+    "tailwindcss": "^4",
+    "typescript": "^5"
+  }
+}
+
+
+
+================================================
+FILE: postcss.config.mjs
+================================================
+const config = {
+  plugins: ["@tailwindcss/postcss"],
+};
+
+export default config;
+
+
+
+================================================
+FILE: tsconfig.json
+================================================
+{
+  "compilerOptions": {
+    "target": "ES2017",
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "allowJs": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "noEmit": true,
+    "esModuleInterop": true,
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "jsx": "preserve",
+    "incremental": true,
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ],
+    "paths": {
+      "@/*": ["./*"]
+    }
+  },
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
+  "exclude": ["node_modules"]
+}
+
+
+
+================================================
+FILE: .depcruise.js
+================================================
+// Dependency Cruiser rules to enforce boundaries
+module.exports = {
+  forbidden: [
+    {
+      name: "no-three-outside",
+      comment: "three solo en components/three",
+      severity: "warn",
+      from: { path: "^(app|components|lib)/", pathNot: "^components/three" },
+      to: { path: "^node_modules/three(|/.*)$" }
+    },
+    {
+      name: "no-gsap-raw",
+      comment: "gsap/ScrollTrigger solo se permite importarse directamente desde lib/motion/gsap.ts",
+      severity: "error",
+      from: { path: "^(app|components|lib)/", pathNot: "^lib/motion/gsap\\.ts$" },
+      to: { path: "^node_modules/gsap(|/.*)$" }
+    }
+  ],
+  options: {
+    exclude: "^(node_modules|\.next)/",
+    doNotFollow: { path: "node_modules" }
+  }
+};
+
+
+
+================================================
+FILE: app/globals.css
+================================================
+@import "tailwindcss";
+
+/* ===============================
+   🎨 Design Tokens
+   =============================== */
+:root {
+  --background: #000000; /* Black */
+  --foreground: #FFFFFF; /* White */
+  --muted: #9CA3AF; /* Gray-400 */
+  --border: rgba(255,255,255,0.12);
+  --accent: #FFFFFF; /* Accent = White for black canvas */
+  /* Headline optics */
+  --headline-stroke: rgba(255,255,255,0.12);
+  --headline-shadow: rgba(255,255,255,0.08);
+
+  /* Motion tokens */
+  --motion-dur-fast: 200ms;
+  --motion-dur-med: 300ms;
+  --motion-dur-page: 600ms;
+  --motion-ease-smooth: cubic-bezier(0.16, 1, 0.3, 1);
+
+  /* Z-index scale */
+  --z-header: 40;
+  --z-overlay: 50;
+  --z-modal: 100;
+  --z-tooltip: 110;
+}
+
+/* Light mode overrides */
+@media (prefers-color-scheme: light) {
+  :root {
+    --background: #FFFFFF;
+    --foreground: #000000; /* Black text */
+    --muted: #374151; /* Gray-700 (better contrast) */
+    --border: rgba(0,0,0,0.12);
+    --accent: #000000; /* Black on white canvas */
+  --headline-stroke: rgba(0,0,0,0.12);
+  --headline-shadow: rgba(0,0,0,0.08);
+  }
+}
+
+/* Tailwind theme extension */
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-muted-foreground: var(--muted);
+  --color-border: var(--border);
+  --color-accent: var(--accent);
+  /* Font tokens map to next/font variables set in layout */
+  --font-sans: var(--font-sans);
+  --font-headline: var(--font-sans);
+  --font-mono: var(--font-mono);
+
+  /* Breakpoints */
+  --breakpoint-sm: 640px;
+  --breakpoint-md: 768px;
+  --breakpoint-lg: 1024px;
+  --breakpoint-xl: 1440px;
+
+  /* Typography scale (clamp-based for headings) */
+  --text-h1: clamp(3.5rem, 8vw, 7rem);
+  --text-h2: clamp(2.25rem, 4.5vw, 4rem);
+  --text-h3: clamp(1.75rem, 3.5vw, 3rem);
+  --text-h4: clamp(1.5rem, 2.4vw, 2.25rem);
+  --text-h5: clamp(1.25rem, 1.8vw, 1.5rem);
+  --text-h6: clamp(1.125rem, 1.4vw, 1.25rem);
+  --text-body: 1rem; /* 16px */
+  --text-body-lg: 1.125rem; /* 18px */
+  --text-caption: 0.875rem; /* 14px */
+
+  --leading-h1: 0.95;
+  --leading-h2: 1;
+  --leading-h3: 1.05;
+  --leading-h4: 1.1;
+  --leading-h5: 1.15;
+  --leading-h6: 1.2;
+  --leading-body: 1.7;
+
+  /* Spacing (8pt scale) */
+  --spacing-1: 0.25rem;   /* 4px */
+  --spacing-2: 0.5rem;    /* 8px */
+  --spacing-3: 0.75rem;   /* 12px */
+  --spacing-4: 1rem;      /* 16px */
+  --spacing-5: 1.25rem;   /* 20px */
+  --spacing-6: 1.5rem;    /* 24px */
+  --spacing-7: 1.75rem;   /* 28px */
+  --spacing-8: 2rem;      /* 32px */
+  --spacing-10: 2.5rem;   /* 40px */
+  --spacing-12: 3rem;     /* 48px */
+  --spacing-16: 4rem;     /* 64px */
+  --spacing-24: 6rem;     /* 96px */
+
+  /* Radii */
+  --radius-sm: 0.375rem;   /* 6px */
+  --radius-md: 0.75rem;    /* 12px */
+  --radius-lg: 1rem;       /* 16px */
+  --radius-2xl: 1.5rem;    /* 24px */
+  --radius-full: 9999px;
+
+  /* Shadows */
+  --shadow-soft: 0 1px 2px rgba(0,0,0,0.15), 0 6px 20px rgba(0,0,0,0.15);
+  --shadow-elevated: 0 4px 10px rgba(0,0,0,0.2), 0 20px 40px rgba(0,0,0,0.25);
+}
+
+/* ===============================
+   🧩 Headline utilities
+   =============================== */
+.headline-stroke {
+  -webkit-text-stroke-width: 0.4px;
+  -webkit-text-stroke-color: var(--headline-stroke);
+  text-shadow: 0 0 1px var(--headline-shadow);
+}
+
+/* Optional soft glow (desktop only) */
+@media (min-width: 768px) and (hover: hover) {
+  .headline-glow {
+    text-shadow:
+      0 0 2px var(--headline-shadow),
+      0 0 18px color-mix(in oklab, var(--foreground) 10%, transparent),
+      0 0 36px color-mix(in oklab, var(--foreground) 6%, transparent);
+  }
+}
+
+/* ===============================
+   🌍 Global resets
+   =============================== */
+html, body {
+  height: 100%;
+}
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans), system-ui, sans-serif;
+}
+html {
+  scroll-behavior: smooth;
+}
+
+/* Accessibility: Skip link */
+.skip-link {
+  position: absolute;
+  top: -40px;
+  left: 0;
+  background: #fff;
+  color: #000;
+  padding: 8px 12px;
+  border-radius: 8px;
+  z-index: var(--z-tooltip);
+  transition: transform var(--motion-dur-fast) var(--motion-ease-smooth);
+  transform: translateY(-8px);
+}
+.skip-link:focus {
+  top: 8px;
+  transform: translateY(0);
+}
+
+/* Responsive container */
+.container {
+  max-width: 80rem; /* 1280px */
+  margin-inline: auto;
+  padding-inline: 1.5rem;
+}
+@media (min-width: 768px) {
+  .container { padding-inline: 2rem; }
+}
+@media (min-width: 1280px) {
+  .container { padding-inline: 3rem; }
+}
+
+/* ===============================
+   🖋 Typography Utilities
+   =============================== */
+.h1 { font-size: var(--text-h1); line-height: var(--leading-h1); font-weight: 900; letter-spacing: 0.01em; font-family: var(--font-headline), var(--font-sans), system-ui, sans-serif; }
+.h2 { font-size: var(--text-h2); line-height: var(--leading-h2); font-weight: 700; letter-spacing: -0.01em; }
+.h3 { font-size: var(--text-h3); line-height: var(--leading-h3); font-weight: 700; }
+.h4 { font-size: var(--text-h4); line-height: var(--leading-h4); font-weight: 600; }
+.h5 { font-size: var(--text-h5); line-height: var(--leading-h5); font-weight: 600; }
+.h6 { font-size: var(--text-h6); line-height: var(--leading-h6); font-weight: 600; }
+.body-lg { font-size: var(--text-body-lg); line-height: var(--leading-body); }
+.body { font-size: var(--text-body); line-height: var(--leading-body); }
+.caption { font-size: var(--text-caption); line-height: 1.4; color: var(--muted); }
+
+/* H1 prepared for GSAP-driven hover (no CSS transform to avoid conflict) */
+@media (hover: hover) and (pointer: fine) {
+  .h1-interactive { will-change: transform; }
+}
+
+/* ===============================
+   ✨ Visual Effects
+   =============================== */
+
+/* Noise overlay */
+.noise-overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.05;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120' viewBox='0 0 120 120'%3E%3Cfilter id='n'%3E%3CfeTurbulence baseFrequency='0.65' stitchTiles='stitch' type='fractalNoise'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.6'/%3E%3C/svg%3E");
+  animation: noiseShift 6s infinite linear;
+}
+@keyframes noiseShift {
+  0% { transform: translate(0,0); }
+  50% { transform: translate(-5%, 5%); }
+  100% { transform: translate(0,0); }
+}
+
+/* Subtle background slow pan */
+@keyframes slowpan {
+  0% { transform: translate3d(0, 0, 0) scale(1.02); }
+  50% { transform: translate3d(-1.5%, 1.5%, 0) scale(1.02); }
+  100% { transform: translate3d(0, 0, 0) scale(1.02); }
+}
+
+/* Very subtle hero background gradient layer */
+.hero-bg-gradient {
+  position: absolute;
+  inset: -10%;
+  z-index: 0;
+  pointer-events: none;
+  background: radial-gradient(60% 60% at 50% 40%, rgba(255,255,255,0.06), transparent 60%),
+              radial-gradient(40% 40% at 80% 70%, rgba(255,255,255,0.03), transparent 60%),
+              linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.0));
+  filter: saturate(110%) contrast(105%);
+}
+
+/* Hover utilities */
+.vf-hover {
+  transition: letter-spacing var(--motion-dur-fast) ease,
+              transform var(--motion-dur-fast) ease,
+              opacity var(--motion-dur-fast) ease;
+}
+.vf-hover:hover {
+  letter-spacing: 0.02em;
+  opacity: 0.9;
+}
+.vf-weight {
+  transition: font-variation-settings var(--motion-dur-fast) ease,
+              transform var(--motion-dur-fast) ease;
+  font-variation-settings: "wght" 540;
+}
+.vf-weight:hover {
+  font-variation-settings: "wght" 680;
+}
+
+/* Header scrolled state */
+header[data-scroll="true"] {
+  border-color: rgba(255,255,255,0.2);
+}
+
+/* Scroll cue (premium minimal) */
+.scroll-cue {
+  position: absolute;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 22px; height: 22px;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,0.25);
+  display: grid; place-items: center;
+  opacity: 0.9;
+}
+.scroll-cue .dot {
+  width: 6px; height: 6px; border-radius: 999px;
+  background: currentColor;
+  opacity: 0.9;
+  animation: cuePulse 2.4s ease-in-out infinite;
+}
+@keyframes cuePulse {
+  0% { transform: translateY(-2px); opacity: 0.6; }
+  50% { transform: translateY(2px); opacity: 1; }
+  100% { transform: translateY(-2px); opacity: 0.6; }
+}
+
+/* ===============================
+   ♿ Reduced Motion
+   =============================== */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ===============================
+   🧭 ScrollSmoother structure
+   =============================== */
+#smooth-wrapper {
+  min-height: 100dvh;
+  position: relative;
+}
+#smooth-content {
+  will-change: transform;
+}
+
+/* Cursor spotlight overlay (desktop only) */
+@media (hover: hover) and (pointer: fine) {
+  .cursor-spotlight {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: radial-gradient(280px 280px at var(--mx, 50%) var(--my, 50%), rgba(255,255,255,0.04), transparent 65%);
+    opacity: 1;
+    mix-blend-mode: screen;
+    z-index: 1;
+  }
+}
+
+
+
+================================================
+FILE: app/layout.tsx
+================================================
+import type { Metadata } from "next";
+import { Work_Sans, JetBrains_Mono } from "next/font/google";
+import "./globals.css";
+import { SiteHeader } from "@/components/layout/SiteHeader";
+import { SiteFooter } from "@/components/layout/SiteFooter";
+import SmoothScroller from "@/components/motion/SmoothScroller";
+
+const workSans = Work_Sans({
+  variable: "--font-sans",
+  subsets: ["latin"],
+  display: "swap",
+});
+
+const jetbrains = JetBrains_Mono({
+  variable: "--font-mono",
+  subsets: ["latin"],
+  display: "swap",
+});
+
+// Headlines will also use Work Sans via CSS token mapping.
+
+export const metadata: Metadata = {
+  metadataBase: new URL("https://www.luisnoriega.com"),
+  title: {
+    default: "Luis Noriega — Portafolio Personal",
+    template: "%s · Luis Noriega",
+  },
+  description:
+    "Portfolio personal de Luis Noriega. Diseño, producto y visión cósmica.",
+  openGraph: {
+    type: "website",
+    url: "https://www.luisnoriega.com",
+    title: "Luis Noriega — Portafolio Personal",
+    description: "Portfolio personal de Luis Noriega.",
+    siteName: "Luis Noriega",
+    images: [
+      {
+        url: "/og",
+        width: 1200,
+        height: 630,
+        alt: "Luis Noriega",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Luis Noriega — Portafolio Personal",
+    description: "Portfolio personal de Luis Noriega.",
+    images: ["/og"],
+  },
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#ffffff" },
+    { media: "(prefers-color-scheme: dark)", color: "#000000" },
+  ],
+};
+
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return (
+    <html lang="es" suppressHydrationWarning>
+      <head>
+        {/* Plausible Analytics */}
+        <script
+          defer
+          data-domain="luisnoriega.com"
+          src="https://plausible.io/js/script.js"
+        />
+
+        {/* JSON-LD: Person */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "Person",
+              "@id": "https://www.luisnoriega.com/#person",
+              name: "Luis Noriega",
+              url: "https://www.luisnoriega.com",
+              jobTitle: "Product Designer",
+              image: "https://www.luisnoriega.com/og",
+            }),
+          }}
+        />
+      </head>
+      <body
+        className={`${workSans.variable} ${jetbrains.variable} antialiased bg-background text-foreground`}
+      >
+        {/* Skip to content, visible on focus */}
+        <a href="#contenido" className="skip-link">
+          Saltar al contenido
+        </a>
+
+        <div id="smooth-wrapper">
+          <div id="smooth-content">
+            <SmoothScroller>
+              <SiteHeader />
+              <main id="contenido" role="main">
+                {children}
+              </main>
+              <SiteFooter />
+            </SmoothScroller>
+          </div>
+        </div>
+      </body>
+    </html>
+  );
+}
+
+
+
+================================================
+FILE: app/page.tsx
+================================================
+import Hero from "@/components/Hero";
+
+export default function Home() {
+  return <Hero />;
+}
+
+
+
+================================================
+FILE: app/og/route.tsx
+================================================
+import { ImageResponse } from "next/og";
+
+export const runtime = "edge";
+
+export async function GET(req: Request) {
+  // Use a system font to avoid remote fetch & Buffer on Edge
+  const { searchParams } = new URL(req.url);
+  const title = searchParams.get("title") || "Luis Noriega — Portafolio & M&A";
+  const kpi = searchParams.get("kpi");
+
+  return new ImageResponse(
+    (
+      <div style={{ width: "100%", height: "100%", background: "#000", color: "#fff", position: "relative", display: "flex" }}>
+        <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 2, background: "#fff", opacity: 0.9 }} />
+  <div style={{ margin: "auto", padding: 64, maxWidth: 980, width: "100%", fontFamily: 'Work Sans, system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, sans-serif' }}>
+          <div style={{ fontSize: 24, opacity: 0.8 }}>luisnoriega.com</div>
+          <div style={{ fontSize: 88, fontWeight: 800, lineHeight: 1.05, letterSpacing: -0.5 }}>{title}</div>
+          {kpi && (
+            <div style={{ marginTop: 16, fontSize: 36, opacity: 0.85 }}>
+              {kpi}
+            </div>
+          )}
+        </div>
+      </div>
+    ),
+    {
+      width: 1200,
+      height: 630,
+    }
+  );
+}
+
+
+
+================================================
+FILE: app/robots.txt/route.ts
+================================================
+import { NextResponse } from "next/server";
+
+export const dynamic = "force-static";
+
+export async function GET() {
+  const body = `User-agent: *\nAllow: /\nSitemap: https://www.luisnoriega.com/sitemap.xml`;
+  return new NextResponse(body, {
+    status: 200,
+    headers: {
+      "Content-Type": "text/plain; charset=utf-8",
+      "Cache-Control": "public, max-age=3600, s-maxage=3600, stale-while-revalidate=86400",
+    },
+  });
+}
+
+
+
+================================================
+FILE: app/sitemap.xml/route.ts
+================================================
+import { NextResponse } from "next/server";
+
+export const dynamic = "force-static";
+
+const pages = [
+  { loc: "https://www.luisnoriega.com/", priority: 1.0 },
+];
+
+export async function GET() {
+  const lastmod = new Date().toISOString();
+  const xml = `<?xml version="1.0" encoding="UTF-8"?>\n` +
+    `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">` +
+    pages.map(p => `\n  <url><loc>${p.loc}</loc><lastmod>${lastmod}</lastmod><priority>${p.priority}</priority></url>`).join("") +
+    `\n</urlset>`;
+
+  return new NextResponse(xml, {
+    status: 200,
+    headers: {
+      "Content-Type": "application/xml; charset=utf-8",
+      "Cache-Control": "public, max-age=3600, s-maxage=3600, stale-while-revalidate=86400",
+    },
+  });
+}
+
+
+
+================================================
+FILE: components/Footer.tsx
+================================================
+export { SiteFooter as default } from "@/components/layout";
+
+
+
+================================================
+FILE: components/Header.tsx
+================================================
+export { SiteHeader as default } from "@/components/layout";
+
+
+
+================================================
+FILE: components/Hero.tsx
+================================================
+"use client";
+import { useRef } from "react";
+import TitleRevealParallax from "@/components/motion/hero/TitleRevealParallax";
+import BackgroundSlowGradient from "@/components/motion/BackgroundSlowGradient";
+import CursorSpotlight from "@/components/motion/CursorSpotlight";
+import HoverLuxuryTitle from "@/components/motion/hero/HoverLuxuryTitle";
+
+export default function Hero() {
+  const sectionRef = useRef<HTMLElement | null>(null);
+  const titleRef = useRef<HTMLHeadingElement | null>(null);
+
+  // Motion snippet (SplitText reveal + parallax), PRM/save-data gated internamente
+  // Se monta como JSX para manejar efectos/cleanup
+
+  return (
+    <section ref={sectionRef} className="hero relative flex items-center justify-center min-h-screen text-foreground overflow-hidden">
+      {/* Background gradient with imperceptible motion */}
+      <BackgroundSlowGradient />
+      {/* Cursor spotlight (desktop only) */}
+      <CursorSpotlight />
+      {/* Subtle grain overlay */}
+      <div aria-hidden className="noise-overlay" />
+      <TitleRevealParallax sectionRef={sectionRef as React.RefObject<HTMLElement | null>} titleRef={titleRef as React.RefObject<HTMLHeadingElement | null>} />
+  <HoverLuxuryTitle titleRef={titleRef as React.RefObject<HTMLHeadingElement | null>} />
+      <div className="container text-center">
+  <h1
+          ref={titleRef}
+          className="h1 h1-interactive font-black uppercase leading-[0.9] [text-wrap:balance] headline-stroke headline-glow tracking-[0.01em] relative z-[2]"
+        >
+          <span className="block">LUIS</span>
+          <span className="block">NORIEGA</span>
+        </h1>
+      </div>
+      {/* Scroll cue */}
+      <div className="scroll-cue text-foreground/80" aria-hidden>
+        <span className="dot" />
+      </div>
+    </section>
+  );
+}
+
+
+
+================================================
+FILE: components/layout/index.ts
+================================================
+export { SiteHeader } from "./SiteHeader";
+export { SiteFooter } from "./SiteFooter";
+
+
+
+================================================
+FILE: components/layout/SiteFooter.tsx
+================================================
+"use client";
+import Link from "next/link";
+
+export function SiteFooter() {
+  const year = new Date().getFullYear();
+
+  return (
+    <footer
+      role="contentinfo"
+      className="relative min-h-screen flex flex-col items-center justify-center text-center border-t border-border bg-black text-white"
+    >
+      {/* Nombre gigante */}
+      <h2
+        className="font-black uppercase tracking-tight leading-[0.9] [text-wrap:balance]"
+        style={{
+          fontSize: "clamp(3rem, 8vw, 8rem)",
+          WebkitTextStrokeWidth: "0.5px",
+          WebkitTextStrokeColor: "rgba(255,255,255,0.15)",
+        }}
+      >
+        Luis Noriega
+      </h2>
+
+      {/* Subtexto */}
+      <p className="mt-6 max-w-xl text-lg text-muted-foreground">
+        Construyendo entre la materia y el infinito.
+      </p>
+
+      {/* Enlaces */}
+      <div className="mt-10 flex gap-6 text-base">
+        <Link href="/" className="underline-offset-4 hover:underline">Inicio</Link>
+        <Link href="/about" className="underline-offset-4 hover:underline">Sobre mí</Link>
+        <Link href="/contact" className="underline-offset-4 hover:underline">Contacto</Link>
+      </div>
+
+      {/* Línea inferior */}
+      <div className="absolute bottom-6 w-full text-sm text-muted-foreground">
+        <p>© {year} Luis Noriega. Todos los derechos reservados.</p>
+      </div>
+    </footer>
+  );
+}
+
+
+
+================================================
+FILE: components/layout/SiteHeader.tsx
+================================================
+"use client";
+
+import Link from "next/link";
+import { useEffect, useState } from "react";
+
+export function SiteHeader() {
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 8);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  return (
+    <header
+      role="banner"
+      data-scrolled={scrolled}
+      className={`sticky top-0 z-50 transition-all duration-300 ${
+        scrolled
+          ? "backdrop-blur-md bg-background/70 border-b border-border/60 shadow-sm"
+          : "bg-transparent"
+      }`}
+    >
+      <div className="container flex items-center justify-between h-16">
+        {/* Logo */}
+        <Link
+          href="/"
+          className="font-black tracking-tight text-lg uppercase"
+          aria-label="Inicio"
+        >
+          Luis Noriega
+        </Link>
+
+        {/* Navegación */}
+        <nav aria-label="Principal">
+          <ul className="flex items-center gap-6 text-sm font-medium">
+            <li>
+              <Link
+                href="#about"
+                className="hover:opacity-70 transition-opacity"
+              >
+                Sobre mí
+              </Link>
+            </li>
+            <li>
+              <Link
+                href="#projects"
+                className="hover:opacity-70 transition-opacity"
+              >
+                Proyectos
+              </Link>
+            </li>
+            <li>
+              <Link
+                href="#contact"
+                className="hover:opacity-70 transition-opacity"
+              >
+                Contacto
+              </Link>
+            </li>
+          </ul>
+        </nav>
+      </div>
+    </header>
+  );
+}
+
+
+
+================================================
+FILE: components/motion/BackgroundSlowGradient.tsx
+================================================
+"use client";
+import { PRM } from "@/lib/a11y/prm";
+import { useEffect, useRef } from "react";
+import { gsap } from "@/lib/motion/gsap";
+
+export default function BackgroundSlowGradient() {
+  const ref = useRef<HTMLDivElement | null>(null);
+  useEffect(() => {
+    type NetInfoLite = { saveData?: boolean };
+    type NavConn = { connection?: NetInfoLite };
+    const saveData =
+      typeof navigator !== "undefined" && (navigator as Navigator & NavConn).connection?.saveData === true;
+    if (PRM() || saveData) return;
+
+    if (!ref.current) return;
+    // Subtle, slow pan via GSAP to avoid CSS animation conflicts
+    const tween = gsap.to(ref.current, {
+      duration: 36,
+      xPercent: -1.5,
+      yPercent: 1.5,
+      scale: 1.02,
+      ease: "sine.inOut",
+      yoyo: true,
+      repeat: -1,
+    });
+
+    return () => {
+      try { tween?.kill(); } catch {}
+    };
+  }, []);
+  return <div ref={ref} aria-hidden className="hero-bg-gradient" />;
+}
+
+
+
+================================================
+FILE: components/motion/CursorSpotlight.tsx
+================================================
+"use client";
+import { useEffect, useRef } from "react";
+import { PRM } from "@/lib/a11y/prm";
+
+// Desktop-only radial spotlight following cursor, very subtle opacity
+export default function CursorSpotlight() {
+  const ref = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    type NetInfoLite = { saveData?: boolean };
+    type NavConn = { connection?: NetInfoLite };
+    const saveData =
+      typeof navigator !== "undefined" && (navigator as Navigator & NavConn).connection?.saveData === true;
+
+    const el = ref.current;
+    const onMove = (e: MouseEvent) => {
+      if (!el) return;
+      el.style.setProperty("--mx", `${e.clientX}px`);
+      el.style.setProperty("--my", `${e.clientY}px`);
+    };
+
+    const desktop = typeof window !== "undefined" && matchMedia("(hover: hover) and (pointer: fine)").matches;
+    if (PRM() || saveData || !desktop) return;
+
+    window.addEventListener("mousemove", onMove, { passive: true });
+    return () => window.removeEventListener("mousemove", onMove);
+  }, []);
+
+  return <div ref={ref} aria-hidden className="cursor-spotlight" />;
+}
+
+
+
+================================================
+FILE: components/motion/SmoothScroller.tsx
+================================================
+"use client";
+import { useEffect } from "react";
+import { ScrollSmoother } from "@/lib/motion/gsap";
+import { PRM } from "@/lib/a11y/prm";
+
+type Props = {
+  children: React.ReactNode;
+};
+
+// Site-wide smooth scrolling via GSAP ScrollSmoother
+// Gated by PRM (prefers-reduced-motion) and Save-Data
+type NetworkInformationLite = { saveData?: boolean };
+type NavigatorConnection = { connection?: NetworkInformationLite };
+type ScrollSmootherInstance = { kill?: () => void };
+
+export default function SmoothScroller({ children }: Props) {
+  useEffect(() => {
+    // respect user preferences
+    const saveData =
+      typeof navigator !== "undefined" &&
+      (navigator as Navigator & NavigatorConnection).connection?.saveData === true;
+
+    if (PRM() || saveData) return;
+
+  let smoother: ScrollSmootherInstance | null = null;
+
+    let cancelled = false;
+
+    (async () => {
+      try {
+        if (cancelled || !ScrollSmoother) return;
+        smoother = ScrollSmoother.create({
+          wrapper: "#smooth-wrapper",
+          content: "#smooth-content",
+          smooth: 1.15,
+          normalizeScroll: true,
+          effects: true,
+          smoothTouch: 0.1,
+        }) as unknown as ScrollSmootherInstance;
+      } catch {
+        // Plugin missing or unsupported - no-op
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+      try {
+        if (smoother && typeof smoother.kill === "function") {
+          smoother.kill();
+        }
+      } catch {}
+    };
+  }, []);
+
+  return <>{children}</>;
+}
+
+
+
+================================================
+FILE: components/motion/hero/HoverLuxuryTitle.tsx
+================================================
+"use client";
+import { useEffect } from "react";
+import { gsap } from "@/lib/motion/gsap";
+import { PRM } from "@/lib/a11y/prm";
+
+export type HoverLuxuryTitleProps = {
+  titleRef: React.RefObject<HTMLHeadingElement | null>;
+};
+
+export default function HoverLuxuryTitle({ titleRef }: HoverLuxuryTitleProps) {
+  useEffect(() => {
+    type NetInfoLite = { saveData?: boolean };
+    type NavConn = { connection?: NetInfoLite };
+    const saveData =
+      typeof navigator !== "undefined" && (navigator as Navigator & NavConn).connection?.saveData === true;
+    if (PRM() || saveData) return;
+
+    const el = titleRef.current;
+    if (!el) return;
+
+    let tween: gsap.core.Tween | null = null;
+
+    const onEnter = () => {
+      tween?.kill();
+      tween = gsap.to(el, {
+        duration: 0.22,
+        scale: 1.012,
+        y: -1,
+        letterSpacing: "0.01em",
+        ease: "power2.out",
+      });
+    };
+
+    const onLeave = () => {
+      tween?.kill();
+      tween = gsap.to(el, {
+        duration: 0.26,
+        scale: 1,
+        y: 0,
+        letterSpacing: "0em",
+        ease: "power2.inOut",
+      });
+    };
+
+    el.addEventListener("mouseenter", onEnter as EventListener, { passive: true } as AddEventListenerOptions);
+    el.addEventListener("mouseleave", onLeave as EventListener, { passive: true } as AddEventListenerOptions);
+
+    return () => {
+      try { el.removeEventListener("mouseenter", onEnter as EventListener); } catch {}
+      try { el.removeEventListener("mouseleave", onLeave as EventListener); } catch {}
+      try { tween?.kill(); } catch {}
+    };
+  }, [titleRef]);
+
+  return null;
+}
+
+
+
+================================================
+FILE: components/motion/hero/TitleRevealParallax.tsx
+================================================
+"use client";
+import { gsap, ScrollTrigger, SplitText, useGSAP } from "@/lib/motion/gsap";
+import { PRM } from "@/lib/a11y/prm";
+
+export type TitleRevealParallaxProps = {
+  sectionRef: React.RefObject<HTMLElement | null>;
+  titleRef: React.RefObject<HTMLElement | null>;
+};
+
+// Minimal types to avoid 'any'
+type NetInfoLite = { saveData?: boolean };
+type NavConn = { connection?: NetInfoLite };
+
+type SplitTextInstance = { chars?: Element[]; revert?: () => void };
+type SplitTextCtor = new (
+  element: Element,
+  options?: { type?: string; wordsClass?: string; charsClass?: string }
+) => SplitTextInstance;
+
+export default function TitleRevealParallax({ sectionRef, titleRef }: TitleRevealParallaxProps) {
+  useGSAP(
+    () => {
+      const saveData =
+        typeof navigator !== "undefined" &&
+        (navigator as Navigator & NavConn).connection?.saveData === true;
+      if (PRM() || saveData) return;
+
+      // Intro lift (slight)
+      gsap.from(sectionRef.current, {
+        opacity: 0,
+        y: 16,
+        duration: 0.6,
+        ease: "power2.out",
+      });
+
+      // Keep references for cleanup
+      const triggers: ScrollTrigger[] = [];
+      let splitRevert: (() => void) | null = null;
+
+      // SplitText reveal
+      if (titleRef.current && SplitText) {
+        let split: SplitTextInstance | null = null;
+        try {
+          const Ctor = SplitText as unknown as SplitTextCtor;
+          split = new Ctor(titleRef.current, {
+            type: "chars,words",
+            wordsClass: "word",
+            charsClass: "char",
+          });
+          splitRevert = () => {
+            try { split?.revert?.(); } catch {}
+          };
+        } catch {}
+
+        if (split?.chars?.length) {
+          // Delay subtle, luxury stagger
+          gsap.from(split.chars, {
+            opacity: 0,
+            yPercent: 20,
+            duration: 0.6,
+            ease: "power2.out",
+            stagger: { each: 0.015, from: "start" },
+            delay: 0.15,
+          });
+        }
+      }
+
+      // Parallax bi-directional around resting point (feel of depth)
+      if (titleRef.current && ScrollTrigger) {
+        gsap.fromTo(
+          titleRef.current,
+          { yPercent: 3, immediateRender: false },
+          {
+            yPercent: -3,
+            ease: "none",
+            scrollTrigger: {
+              trigger: sectionRef.current,
+              start: "top bottom",
+              end: "bottom top",
+              scrub: 0.6,
+              anticipatePin: 1,
+              invalidateOnRefresh: true,
+            },
+          }
+        );
+  // We rely on global cleanup by killing all triggers we create explicitly below
+
+        // Optional premium entrance: pin briefly so the H1 holds for ~1s
+        const pin = ScrollTrigger.create({
+          trigger: sectionRef.current!,
+          start: "top top",
+          end: "+=10%",
+          pin: true,
+          pinSpacing: true,
+          anticipatePin: 1,
+        });
+        triggers.push(pin);
+
+        // Ensure ScrollSmoother picks up these triggers
+        // Small async refresh after creation
+        requestAnimationFrame(() => {
+          try { ScrollTrigger.refresh(); } catch {}
+        });
+        // Also refresh on resize to keep positions synced with Smoother
+        const onResize = () => { try { ScrollTrigger.refresh(); } catch {} };
+        window.addEventListener("resize", onResize);
+        triggers.push({ kill: () => window.removeEventListener("resize", onResize) } as unknown as ScrollTrigger);
+      }
+
+      // Unified cleanup
+      return () => {
+        try { splitRevert?.(); } catch {}
+        triggers.forEach(t => {
+          try { t.kill(); } catch {}
+        });
+      };
+    },
+    { scope: sectionRef }
+  );
+
+  return null;
+}
+
+
+
+================================================
+FILE: instructions/estructure.instructions.md
+================================================
+
+# instructions.md — System Prompt para **Estructura & Organización del Proyecto**
+
+> **Propósito:** Mantener una estructura de carpetas limpia, escalable y coherente en el proyecto `luisnoriega.com`.  
+> **Meta:** Que cualquier agente LLM o humano sepa **dónde va cada archivo** y que el sistema se mantenga optimizado, ordenado y extensible.
+
+---
+
+## 1) Rol del modelo
+
+Eres un **Arquitecto de Software Frontend**.  
+Tu tarea es **crear, ordenar y vigilar la estructura** del proyecto para que siempre sea clara, minimal y digna de un sitio Awwwards.
+
+---
+
+## 2) Principios de organización (primeros principios)
+
+- **Minimalismo**: solo las carpetas necesarias; nada de duplicados o “misc”.  
+- **Escalabilidad**: cada nueva sección debe tener su lugar sin romper lo existente.  
+- **Consistencia**: mismos nombres, mismas convenciones.  
+- **Separación de responsabilidades**: cada capa (app, components, lib, instructions) cumple un rol claro.  
+- **Optimización continua**: si algo sobra → eliminar; si algo se repite → factorizar.
+
+---
+
+## 3) EJEMPLO: Estructura fundacional (carpetas y propósito) 
+
+```
+
+root/
+├── app/                # Rutas y páginas (Next.js App Router)
+│   ├── layout.tsx      # Shell global (Header/Footer/SEO)
+│   ├── page.tsx        # Home (Hero mínimo)
+│   ├── (marketing)/    # Secciones futuras: about, work, contact
+│   ├── og/             # Open Graph handler
+│   ├── robots.txt/     # Robots
+│   └── sitemap.xml/    # Sitemap
+│
+├── components/         # UI y piezas reusables
+│   ├── ui/             # Botones, inputs, cards (base system)
+│   ├── motion/         # Animaciones (GSAP, Framer)
+│   ├── canvas/         # Canvas/Particles/3D
+│   └── layout/         # Header, Footer, Navigation
+│
+├── lib/                # Utilidades puras (no React)
+│   ├── motion/         # gsap.ts, motion helpers
+│   ├── a11y/           # accessibility helpers (PRM, isTouch)
+│   └── utils/          # utilidades genéricas (format, fetch)
+│
+├── instructions/       # System prompts para IA y guidelines
+│   ├── frontend.instructions.md
+│   ├── motion.instructions.md
+│   ├── seo.instructions.md
+│   ├── copy.instructions.md
+│   └── design.tokens.md
+│
+├── public/             # Assets estáticos (imágenes, fuentes locales)
+│
+├── styles/ (opcional)  # CSS adicional (si crece más allá de globals)
+│
+├── tests/ (opcional)   # Unit/integration tests
+│
+├── package.json        # Dependencias y scripts
+└── README.md           # Documentación general
+
+```
+
+---
+
+## 4) Convenciones de nombres
+
+- **Carpetas**: `kebab-case` para rutas (`/about-me`).  
+- **Componentes**: `PascalCase` (`Hero.tsx`, `SiteHeader.tsx`).  
+- **Helpers/libs**: `camelCase` (`prm.ts`, `gsap.ts`).  
+- **Instructions**: `snake_case` o `dot.md` para identificarlos claramente.  
+
+---
+
+## 5) Reglas de ubicación
+
+- **UI atómica** (botones, inputs) → `components/ui/`.  
+- **Layouts globales** (Header, Footer, Navigation) → `components/layout/`.  
+- **Animaciones/motion** (GSAP, framer-motion) → `components/motion/`.  
+- **Canvas/WebGL** → `components/canvas/`.  
+- **Funciones puras (sin React)** → `lib/`.  
+- **Prompts y manuales de calidad** → `instructions/`.  
+- **Contenido estático** (imágenes, fuentes locales) → `public/`.  
+
+---
+
+## 6) Optimización y QA de estructura
+
+Siempre que crees o modifiques archivos:
+1. **¿Está en la carpeta correcta?**  
+   (Ej: un botón nunca en `motion/`, sino en `ui/`).  
+2. **¿Hay duplicados?**  
+   Si sí → factoriza en un componente/util.  
+3. **¿Cumple naming convention?**  
+   (`PascalCase` para componentes, etc).  
+4. **¿Sigue el principio de menor sorpresa?**  
+   Que cualquier dev/IA pueda adivinar dónde está algo.  
+
+---
+
+## 7) Extensibilidad
+
+- Nuevas páginas → en `app/(segment)/page.tsx`.  
+- Nuevos patrones de UI → en `components/ui/`.  
+- Nuevos prompts de calidad → en `instructions/`.  
+- Nuevas integraciones → crear carpeta dedicada en `lib/` (ej: `lib/analytics`).  
+
+---
+
+## 8) Política de limpieza
+
+- **Cada sprint**: ejecutar `npm run qa` y `npm run analyze:deps` para detectar imports innecesarios.  
+- **Eliminar** dependencias no usadas y archivos huérfanos.  
+- **Revisar** sitemap y robots cuando cambian rutas.  
+
+---
+
+## 9) Optimización continua (para IA)
+
+- Los prompts en `/instructions/` **siempre tienen prioridad** sobre instrucciones ad-hoc.  
+- Si hay conflicto, **prefiere lo escrito en instructions.md**.  
+- Si falta una regla, **propón optimización** en vez de improvisar.  
+
+---
+
+### ✅ Checklist rápido
+
+- [ ] ¿Carpetas ordenadas según estructura fundacional?  
+- [ ] ¿Convenciones de nombres respetadas?  
+- [ ] ¿Componentes/UI/motion están en su lugar?  
+- [ ] ¿SEO/meta actualizados (layout + sitemap)?  
+- [ ] ¿QA (lint, typecheck, deps) pasa en limpio?  
+
+---
+
+**Fin — Este archivo es el “mapa maestro” de orden.**  
+```
+
+--
+
+
+================================================
+FILE: instructions/gsap-usage.instructions.md
+================================================
+# Instrucciones de Motion — **GSAP‑Only**
+
+## 0) Objetivo
+
+* Todo efecto/animación (reveal, parallax, smooth, hover avanzado, splits, counters, etc.) **debe** implementarse con **GSAP** (y sus plugins).
+* No usar Framer Motion, CSS keyframes (salvo utilidades ultra básicas), ni librerías de scroll alternativas.
+
+---
+
+## 1) Reglas de uso (obligatorias)
+
+1. **GSAP como única fuente de verdad**
+
+   * Declarar/actualizar estados visuales con `gsap.to|from|fromTo` y plugins.
+   * Evitar CSS transitions para el mismo prop que anima GSAP.
+
+2. **Plugins permitidos**
+   Registrar **solo** desde `@/lib/motion/gsap` y reutilizar:
+
+   * `ScrollSmoother`, `ScrollTrigger`, `SplitText`, `Flip`, `CustomEase`, `TextPlugin`,
+   * `MotionPathPlugin`, `MorphSVGPlugin`, `DrawSVGPlugin`, `Observer`, `InertiaPlugin`, `Draggable`, `EasePack` (Rough/ExpoScale/SlowMo).
+
+3. **Contexto + Cleanup siempre**
+
+   * En componentes React usar `gsap.context()` (o `useGSAP`) y limpiar en un `return () => ctx.revert()` (y desregistrar `matchMedia` si aplica).
+
+4. **Gating de rendimiento/accesibilidad**
+
+   * Respetar **PRM** (prefers‑reduced‑motion), **Save‑Data**, **touch** y **desktop** antes de animar.
+   * Si `PRM` → mostrar estado final sin animación.
+
+5. **ScrollSmoother como smooth por defecto**
+
+   * Toda lógica de parallax/scroll debe usar `ScrollSmoother` + `ScrollTrigger` (ya registrado).
+   * No usar Lenis/Locomotive.
+
+6. **No SSR en efectos**
+
+   * Animaciones solo en **client components** (`"use client"`).
+   * Imports dinámicos para piezas pesadas si es necesario.
+
+---
+
+## 2) Estructura de implementación
+
+**2.1 Registro único de plugins**
+
+* Usar **exclusivamente** `@/lib/motion/gsap` (ya tienes el archivo) para registrar GSAP y plugins.
+* Importar desde ahí:
+  `import { gsap, ScrollTrigger, ScrollSmoother, useGSAP } from "@/lib/motion/gsap"`
+
+**2.2 Patrón base en componentes**
+
+* Siempre:
+
+  * refs para los elementos a animar,
+  * `useEffect`/`useGSAP` con `gsap.context`,
+  * cleanup.
+
+**2.3 Tokens de motion (consistencia)**
+
+* Duraciones/curvas centralizadas (usa tus CSS vars o constantes TS):
+
+  * `--motion-dur-fast: 200ms`, `--motion-dur-med: 300ms`, `--motion-dur-page: 600ms`
+  * `--motion-ease-smooth: cubic-bezier(0.16,1,0.3,1)`
+    En GSAP, definir equivalentes:
+    `const EASE = "power3.out";  const DFAST=0.2; const DMED=0.3; const DPG=0.6;`
+
+---
+
+## 3) Patrones aprobados (reutilizables)
+
+**3.1 Reveal tipográfico (Hero/Headings)**
+
+* `SplitText` → `from(chars, { yPercent:120, opacity:0, stagger:0.02, duration:0.6, ease:"power3.out" })`
+* Subcopy → `from(el, { y:14, opacity:0, duration:0.45 })`
+* Gatear por PRM; si PRM → `split.revert()` y set visible.
+
+**3.2 Parallax sutil**
+
+* Texto/imagenes: `yPercent` entre `-4` y `+6`, `scrub:true`, `start:"top bottom"`, `end:"bottom top"`.
+* Fuegos artificiales no: parallax **muy** ligero.
+
+**3.3 ScrollSmoother**
+
+* Instanciar 1 sola vez en un “shell” (layout/App).
+* Efectos locales con `ScrollTrigger` (no crear múltiples Smoothers).
+
+**3.4 Cursor light / inertia (desktop)**
+
+* `Observer`/listeners + `gsap.quickTo` con `InertiaPlugin` opcional.
+* Opacidad muy baja; desactivar en móvil/PRM/Save‑Data.
+
+**3.5 Flip (transformaciones de layout)**
+
+* Para transiciones (ej. H1 → logo): `Flip.getState()`, mutar DOM, `Flip.from(state, { ease:"power2.inOut", duration:0.6 })`.
+
+**3.6 Lines/Orbits (SVG)**
+
+* `DrawSVGPlugin` para strokes, `MotionPathPlugin` para trayectorias.
+* Duraciones largas, loops lentos; sin distraer.
+
+**3.7 Textos dinámicos**
+
+* `TextPlugin` para cambios sutiles (nunca “typewriter” agresivo por defecto).
+
+---
+
+## 4) Accesibilidad & Rendimiento
+
+* **PRM**: si `true`, no animar. Dejar estado final (sin motion).
+* **Save‑Data**: desactivar partículas, cursor‑light, grandes timelines.
+* **Touch**: reducir densidades y efectos costosos.
+* **Eficiencia**:
+
+  * Evitar animar `width/height/top/left`; preferir `transform/opacity`.
+  * Usar `will-change: transform` solo en elementos animados y durante el motion.
+  * Timelines cortos; reciclar instancias cuando sea posible.
+* **Cleanup estricto**: matar `ScrollTrigger`/`matchMedia`/timelines al desmontar.
+
+---
+
+## 5) Do / Don’t
+
+**Do**
+
+* `gsap.context` en cada componente animado.
+* `ScrollTrigger.refresh()` solo tras cambios estructurales.
+* `matchMedia` de GSAP para variantes responsive.
+
+**Don’t**
+
+* No mezclar **Framer Motion** ni otras librerías de scroll.
+* No keyframes CSS para props ya animados por GSAP.
+* No “eases locos” por defecto; mantener `power3.out`, `expo.out` sutil.
+
+---
+
+## 6) QA de motion (Checklist antes de merge)
+
+1. ¿Respeta PRM/Save‑Data/touch?
+2. ¿Solo usa GSAP y plugins registrados?
+3. ¿Hay `gsap.context()` y cleanup?
+4. ¿Props animadas son `transform/opacity`?
+5. ¿Duraciones/eases siguen tokens del sistema?
+6. ¿ScrollSmoother único, sin duplicados?
+7. ¿No afecta Core Web Vitals? (comprobar CLS/LCP)
+8. ¿Funciona sin errores en Safari iOS/Android Chrome?
+
+---
+
+## 7) Naming/Convenciones
+
+* Refs: `headlineRef`, `subRef`, `ctaRef`, `imgRef`.
+* Timelines: `tlHero`, `tlAbout`, `tlSectionX`.
+* Triggers: `trigger: ".hero"` o `trigger: sectionRef.current`.
+* Data‑attrs para estados: `data-scrolled`, `data-revealed`.
+
+---
+
+## 8) Plantillas de efectos a usar (descriptivo)
+
+* **Hero reveal**: SplitText (chars) + subcopy + CTAs con pequeños offsets.
+* **Sección About**: fade + y en los bloques, parallax muy leve de heading.
+* **Grid de proyectos**: hover con `y: -4 ~ -8`, `scale: 1.02`, sombra sutil; reveal secuencial al entrar al viewport.
+* **Footer gigante**: timeline al entrar, con título fade + letter‑spacing normalize, scroll cue final.
+
+---
+
+## 9) Seguridad en Next.js
+
+* Todos los componentes que animan: `"use client"`.
+* Imports que dependan del `window` → dinámicos (`ssr:false`) si hace falta.
+* Nunca llamar GSAP en SSR.
+
+---
+
+## 10) Ejecución por fases (roadmap de motion)
+
+1. **Fundación**: ScrollSmoother global + PRM gating.
+2. **Hero**: SplitText + reveal + scroll cue.
+3. **About**: reveal + parallax leve.
+4. **Work/Showcase**: reveals por card + hover micro.
+5. **CTA final/Footer**: cierre con fade/scale sobrio.
+
+---
+
+## 11) Resumen anti‑mix (reglas rápidas)
+
+- Si GSAP anima un target/propiedad, no usar CSS `transition`/`animation` sobre ese mismo target/propiedad.
+- Evitar Framer Motion u otras libs de scroll. Stack único: GSAP + plugins registrados en `lib/motion/gsap`.
+- React solo si es necesario: refs + efectos + listeners. Sin estado/JSX extra si el snippet solo hace side‑effects.
+
+---
+
+## 12) Estructura de snippets (obligatoria)
+
+- Ubicación: `components/motion/<dominio>/NombreDelSnippet.tsx`.
+- Imports: siempre desde `@/lib/motion/gsap` y helpers A11y desde `@/lib/a11y/prm`.
+- Gating: comprobar `PRM()` y `navigator.connection?.saveData` antes de animar.
+- Cleanup: `tween/tl.kill()`, `trigger.kill()`, `split.revert()`, `removeEventListener()`.
+- Devolver `null` si el snippet solo aplica efectos (sin UI propia).
+
+Tips con ScrollSmoother + ScrollTrigger:
+- Parallax: `start: "top bottom"`, `end: "bottom top"`, `scrub: 0.3–0.8`, `immediateRender: false` en `fromTo`.
+- Pin: `anticipatePin: 1`, `pinSpacing: true`.
+- Consistencia: `invalidateOnRefresh: true` y `ScrollTrigger.refresh()` tras crear triggers y en `resize`.
+
+---
+
+## 13) Snippets actuales (referencia en repo)
+
+- Parallax + reveal (Hero): `components/motion/hero/TitleRevealParallax.tsx`
+- Hover premium (Hero): `components/motion/hero/HoverLuxuryTitle.tsx`
+- Loop de fondo sutil: `components/motion/BackgroundSlowGradient.tsx`
+- Smoother global: `components/motion/SmoothScroller.tsx`
+
+Todos siguen: imports centralizados, gating PRM/Save‑Data y cleanup estricto.
+
+---
+
+## 14) Checklist por snippet (crear/modificar)
+
+- [ ] En `components/motion/<dominio>/` y retorna `null` si es solo efecto.
+- [ ] Imports desde `lib/motion/gsap` (no del paquete directo).
+- [ ] Gated por `PRM()` y `Save‑Data` antes de animar.
+- [ ] No hay CSS `transition`/`animation` para las mismas props/targets.
+- [ ] ScrollTrigger compatible con Smoother (start/end/scrub/anticipatePin/invalidateOnRefresh).
+- [ ] `ScrollTrigger.refresh()` tras creación y en `resize` si afecta el layout.
+- [ ] Cleanup completo: `kill/revert/removeEventListener`.
+
+
+
+================================================
+FILE: instructions/quality.instructions.md
+================================================
+# quality.instructions.md — System Prompt para **Mantener la Calidad del Proyecto**
+
+> **Propósito:** Garantizar que el proyecto `luisnoriega.com` mantenga un estándar de **calidad mundial**, accesible, consistente y digno de Awwwards.  
+> **Meta:** Que cualquier agente LLM o humano siga las mismas reglas para no comprometer estética, accesibilidad ni orden.
+
+---
+
+## 1) Convenciones de Layout
+- Siempre debe existir un **skip-link** en `layout.tsx` que apunte a `<main id="contenido">`.  
+- Solo **un `<h1>` por página**.  
+- El `<header>` debe ser sticky con borde visible al hacer scroll (`header[data-scroll="true"]`).  
+- El `<footer>` es minimal, sin navegación redundante.  
+
+---
+
+## 2) SEO y Metadata
+- Prohibido incluir valores `undefined` en JSON-LD.  
+- `sitemap.xml` solo debe listar rutas reales (no legacy).  
+- `robots.txt` siempre enlaza al sitemap correcto.  
+- Cada página define `title` y `description` en `metadata`.  
+- OG/Twitter images deben estar siempre configuradas.  
+
+---
+
+## 3) Accesibilidad
+- Todo `<a>` tiene `aria-label` si el texto no es autodescriptivo.  
+- Botones con loading → usar `aria-busy`.  
+- Feedback dinámico → usar `aria-live="polite"`.  
+- Navegación principal → `<nav aria-label="Principal">`.  
+- Tokens de color (`globals.css`) deben respetar contraste **AA mínimo**.  
+
+---
+
+## 4) Motion (Animaciones)
+- Animaciones siempre condicionadas por `PRM()` (prefers-reduced-motion).  
+- Duraciones estándar:  
+  - Hover/Focus: ≤200ms.  
+  - Reveals (texto/hero): 400–600ms.  
+  - Page transitions: ≤900ms.  
+- GSAP siempre importado desde `lib/motion/gsap.ts`.  
+- Framer Motion solo para microinteracciones (hover, fade), nunca scroll.  
+
+---
+
+## 5) QA Continua
+- Ejecutar `npm run qa` en cada commit (lint + typecheck + depcruise).  
+- Ejecutar `npm run analyze:deps` semanalmente para detectar imports innecesarios.  
+- Nuevas rutas → actualizar `sitemap.xml` y `metadata`.  
+- Nuevas animaciones → revisar accesibilidad (PRM + performance).  
+
+---
+
+## 6) Estructura y Orden
+- Componentes globales (Header, Footer, Navigation) → `components/layout/`.  
+- UI atómica (botones, inputs, cards) → `components/ui/`.  
+- Animaciones/motion patterns → `components/motion/`.  
+- Canvas/WebGL → `components/canvas/`.  
+- Helpers y funciones puras → `lib/`.  
+- Prompts y reglas de IA → `instructions/`.  
+- Assets estáticos (logos, imágenes) → `public/`.  
+
+---
+
+## 7) Optimización Continua
+- **Cada sprint**:  
+  - Revisar dependencias (`npm run unused`).  
+  - Eliminar archivos huérfanos.  
+  - Validar Lighthouse/axe (>95 en SEO + A11y).  
+- **Al agregar código nuevo**:  
+  - ¿Está en la carpeta correcta?  
+  - ¿Cumple naming convention?  
+  - ¿Cumple con accesibilidad mínima?  
+
+---
+
+### ✅ Checklist rápido
+- [ ] Skip-link y `<main>` presentes.  
+- [ ] Metadata y JSON-LD válidos.  
+- [ ] SEO + A11y >95 en Lighthouse.  
+- [ ] Animaciones gateadas por PRM.  
+- [ ] Estructura de carpetas respetada.  
+- [ ] QA (`npm run qa`) en verde.  
+
+---
+
+**Fin — Este archivo define el estándar de calidad obligatorio.**
+
+
+
+================================================
+FILE: lib/a11y/prm.ts
+================================================
+export const PRM = () => typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+export const isTouch = () => typeof window !== "undefined" && window.matchMedia("(hover: none) and (pointer: coarse)").matches;
+export const isDesktop = () => typeof window !== "undefined" && window.matchMedia("(min-width: 768px)").matches;
+
+
+
+================================================
+FILE: lib/motion/gsap.ts
+================================================
+"use client";
+import { gsap } from "gsap";
+import { useGSAP } from "@gsap/react";
+
+import { CustomEase } from "gsap/CustomEase";
+// CustomBounce requires CustomEase
+import { CustomBounce } from "gsap/CustomBounce";
+// CustomWiggle requires CustomEase
+import { CustomWiggle } from "gsap/CustomWiggle";
+import { RoughEase, ExpoScaleEase, SlowMo } from "gsap/EasePack";
+    
+import { Draggable } from "gsap/Draggable";
+import { DrawSVGPlugin } from "gsap/DrawSVGPlugin";
+import { EaselPlugin } from "gsap/EaselPlugin";
+import { Flip } from "gsap/Flip";
+import { GSDevTools } from "gsap/GSDevTools";
+import { InertiaPlugin } from "gsap/InertiaPlugin";
+import { MotionPathHelper } from "gsap/MotionPathHelper";
+import { MotionPathPlugin } from "gsap/MotionPathPlugin";
+import { MorphSVGPlugin } from "gsap/MorphSVGPlugin";
+import { Observer } from "gsap/Observer";
+import { Physics2DPlugin } from "gsap/Physics2DPlugin";
+import { PhysicsPropsPlugin } from "gsap/PhysicsPropsPlugin";
+import { PixiPlugin } from "gsap/PixiPlugin";
+import { ScrambleTextPlugin } from "gsap/ScrambleTextPlugin";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+// ScrollSmoother requires ScrollTrigger
+import { ScrollSmoother } from "gsap/ScrollSmoother";
+import { ScrollToPlugin } from "gsap/ScrollToPlugin";
+import { SplitText } from "gsap/SplitText";
+import { TextPlugin } from "gsap/TextPlugin";
+
+let registered = false;
+if (typeof window !== "undefined" && !registered) {
+	gsap.registerPlugin(
+		useGSAP,
+		Draggable,
+		DrawSVGPlugin,
+		EaselPlugin,
+		Flip,
+		GSDevTools,
+		InertiaPlugin,
+		MotionPathHelper,
+		MotionPathPlugin,
+		MorphSVGPlugin,
+		Observer,
+		Physics2DPlugin,
+		PhysicsPropsPlugin,
+		PixiPlugin,
+		ScrambleTextPlugin,
+		ScrollTrigger,
+		ScrollSmoother,
+		ScrollToPlugin,
+		SplitText,
+		TextPlugin,
+		RoughEase,
+		ExpoScaleEase,
+		SlowMo,
+		CustomEase,
+		CustomBounce,
+		CustomWiggle
+	);
+	registered = true;
+}
+
+export { gsap, useGSAP, ScrollTrigger, ScrollSmoother, SplitText };
+
+
+
+
+================================================
+FILE: lib/utils/index.ts
+================================================
+// Pure utility helpers (no React imports)
+// Keep functions small and easily testable
+
+/**
+ * Join class names safely.
+ */
+export function cn(...values: Array<string | false | null | undefined>) {
+  return values.filter(Boolean).join(" ");
+}
+
+

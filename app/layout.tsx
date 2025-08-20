@@ -1,8 +1,6 @@
 import type { Metadata } from "next";
 import { Work_Sans, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
-import { SiteHeader } from "@/components/layout/SiteHeader";
-import { SiteFooter } from "@/components/layout/SiteFooter";
 import SmoothScroller from "@/components/motion/SmoothScroller";
 
 const workSans = Work_Sans({
@@ -93,17 +91,15 @@ export default function RootLayout({
           Saltar al contenido
         </a>
 
-        <div id="smooth-wrapper">
-          <div id="smooth-content">
-            <SmoothScroller>
-              <SiteHeader />
+        <SmoothScroller>
+          <div id="smooth-wrapper">
+            <div id="smooth-content">
               <main id="contenido" role="main">
                 {children}
               </main>
-              <SiteFooter />
-            </SmoothScroller>
+            </div>
           </div>
-        </div>
+        </SmoothScroller>
       </body>
     </html>
   );
