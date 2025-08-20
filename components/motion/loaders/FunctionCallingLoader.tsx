@@ -28,6 +28,9 @@ export default function FunctionCallingLoader({ onComplete }: FunctionCallingLoa
   const caretRef = useRef<HTMLSpanElement>(null);
   const nameRef = useRef<HTMLSpanElement>(null);
   const typingRef = useRef<HTMLSpanElement>(null);
+  // Blink state trackers
+  const resultCaretBlinking = useRef(false);
+  const promptCaretBlinking = useRef(false);
   // Prompt input (bottom bar)
   const promptBarRef = useRef<HTMLDivElement>(null);
   const promptBarTextRef = useRef<HTMLSpanElement>(null);
@@ -35,6 +38,8 @@ export default function FunctionCallingLoader({ onComplete }: FunctionCallingLoa
 
   const [isVisible, setIsVisible] = useState(true);
   const [logsOpen, setLogsOpen] = useState(false);
+
+  // Presets wired inside effect to avoid deps warning
 
   const locale: Locale = useMemo(() => (typeof navigator !== "undefined" && navigator.language?.startsWith("es") ? "es" : "en"), []);
   const T = useMemo(() => {
@@ -98,10 +103,31 @@ export default function FunctionCallingLoader({ onComplete }: FunctionCallingLoa
       return;
     }
 
-    // Type-safe Save-Data detection
+  // Type-safe Save-Data detection
     const saveData = typeof navigator !== "undefined" && (navigator as Navigator & { connection?: { saveData?: boolean } }).connection?.saveData;
+    const ultraSmooth = {
+      prompt: { base: 0.044, jitter: 0.022, pauseSemantic: 0.09 },
+      panel: { delay: 0.12, entrance: 0.36 },
+      phases: { planning: 0.42, calling: 0.62, tool: 0.56, compiling: 0.56, check: 0.25, bounce: 0.18 },
+      resultHold: 0.95,
+      flip: { duration: 0.68 },
+      hero: { base: 0.06, jitter: 0.05, pauseSeparator: 0.08 },
+      overlay: { fade: 0.5, delayAfterType: 0.1 },
+      caretBlink: 0.5,
+    } as const;
+    const fast = {
+      prompt: { base: 0.03, jitter: 0.015, pauseSemantic: 0.05 },
+      panel: { delay: 0.08, entrance: 0.28 },
+      phases: { planning: 0.32, calling: 0.42, tool: 0.4, compiling: 0.4, check: 0.2, bounce: 0.12 },
+      resultHold: 0.4,
+      flip: { duration: 0.55 },
+      hero: { base: 0.035, jitter: 0.015, pauseSeparator: 0.05 },
+      overlay: { fade: 0.35, delayAfterType: 0.06 },
+      caretBlink: 0.45,
+    } as const;
+    const cfg = saveData ? fast : ultraSmooth;
 
-    const showTyping = (on: boolean) => {
+  const showTyping = (on: boolean) => {
       if (!typingRef.current) return;
       gsap.killTweensOf(typingRef.current);
       gsap.set(typingRef.current, { opacity: on ? 0.5 : 0 });
@@ -128,7 +154,7 @@ export default function FunctionCallingLoader({ onComplete }: FunctionCallingLoa
 
     const ctx = gsap.context(() => {
       // Fast path for Save-Data: show final state quickly
-      if (saveData) {
+  if (saveData) {
         // Reduced logging fast mode
         setPhase("Result");
         if (planningRef.current) planningRef.current.textContent = `${T.planning} ${T.reduce}`;
@@ -141,37 +167,44 @@ export default function FunctionCallingLoader({ onComplete }: FunctionCallingLoa
         if (nameRef.current) nameRef.current.textContent = "LUIS NORIEGA";
         if (promptBarTextRef.current) promptBarTextRef.current.textContent = T.prompt;
         if (promptBarCaretRef.current) gsap.set(promptBarCaretRef.current, { opacity: 0 });
-        gsap.to(containerRef.current, { opacity: 0, duration: 0.5, delay: 0.6, onComplete: () => { setIsVisible(false); onComplete?.(); } });
+  gsap.to(containerRef.current, { opacity: 0, duration: cfg.overlay.fade, delay: cfg.overlay.delayAfterType, onComplete: () => { setIsVisible(false); onComplete?.(); } });
         return;
       }
 
       // Type prompt at bottom, then show bubbles above
       // Compute typing schedule for prompt
-      const prompt = T.prompt;
-      const baseP = 0.04;
-      const jitterP = 0.045;
+  const prompt = T.prompt;
+  const baseP = cfg.prompt.base;
+  const jitterP = cfg.prompt.jitter;
       let accP = 0;
       // Prepare prompt bar
       if (promptBarTextRef.current) promptBarTextRef.current.textContent = "";
       if (promptBarCaretRef.current) {
         gsap.set(promptBarCaretRef.current, { opacity: 1 });
-        gsap.to(promptBarCaretRef.current, { opacity: 0.25, duration: 0.5, repeat: -1, yoyo: true, ease: "none" });
+        promptCaretBlinking.current = true;
+  gsap.to(promptBarCaretRef.current, { opacity: 0.25, duration: cfg.caretBlink, repeat: -1, yoyo: true, ease: "none" });
       }
       for (let i = 0; i < prompt.length; i++) {
         const ch = prompt[i];
-        const d = baseP + Math.random() * jitterP;
+  let d = baseP + Math.random() * jitterP;
+  if (ch === " " || ch === "," || ch === ".") d += cfg.prompt.pauseSemantic; // natural pause
         accP += d;
         gsap.delayedCall(accP, () => {
           if (!promptBarTextRef.current) return;
           promptBarTextRef.current.textContent = (promptBarTextRef.current.textContent || "") + ch;
         });
       }
+      gsap.delayedCall(accP + 0.05, () => {
+        if (promptBarCaretRef.current) {
+          promptCaretBlinking.current = false;
+          gsap.to(promptBarCaretRef.current, { opacity: 0, duration: 0.2 });
+        }
+      });
 
-      const tl = gsap.timeline({ defaults: { ease: "none" } , onComplete: () => {
+  const tl = gsap.timeline({ defaults: { ease: "none" } , onComplete: () => {
         const hero = document.getElementById("hero-title");
-        const saveData = typeof navigator !== "undefined" && (navigator as Navigator & { connection?: { saveData?: boolean } }).connection?.saveData;
         const finalize = () => {
-          gsap.to(containerRef.current, { opacity: 0, duration: 0.5, delay: 0.1, ease: "power2.inOut", onComplete: () => { setIsVisible(false); onComplete?.(); } });
+      gsap.to(containerRef.current, { opacity: 0, duration: cfg.overlay.fade, delay: cfg.overlay.delayAfterType, ease: "power2.inOut", onComplete: () => { setIsVisible(false); onComplete?.(); } });
         };
 
         if (hero && resultLineRef.current) {
@@ -180,22 +213,26 @@ export default function FunctionCallingLoader({ onComplete }: FunctionCallingLoa
 
           const state = Flip.getState(resultLineRef.current);
           hero.appendChild(resultLineRef.current);
-          Flip.from(state, { duration: 0.7, ease: "power3.inOut" });
+          // will-change during FLIP for smoother paint
+          gsap.set(resultLineRef.current, { willChange: 'transform' });
+          Flip.from(state, { duration: cfg.flip.duration, ease: "power3.inOut", onComplete: () => { if (resultLineRef.current) gsap.set(resultLineRef.current, { willChange: 'auto' }); } });
 
           if (resultLabelRef.current) gsap.set(resultLabelRef.current, { opacity: 0 });
           if (nameRef.current) nameRef.current.textContent = "";
           if (caretRef.current) {
             gsap.set(caretRef.current, { opacity: 1 });
-            gsap.to(caretRef.current, { opacity: 0.25, duration: 0.5, repeat: -1, yoyo: true, ease: "none" });
+            resultCaretBlinking.current = true;
+            gsap.to(caretRef.current, { opacity: 0.25, duration: cfg.caretBlink, repeat: -1, yoyo: true, ease: "none" });
           }
 
           const typed = "L-U-I-S N-O-R-I-E-G-A";
-          const base = saveData ? 0.03 : 0.06;
-          const jitter = saveData ? 0.015 : 0.05;
+          const base = cfg.hero.base;
+          const jitter = cfg.hero.jitter;
           let acc = 0;
           for (let i = 0; i < typed.length; i++) {
             const ch = typed[i];
-            const d = base + Math.random() * jitter;
+            let d = base + Math.random() * jitter;
+            if (ch === "-" || ch === " ") d += cfg.hero.pauseSeparator; // micro pause on separators
             acc += d;
             gsap.delayedCall(acc, () => {
               if (!nameRef.current) return;
@@ -204,7 +241,7 @@ export default function FunctionCallingLoader({ onComplete }: FunctionCallingLoa
           }
 
           gsap.delayedCall(acc + 0.15, () => {
-            if (caretRef.current) gsap.to(caretRef.current, { opacity: 0, duration: 0.2 });
+            if (caretRef.current) { resultCaretBlinking.current = false; gsap.to(caretRef.current, { opacity: 0, duration: 0.2 }); }
             if (resultLineRef.current) gsap.to(resultLineRef.current, { opacity: 0, duration: 0.3, onComplete: () => { if (resultLineRef.current) resultLineRef.current.remove(); } });
             if (originals.length) gsap.to(originals, { opacity: 1, duration: 0.4, ease: "power2.out" });
             finalize();
@@ -216,19 +253,20 @@ export default function FunctionCallingLoader({ onComplete }: FunctionCallingLoa
 
       // Wait for bottom typing to finish, then start AI bubble above (no prompt echo)
       tl.to({}, { duration: accP })
-        .fromTo(aiRef.current, { opacity: 0, y: 8 }, { opacity: 1, y: 0, duration: 0.42, ease: "power2.out" })
+        .to({}, { duration: cfg.panel.delay })
+        .fromTo(aiRef.current, { opacity: 0, y: 8 }, { opacity: 1, y: 0, duration: cfg.panel.entrance, ease: "power2.out" })
         .add(() => { setPhase(locale === "es" ? "Pensando" : "Thinking"); showTyping(true); })
-        .to(planningRef.current, { text: T.planning, duration: 0.5 })
+        .to(planningRef.current, { text: T.planning, duration: cfg.phases.planning })
         .add(() => { setPhase(locale === "es" ? "Llamando" : "Calling"); })
-        .to(callRef.current,      { text: `${timeLabel} ${T.calling}`, duration: 0.7 })
+        .to(callRef.current,      { text: `${timeLabel} ${T.calling}`, duration: cfg.phases.calling })
         .add(() => showTyping(true), "+=0.08")
         .add(() => { setPhase(locale === "es" ? "Recibiendo" : "Receiving"); })
         .to(toolBadgeRef.current, { opacity: 1, duration: 0.2 })
-        .to(toolBlockRef.current, { text: prettyJSON, duration: 0.6 })
+        .to(toolBlockRef.current, { text: prettyJSON, duration: cfg.phases.tool })
         .add(() => { setPhase(locale === "es" ? "Compilando" : "Compiling"); })
-        .to(compilingRef.current, { text: `${timeLabel} ${T.compiling}`, duration: 0.6 })
-        .to(check1Ref.current,    { text: T.fetched, duration: 0.25, onStart: () => { if (check1Ref.current) { gsap.fromTo(check1Ref.current, { scale: 1.08 }, { scale: 1, duration: 0.18, ease: "power2.out" }); } } })
-        .to(check2Ref.current,    { text: T.composed, duration: 0.25, onStart: () => { if (check2Ref.current) { gsap.fromTo(check2Ref.current, { scale: 1.08 }, { scale: 1, duration: 0.18, ease: "power2.out" }); } } })
+        .to(compilingRef.current, { text: `${timeLabel} ${T.compiling}`, duration: cfg.phases.compiling })
+        .to(check1Ref.current,    { text: T.fetched, duration: cfg.phases.check, onStart: () => { if (check1Ref.current) { gsap.fromTo(check1Ref.current, { scale: 1.08 }, { scale: 1, duration: cfg.phases.bounce, ease: "power2.out" }); } } })
+        .to(check2Ref.current,    { text: T.composed, duration: cfg.phases.check, onStart: () => { if (check2Ref.current) { gsap.fromTo(check2Ref.current, { scale: 1.08 }, { scale: 1, duration: cfg.phases.bounce, ease: "power2.out" }); } } })
         .add(() => { setPhase("Result"); showTyping(false); })
         .to(resultLabelRef.current, { text: T.result, duration: 0.35 })
         .add(() => {
@@ -238,7 +276,7 @@ export default function FunctionCallingLoader({ onComplete }: FunctionCallingLoa
           }
         })
   // Hold on result before transitioning to hero typing
-  .to({}, { duration: 0.95 });
+  .to({}, { duration: cfg.resultHold });
 
     }, containerRef);
 
@@ -254,9 +292,32 @@ export default function FunctionCallingLoader({ onComplete }: FunctionCallingLoa
       }
     };
 
+    const onVis = () => {
+      if (typeof document === 'undefined') return;
+      if (document.hidden) {
+        if (promptCaretBlinking.current && promptBarCaretRef.current) {
+          gsap.killTweensOf(promptBarCaretRef.current);
+          gsap.set(promptBarCaretRef.current, { opacity: 0 });
+        }
+        if (resultCaretBlinking.current && caretRef.current) {
+          gsap.killTweensOf(caretRef.current);
+          gsap.set(caretRef.current, { opacity: 0 });
+        }
+      } else {
+        if (promptCaretBlinking.current && promptBarCaretRef.current) {
+          gsap.to(promptBarCaretRef.current, { opacity: 0.25, duration: 0.5, repeat: -1, yoyo: true, ease: "none" });
+        }
+        if (resultCaretBlinking.current && caretRef.current) {
+          gsap.to(caretRef.current, { opacity: 0.25, duration: 0.5, repeat: -1, yoyo: true, ease: "none" });
+        }
+      }
+    };
+
     window.addEventListener("keydown", onKey);
+    document.addEventListener("visibilitychange", onVis);
     return () => {
       window.removeEventListener("keydown", onKey);
+      document.removeEventListener("visibilitychange", onVis);
       ctx.revert();
     };
   }, [T, locale, onComplete, timeLabel]);
@@ -294,7 +355,7 @@ export default function FunctionCallingLoader({ onComplete }: FunctionCallingLoa
             {/* AI bubble with monospace code block */}
             <div ref={aiRef} className="flex justify-start">
               <div className="rounded-lg px-4 py-3 text-sm bg-black border border-white/15 w-full max-w-[90%]">
-                <div className="font-mono text-white/90 space-y-1" aria-live="polite">
+                <div className="font-mono text-white/90 space-y-1" role="log" aria-live="polite">
                   {/* Phase */}
                   <div ref={phaseRef} className="text-white/50 mb-1" />
 
@@ -322,7 +383,7 @@ export default function FunctionCallingLoader({ onComplete }: FunctionCallingLoa
                   {/* Result line – used for Flip */}
                   <div ref={resultLineRef} className="mt-2 text-center">
                     <span ref={resultLabelRef} className="inline" />
-                    <span ref={caretRef} className="inline-block ml-1 opacity-0 select-none">|</span>
+                    <span ref={caretRef} aria-hidden className="inline-block ml-1 opacity-0 select-none">|</span>
                     <span ref={nameRef} className="inline-block ml-2 text-3xl font-black tracking-wide" style={{ fontFamily: 'var(--font-work-sans)' }} />
                   </div>
 
@@ -356,7 +417,7 @@ export default function FunctionCallingLoader({ onComplete }: FunctionCallingLoa
             <span className="text-white/50 text-xs">Prompt</span>
             <span className="flex-1 font-sans tracking-wide">
               <span ref={promptBarTextRef} />
-              <span ref={promptBarCaretRef} className="inline-block ml-1 opacity-0 select-none">|</span>
+              <span ref={promptBarCaretRef} aria-hidden className="inline-block ml-1 opacity-0 select-none">|</span>
             </span>
           </div>
         </div>
