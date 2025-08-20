@@ -97,7 +97,7 @@ export default function RootLayout({
           data-domain="luisnoriega.com"
           src="https://plausible.io/js/script.js"
         />
-        {/* JSON-LD: Person & Organization */}
+        {/* JSON-LD: Person & Organizations */}
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
@@ -115,6 +115,20 @@ export default function RootLayout({
                 { "@type": "Organization", name: "ADQUISICIÓN", url: "https://www.luisnoriega.com" },
                 { "@type": "Organization", name: "AQXION", url: "https://www.luisnoriega.com/portafolio" }
               ],
+            }),
+          }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "Organization",
+              name: "AQXION",
+              url: "https://www.luisnoriega.com/portafolio",
+              sameAs: [
+                "https://www.luisnoriega.com/portafolio"
+              ]
             }),
           }}
         />

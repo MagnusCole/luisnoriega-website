@@ -1,14 +1,12 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import { PRM, isDesktop, isTouch } from "@/lib/a11y/prm";
 
 export default function FloatingIco({ size = 260 }: { size?: number }) {
   const ref = useRef<HTMLDivElement>(null);
   useEffect(() => {
-    const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
-    const desktop = matchMedia("(min-width: 768px)").matches;
-    const isTouch = matchMedia("(hover: none) and (pointer: coarse)").matches;
-    if (reduce || !desktop || isTouch || !ref.current) return;
+  if (PRM() || !isDesktop() || isTouch() || !ref.current) return;
     let cleanup: (() => void) | null = null;
     (async () => {
       const THREE = await import("three");

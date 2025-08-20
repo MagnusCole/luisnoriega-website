@@ -1,12 +1,12 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import { PRM } from "@/lib/a11y/prm";
 
 export default function NeonGradient({ className = "" }: { className?: string }) {
   const ref = useRef<HTMLDivElement>(null);
   useEffect(() => {
-    const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (reduce || !ref.current) return;
+  if (PRM() || !ref.current) return;
     const el = ref.current;
     let raf = 0;
     let t = 0;

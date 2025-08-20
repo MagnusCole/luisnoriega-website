@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useRef } from "react";
+import { PRM, isDesktop } from "@/lib/a11y/prm";
 
 type Props = {
   className?: string;
@@ -15,9 +16,7 @@ export default function Particles2D({ className, density = 0.08, speed = 0.25, c
   const pausedRef = useRef(false);
 
   useEffect(() => {
-    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    const isDesktop = window.matchMedia("(min-width: 768px)").matches;
-    if (reduce || !isDesktop) return;
+  if (PRM() || !isDesktop()) return;
     const canvas = ref.current;
     if (!canvas) return;
     const context = canvas.getContext("2d", { alpha: true });

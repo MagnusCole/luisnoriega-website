@@ -1,14 +1,13 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import { PRM, isTouch } from "@/lib/a11y/prm";
 
 export default function CursorDot() {
   const dotRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const isTouch = matchMedia("(hover: none) and (pointer: coarse)").matches;
-    const prefersReduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (isTouch || prefersReduced) return;
+  if (isTouch() || PRM()) return;
 
     const dot = dotRef.current!;
     let x = window.innerWidth / 2;

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import { PRM, isDesktop, isTouch } from "@/lib/a11y/prm";
 
 declare global { interface Window { plausible?: (event: string, options?: Record<string, unknown>) => void } }
 
@@ -10,10 +11,7 @@ export default function SpinTetra() {
   const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
-    const desktop = matchMedia("(min-width: 768px)").matches;
-    const isTouch = matchMedia("(hover: none) and (pointer: coarse)").matches;
-    if (reduce || !desktop || isTouch) return;
+  if (PRM() || !isDesktop() || isTouch()) return;
 
     const mount = ref.current!;
     let cleanup: (() => void) | null = null;
@@ -30,8 +28,16 @@ export default function SpinTetra() {
       camera.position.z = 3.2;
 
       const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-      renderer.setSize(220, 220);
+      const setSize = (w: number, h: number) => {
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.5));
+        renderer.setSize(w, h);
+        camera.aspect = w / h;
+        camera.updateProjectionMatrix();
+      };
+      // initial size: use mount box or fallback to 220
+      const initW = Math.round(mount.clientWidth) || 220;
+      const initH = Math.round(mount.clientHeight) || 220;
+      setSize(initW, initH);
       mount.appendChild(renderer.domElement);
 
       const geometry = new THREE.TetrahedronGeometry(1.1, 0);
@@ -50,26 +56,34 @@ export default function SpinTetra() {
       scene.add(ambient, dir);
 
       let raf = 0;
+      let paused = false;
       const animate = () => {
-        mesh.rotation.x += 0.004;
-        mesh.rotation.y += 0.006;
-        renderer.render(scene, camera);
+        if (!paused) {
+          mesh.rotation.x += 0.004;
+          mesh.rotation.y += 0.006;
+          renderer.render(scene, camera);
+        }
         raf = requestAnimationFrame(animate);
       };
       raf = requestAnimationFrame(animate);
 
-      const onVis = () => {
-        if (document.hidden) {
-          cancelAnimationFrame(raf);
-        } else {
-          raf = requestAnimationFrame(animate);
-        }
-      };
+      const onVis = () => { paused = document.hidden; };
       document.addEventListener("visibilitychange", onVis);
+
+      const ro = new ResizeObserver((entries) => {
+        for (const entry of entries) {
+          const { width, height } = entry.contentRect;
+          const w = Math.round(width) || initW;
+          const h = Math.round(height) || initH;
+          setSize(w, h);
+        }
+      });
+      ro.observe(mount);
 
       cleanup = () => {
         cancelAnimationFrame(raf);
         document.removeEventListener("visibilitychange", onVis);
+        ro.disconnect();
         renderer.dispose();
         geometry.dispose();
         material.dispose();

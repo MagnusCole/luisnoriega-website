@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { PRM } from "@/lib/a11y/prm";
 
 type Props = {
   from?: number;
@@ -17,8 +18,7 @@ export default function Counter({ from = 0, to, duration = 1200, prefix = "", su
 
   useEffect(() => {
     if (!ref.current) return;
-    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (reduce) {
+  if (PRM()) {
       setVisible(true);
       return;
     }
@@ -34,8 +34,7 @@ export default function Counter({ from = 0, to, duration = 1200, prefix = "", su
 
   useEffect(() => {
     if (!isVisible || !ref.current) return;
-    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (reduce) {
+  if (PRM()) {
       ref.current.textContent = `${prefix}${to.toLocaleString()}${suffix}`;
       return;
     }

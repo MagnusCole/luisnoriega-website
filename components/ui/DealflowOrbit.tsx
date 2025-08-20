@@ -1,15 +1,14 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import { PRM, isDesktop } from "@/lib/a11y/prm";
 
 // Signature interaction: orbiting nodes representing deal stages.
 // Lightweight Three.js-less version (CSS+canvas) for minimal cost; can swap to R3F later.
 export default function DealflowOrbit({ size = 320 }: { size?: number }) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   useEffect(() => {
-    const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
-    const desktop = matchMedia("(min-width: 768px)").matches;
-    if (reduce || !desktop || !canvasRef.current) return;
+  if (PRM() || !isDesktop() || !canvasRef.current) return;
     const canvas = canvasRef.current;
     const dpr = Math.min(window.devicePixelRatio || 1, 2);
     const ctx = canvas.getContext("2d");

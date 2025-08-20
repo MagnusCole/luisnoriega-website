@@ -31,3 +31,23 @@
 - Foco visible en todos los elementos interactivos
 - Skip-link en header
 - PRM respetado (animaciones off o estáticas)
+
+## QA Checklist (estado actual)
+
+- [x] Route-mask < 900ms total (0.45s in + 0.40s out ≈ 0.85s)
+- [x] Scenes: pin solo en desktop (solo sección media) y scrub ≤ 0.6
+- [x] SmoothScroll pausa en visibilitychange (requestAnimationFrame controlado)
+- [x] Métricas: counters no corren en PRM (render estático cuando PRM=true)
+
+### Pesos observados (build actual)
+- JS compartido inicial: ~99.8 kB (gz, Next report)
+- Home First Load JS: ~179 kB (incluye chunk de página)
+- Portafolio First Load JS: ~155 kB
+- Three.js: cargado on‑demand solo tras interacción/escena; no en SSR
+
+Notas:
+- El presupuesto de JS inicial (≤150 kB) se excede en Home por el chunk de página. Opciones para reducir:
+  - Cargar `LeadForm` con import dinámico en visibilidad (lazy/in-view)
+  - Importar `split-type` dinámicamente dentro del efecto del Hero
+  - Auditar dependencias no críticas en la home
+

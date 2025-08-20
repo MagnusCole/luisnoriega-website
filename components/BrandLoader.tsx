@@ -1,16 +1,21 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { gsap } from "@/lib/motion/gsap";
+import { gsap, initGSAP } from "@/lib/motion/gsap";
+import { PRM } from "@/lib/a11y/prm";
 
 export default function BrandLoader() {
   const [show, setShow] = useState(false);
   const rootRef = useRef<HTMLDivElement | null>(null);
   // session flag managed in initial effect
 
+  // Ensure GSAP + ScrollTrigger are registered once
   useEffect(() => {
-    const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (reduce) return;
+    initGSAP();
+  }, []);
+
+  useEffect(() => {
+  if (PRM()) return;
     const seen = sessionStorage.getItem("brand-loader-seen");
     if (!seen) {
       setShow(true);
@@ -24,8 +29,7 @@ export default function BrandLoader() {
 
   useEffect(() => {
     if (!show || !rootRef.current) return;
-    const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (reduce) return;
+  if (PRM()) return;
     const tl = gsap.timeline({ onComplete: () => setShow(false) });
     tl.fromTo(
       rootRef.current,

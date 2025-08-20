@@ -2,16 +2,17 @@
 
 import Image from "next/image";
 import { useEffect, useRef } from "react";
-import { gsap, ScrollTrigger } from "@/lib/motion/gsap";
+import { gsap, ScrollTrigger, initGSAP } from "@/lib/motion/gsap";
+import { PRM } from "@/lib/a11y/prm";
 import Counter from "@/components/ui/Counter";
 
 
 export default function PortfolioStories() {
 	const ref = useRef<HTMLDivElement>(null);
 
+	useEffect(() => { initGSAP(); }, []);
 	useEffect(() => {
-		const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-		if (reduce) return;
+		if (PRM()) return;
 		const mm = gsap.matchMedia();
 		const ctx = gsap.context(() => {
 			mm.add("(min-width: 768px)", () => {

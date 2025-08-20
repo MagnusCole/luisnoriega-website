@@ -1,9 +1,10 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { gsap } from "@/lib/motion/gsap";
+import { gsap, initGSAP } from "@/lib/motion/gsap";
 import { pinOnce } from "@/lib/motion/contracts";
 import dynamic from "next/dynamic";
+import { PRM, isDesktop } from "@/lib/a11y/prm";
 
 const SpinTetra = dynamic(() => import("@/components/three/SpinTetra"), { ssr: false });
 
@@ -22,10 +23,10 @@ export default function ScrollScenes({ scenes }: Props) {
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (prefersReduced) return; // Respect accessibility
+    initGSAP();
+    if (PRM()) return; // Respect accessibility
     const ctx = gsap.context(() => {
-      const isDesktop = window.matchMedia("(min-width: 768px)").matches;
+      const desktop = isDesktop();
       const sections = gsap.utils.toArray<HTMLElement>(".scene");
 
       sections.forEach((section, index) => {
@@ -76,7 +77,7 @@ export default function ScrollScenes({ scenes }: Props) {
         );
 
         // Pin the middle section for emphasis (one pin per block)
-        if (isDesktop && index === 1) {
+  if (desktop && index === 1) {
           const kill = pinOnce(section, { start: "top top+=20%", end: "+=80%" });
           // attach typed cleanup on section for context revert safety
           (section as HTMLElement & { __killPin?: () => void }).__killPin = kill;

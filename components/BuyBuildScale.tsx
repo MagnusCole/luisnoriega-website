@@ -1,12 +1,13 @@
 "use client";
 import { useEffect, useRef } from "react";
-import { gsap } from "@/lib/motion/gsap";
+import { gsap, initGSAP } from "@/lib/motion/gsap";
+import { PRM } from "@/lib/a11y/prm";
 
 export default function BuyBuildScale() {
   const ref = useRef<HTMLDivElement | null>(null);
+  useEffect(() => { initGSAP(); }, []);
   useEffect(() => {
-    const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (reduce || !ref.current) return;
+  if (PRM() || !ref.current) return;
     const ctx = gsap.context(() => {
       const tl = gsap.timeline({ defaults: { ease: "power2.out" } });
       tl.from(".bbs-node", { y: 20, opacity: 0, duration: 0.4, stagger: 0.08 })

@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useRef } from "react";
-import { gsap, ScrollTrigger } from "@/lib/motion/gsap";
+import { gsap, ScrollTrigger, initGSAP } from "@/lib/motion/gsap";
+import { PRM, isDesktop } from "@/lib/a11y/prm";
 import SplitType from "split-type";
 import Particles2D from "@/components/canvas/Particles2D";
 
@@ -8,15 +9,16 @@ export default function Why() {
 	const ref = useRef<HTMLElement | null>(null);
 	const headRef = useRef<HTMLHeadingElement | null>(null);
 
+	useEffect(() => { initGSAP(); }, []);
 	useEffect(() => {
-		const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-		const isDesktop = window.matchMedia("(min-width: 768px)").matches;
+		const reduce = PRM();
+		const desktop = isDesktop();
 		const ctx = gsap.context(() => {
 			if (headRef.current && !reduce) {
 				const split = new SplitType(headRef.current, { types: "words" });
 				gsap.from(split.words, { yPercent: 120, opacity: 0, stagger: 0.06, duration: 0.6, ease: "power3.out" });
 			}
-			if (isDesktop && !reduce && ref.current) {
+			if (desktop && !reduce && ref.current) {
 				ScrollTrigger.create({ trigger: ref.current, start: "top top+=10%", end: "+=120%", pin: true, pinSpacing: true });
 			}
 		}, ref);

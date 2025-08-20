@@ -3,7 +3,8 @@ import MagneticButton from "@/components/ui/MagneticButton";
 import Button from "@/components/ui/Button";
 import { useEffect, useRef, useState } from "react";
 import SplitType from "split-type";
-import { gsap } from "@/lib/motion/gsap";
+import { gsap, initGSAP } from "@/lib/motion/gsap";
+import { PRM, isDesktop, isTouch } from "@/lib/a11y/prm";
 import NeonGradient from "@/components/ui/NeonGradient";
 import dynamic from "next/dynamic";
 
@@ -22,14 +23,16 @@ export default function Hero() {
 	const [showVideo, setShowVideo] = useState(false);
 	const lightRef = useRef<HTMLDivElement | null>(null);
 	const [canDecorate, setCanDecorate] = useState(false);
+	// Ensure GSAP/ScrollTrigger are registered once
+	useEffect(() => { initGSAP(); }, []);
 	useEffect(() => {
 		if (!headlineRef.current) return;
-		const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-		const desktop = window.matchMedia('(min-width: 768px)').matches;
+		const reduce = PRM();
+		const desktop = isDesktop();
 		type NavigatorWithConnection = Navigator & { connection?: { saveData?: boolean } };
 		const saveData = (navigator as NavigatorWithConnection).connection?.saveData === true;
 		if (!reduce && desktop && !saveData) setShowVideo(true);
-		setCanDecorate(!reduce && desktop && !saveData && !window.matchMedia('(hover: none) and (pointer: coarse)').matches);
+		setCanDecorate(!reduce && desktop && !saveData && !isTouch());
 		const split = new SplitType(headlineRef.current, { types: "words,chars" });
 		const tl = gsap.timeline();
 		if (!reduce) {
@@ -51,10 +54,7 @@ export default function Hero() {
 		};
 	}, []);
 	useEffect(() => {
-		const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-		if (reduce) return;
-		const isDesktop = window.matchMedia('(min-width: 768px)').matches;
-		if (!isDesktop) return;
+		if (PRM() || !isDesktop()) return;
 
 		const ctx = gsap.context(() => {
 			gsap.to(".hero-parallax-1", {
@@ -73,9 +73,7 @@ export default function Hero() {
 
 	// Cursor-reactive soft light (desktop only)
 	useEffect(() => {
-		const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-		const isDesktop = window.matchMedia('(min-width: 768px)').matches;
-		if (reduce || !isDesktop || !lightRef.current) return;
+		if (PRM() || !isDesktop() || !lightRef.current) return;
 		const el = lightRef.current;
 		const onMove = (e: MouseEvent) => {
 			const { clientX: x, clientY: y } = e;
