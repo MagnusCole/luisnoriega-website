@@ -11,6 +11,7 @@ const LeadSchema = z.object({
   email: z.string().email().max(120),
   message: z.string().min(5).max(2000),
   source: z.string().optional(),
+  website: z.string().optional(), // honeypot
 });
 
 type LeadData = z.infer<typeof LeadSchema>;
@@ -40,9 +41,15 @@ export default function LeadForm({ source = "site" }: { source?: string }) {
       }
       setServerOk(true);
       reset({ name: "", email: "", message: "", source });
+      if (typeof window !== "undefined") {
+        window.plausible?.("lead:submit:ok", { props: { source } });
+      }
     } catch (e: unknown) {
       const isError = (x: unknown): x is Error => typeof x === "object" && x !== null && "message" in x;
       setServerError(isError(e) ? String((e as Error).message) : "server_error");
+      if (typeof window !== "undefined") {
+        window.plausible?.("lead:submit:error", { props: { source } });
+      }
     }
   };
 
@@ -62,7 +69,10 @@ export default function LeadForm({ source = "site" }: { source?: string }) {
         />
         {errors.message?.message && <p className="mt-1 text-xs text-red-400">{errors.message.message}</p>}
       </div>
-      <input type="hidden" value={source} {...register("source")} />
+  <input type="hidden" value={source} {...register("source")} />
+  {/* Honeypot field (hidden from users) */}
+  <label className="sr-only" htmlFor="website">Sitio Web</label>
+  <input id="website" className="hidden" tabIndex={-1} autoComplete="off" {...register("website")} />
       <div className="flex items-center gap-3">
         <Button type="submit" disabled={isSubmitting}>
           {isSubmitting ? "Enviando…" : "Enviar"}

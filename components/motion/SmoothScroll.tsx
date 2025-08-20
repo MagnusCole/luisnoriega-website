@@ -1,21 +1,28 @@
 "use client";
 import { useEffect } from "react";
-import Lenis from "lenis";
 import { ScrollTrigger } from "@/lib/motion/gsap";
 import { PRM } from "@/lib/a11y/prm";
 
 export default function SmoothScroll({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     if (PRM()) return;
-  const isMobile = matchMedia("(max-width: 767px)").matches;
-  const lenis = new Lenis({ lerp: isMobile ? 0.07 : 0.08, smoothWheel: true });
+  type LenisLike = { raf: (t: number) => void; destroy: () => void };
+  let lenis: LenisLike | null = null;
+    let mounted = true;
+    const start = async () => {
+      const { default: Lenis } = await import("lenis");
+      if (!mounted) return;
+      const isMobile = matchMedia("(max-width: 767px)").matches;
+      lenis = new Lenis({ lerp: isMobile ? 0.07 : 0.08, smoothWheel: true });
+      loop(0);
+    };
     let raf = 0;
     const loop = (time: number) => {
-      lenis.raf(time);
+      if (lenis) lenis.raf(time);
       ScrollTrigger.update();
       raf = requestAnimationFrame(loop);
     };
-    raf = requestAnimationFrame(loop);
+    start();
     const onVis = () => {
       if (document.hidden) {
         cancelAnimationFrame(raf);
@@ -25,9 +32,10 @@ export default function SmoothScroll({ children }: { children: React.ReactNode }
     };
     document.addEventListener("visibilitychange", onVis);
     return () => {
+      mounted = false;
       document.removeEventListener("visibilitychange", onVis);
       cancelAnimationFrame(raf);
-      lenis.destroy();
+  if (lenis) lenis.destroy();
     };
   }, []);
 

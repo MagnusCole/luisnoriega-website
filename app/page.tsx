@@ -1,19 +1,19 @@
 import Hero from "@/components/blocks/Hero";
-import DealflowOrbitClient from "@/components/motion/DealflowOrbitClient";
-import MetricsStrip from "@/components/MetricsStrip";
+import DealflowOrbitLazy from "@/components/motion/DealflowOrbitLazy";
+import MetricsStripLazy from "@/components/MetricsStripLazy";
 import { Card } from "@/components/ui/Card";
 import BuyBuildScale from "@/components/BuyBuildScale";
-import GsapRevealClient from "@/components/motion/GsapRevealClient";
-import ScrollScenes from "@/components/motion/ScrollScenesClient";
+import GsapRevealIdle from "@/components/motion/GsapRevealIdle";
+import ScrollScenesLazy from "@/components/motion/ScrollScenesLazy";
 import Why from "@/components/blocks/Why";
-import LeadForm from "@/components/ui/LeadForm";
+import LeadFormLazy from "@/components/ui/LeadFormLazy";
 
 export default function Home() {
   return (
     <>
-  <GsapRevealClient />
+  <GsapRevealIdle />
       <Hero />
-      <MetricsStrip />
+  <MetricsStripLazy />
       {/* Firma de interacción: Dealflow Orbit (desktop/no touch/PRM off) */}
       <section className="container py-10 md:py-16">
         <div className="hidden items-center justify-between md:flex">
@@ -22,7 +22,7 @@ export default function Home() {
             <p className="mt-2 text-muted-foreground max-w-md">Etapas de adquisición orbitando un centro: origen → análisis → due diligence → cierre.</p>
           </div>
           <div className="opacity-80" aria-label="Etapas del dealflow: Búsqueda, Evaluación, Due Diligence, Cierre" role="img">
-            <DealflowOrbitClient />
+            <DealflowOrbitLazy />
           </div>
         </div>
       </section>
@@ -56,7 +56,7 @@ export default function Home() {
       </section>
   <BuyBuildScale />
 
-  <ScrollScenes
+  <ScrollScenesLazy
         scenes={[
           {
             id: "thesis",
@@ -104,7 +104,7 @@ export default function Home() {
               <p className="mt-2 text-muted-foreground">Si piensas retirarte o quieres coinvertir en LATAM, conversemos.</p>
               <p className="mt-3 text-sm text-muted-foreground">También puedes escribir a <a className="underline" href="mailto:hola@luisnoriega.com">hola@luisnoriega.com</a></p>
             </div>
-            <LeadForm source="home:hablemos" />
+            <LeadFormLazy source="home:hablemos" />
           </div>
         </section>
     </>

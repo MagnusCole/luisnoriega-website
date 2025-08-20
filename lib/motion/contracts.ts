@@ -1,6 +1,24 @@
 import { gsap, ScrollTrigger, initGSAP } from "./gsap";
 import { PRM } from "../a11y/prm";
 
+export const MOTION_BUDGETS = {
+  micro: {
+    duration: 0.28, // default micro duration
+    maxDuration: 0.3,
+  },
+  mask: {
+    in: 0.45,
+    out: 0.4,
+    max: 0.8,
+  },
+  scroll: {
+    scrubMax: 0.6,
+  },
+  pin: {
+    maxPinsPerPage: 1,
+  },
+} as const;
+
 type RevealOptions = {
   y?: number;
   opacityFrom?: number;
@@ -21,7 +39,8 @@ export function reveal(
   target: string | Element | Element[] | NodeListOf<Element>,
   opts: RevealOptions = {}
 ) {
-  const duration = opts.duration ?? 0.28;
+  const baseDuration = opts.duration ?? MOTION_BUDGETS.micro.duration;
+  const duration = Math.min(baseDuration, MOTION_BUDGETS.micro.maxDuration);
   const y = opts.y ?? 12;
   const opacityFrom = opts.opacityFrom ?? 0;
   const ease = opts.ease ?? "power2.out";
@@ -85,6 +104,7 @@ type PinOptions = {
   end?: string;
   pinSpacing?: boolean;
   scrub?: boolean | number;
+  allowMultiple?: boolean;
 };
 
 /**
@@ -93,20 +113,31 @@ type PinOptions = {
  * Caller should ensure "one pin per block" discipline.
  * Returns a cleanup function.
  */
+let __activePins = 0;
+
 export function pinOnce(trigger: Element | string, opts: PinOptions = {}) {
   if (PRM()) return () => {};
   initGSAP();
   const trg = typeof trigger === "string" ? document.querySelector(trigger) : trigger;
   if (!trg) return () => {};
+  if (!opts.allowMultiple && __activePins >= MOTION_BUDGETS.pin.maxPinsPerPage) {
+    console.warn("[motion] pinOnce skipped: max pins per page reached");
+    return () => {};
+  }
+  const scrub = typeof opts.scrub === "number" ? Math.min(opts.scrub, MOTION_BUDGETS.scroll.scrubMax) : opts.scrub ?? false;
   const st = ScrollTrigger.create({
     trigger: trg as Element,
     start: opts.start ?? "top top+=20%",
     end: opts.end ?? "+=80%",
     pin: true,
     pinSpacing: opts.pinSpacing ?? true,
-    scrub: opts.scrub ?? false,
+    scrub,
   });
-  return () => st.kill();
+  __activePins++;
+  return () => {
+    st.kill();
+    __activePins = Math.max(0, __activePins - 1);
+  };
 }
 
 type MaskOptions = {
@@ -127,9 +158,9 @@ type MaskOptions = {
 export function maskTransition(opts: MaskOptions = {}): { cancel: () => void } {
   const reduce = PRM();
   const fastExit = opts.fastExit ?? (typeof document !== "undefined" && document.visibilityState === "hidden");
-  // Defaults tuned to stay under the 800ms route-transition budget (0.4 + 0.35 = 0.75s)
-  const durationIn = Math.min(opts.durationIn ?? 0.4, 0.8);
-  const durationOut = Math.min(opts.durationOut ?? (fastExit ? 0.1 : 0.35), 0.8);
+  // Defaults tuned to stay under budgets
+  const durationIn = Math.min(opts.durationIn ?? MOTION_BUDGETS.mask.in, MOTION_BUDGETS.mask.max);
+  const durationOut = Math.min(opts.durationOut ?? (fastExit ? 0.1 : MOTION_BUDGETS.mask.out), MOTION_BUDGETS.mask.max);
   const ease = opts.ease ?? "power3.inOut";
 
   if (reduce) {

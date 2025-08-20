@@ -2,7 +2,7 @@
 import MagneticButton from "@/components/ui/MagneticButton";
 import Button from "@/components/ui/Button";
 import { useEffect, useRef, useState } from "react";
-import SplitType from "split-type";
+// SplitType is only needed after mount; import dynamically for LCP
 import { gsap, initGSAP } from "@/lib/motion/gsap";
 import { PRM, isDesktop, isTouch } from "@/lib/a11y/prm";
 import NeonGradient from "@/components/ui/NeonGradient";
@@ -33,10 +33,13 @@ export default function Hero() {
 		const saveData = (navigator as NavigatorWithConnection).connection?.saveData === true;
 		if (!reduce && desktop && !saveData) setShowVideo(true);
 		setCanDecorate(!reduce && desktop && !saveData && !isTouch());
-		const split = new SplitType(headlineRef.current, { types: "words,chars" });
-		const tl = gsap.timeline();
-		if (!reduce) {
-			tl.from(split.chars, {
+		let cleanup: (() => void) | undefined;
+		(async () => {
+			const { default: SplitType } = await import("split-type");
+			const split = new SplitType(headlineRef.current!, { types: "words,chars" });
+			const tl = gsap.timeline();
+			if (!reduce) {
+				tl.from(split.chars, {
 				yPercent: 120,
 				opacity: 0,
 				stagger: 0.02,
@@ -47,10 +50,14 @@ export default function Hero() {
 			if (paragraph) {
 				tl.from(paragraph, { opacity: 0, y: 12, duration: 0.5, ease: "power2.out" }, "<0.05");
 			}
-		}
+			}
+			cleanup = () => {
+				split.revert();
+				tl.kill();
+			};
+		})();
 		return () => {
-			split.revert();
-			tl.kill();
+			cleanup?.();
 		};
 	}, []);
 	useEffect(() => {

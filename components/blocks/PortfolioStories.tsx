@@ -97,7 +97,7 @@ export default function PortfolioStories() {
 				<div className="grid gap-8 md:grid-cols-12 md:items-center">
 					<div className="md:col-span-6">
 						<h2 className="story-title h4">Lead‑Gen B2B — Automatización</h2>
-						<p className="body mt-4 text-muted-foreground max-w-2xl">Problema → Sistema → Resultado.</p>
+						<p className="body mt-4 text-muted-foreground max-w-2xl">Problema → Sistema → Resultado (con KPIs reales).</p>
 						<ul className="mt-6 grid grid-cols-2 gap-4">
 							<li>
 								<p className="caption">SQL</p>
@@ -106,6 +106,10 @@ export default function PortfolioStories() {
 							<li>
 								<p className="caption">CAC</p>
 								<p className="h5 story-metric"><Counter to={18} prefix="-" suffix="%" /></p>
+							</li>
+							<li>
+								<p className="caption">Reply Rate</p>
+								<p className="h5 story-metric"><Counter to={22} prefix="+" suffix="%" /></p>
 							</li>
 						</ul>
 					</div>
