@@ -5,7 +5,13 @@ import { useEffect, useRef, useState } from "react";
 import SplitType from "split-type";
 import { gsap } from "@/lib/motion/gsap";
 import NeonGradient from "@/components/ui/NeonGradient";
-import FloatingIco from "@/components/three/FloatingIco";
+import dynamic from "next/dynamic";
+
+// Lazy-load 3D accent on client only (desktop/PRM-gated in render)
+const FloatingIco = dynamic(() => import("@/components/three/FloatingIco"), {
+	ssr: false,
+	loading: () => null,
+});
 
 declare global {
 	interface Window { plausible?: (event: string, options?: Record<string, unknown>) => void }
@@ -20,8 +26,10 @@ export default function Hero() {
 		if (!headlineRef.current) return;
 		const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 		const desktop = window.matchMedia('(min-width: 768px)').matches;
-		if (!reduce && desktop) setShowVideo(true);
-		setCanDecorate(!reduce && desktop && !window.matchMedia('(hover: none) and (pointer: coarse)').matches);
+		type NavigatorWithConnection = Navigator & { connection?: { saveData?: boolean } };
+		const saveData = (navigator as NavigatorWithConnection).connection?.saveData === true;
+		if (!reduce && desktop && !saveData) setShowVideo(true);
+		setCanDecorate(!reduce && desktop && !saveData && !window.matchMedia('(hover: none) and (pointer: coarse)').matches);
 		const split = new SplitType(headlineRef.current, { types: "words,chars" });
 		const tl = gsap.timeline();
 		if (!reduce) {
@@ -91,7 +99,8 @@ export default function Hero() {
 					playsInline
 					muted
 					loop
-					preload="metadata"
+					preload="none"
+					poster="/globe.svg"
 					aria-hidden
 				>
 					<source src="/hero-loop.mp4" type="video/mp4" />
@@ -116,7 +125,7 @@ export default function Hero() {
 						Ver portafolio
 					</Button>
 					<MagneticButton href="/portafolio#caso-b2b" className="vf-hover vf-weight inline-flex items-center justify-center rounded-full border border-border px-6 py-3 font-medium hover:bg-white/5 transition" onClick={() => { window.plausible?.("cta:hero:lead-gen-b2b"); }}>
-						LeadGen B2B
+						Lead Gen B2B
 					</MagneticButton>
 				</div>
 				{/* Desktop-only 3D accent */}
