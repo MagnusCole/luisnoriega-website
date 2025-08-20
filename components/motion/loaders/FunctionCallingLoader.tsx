@@ -98,10 +98,19 @@ export default function FunctionCallingLoader({ onComplete }: FunctionCallingLoa
   }, [onComplete]);
 
   useEffect(() => {
-    if (!containerRef.current || PRM()) {
+  if (!containerRef.current || PRM()) {
       onComplete?.();
       return;
     }
+    // Reserve space for bottom bar so main card centers above it
+    const applyBottomReserve = () => {
+      if (!containerRef.current || !promptBarRef.current) return;
+      const h = promptBarRef.current.offsetHeight || 0;
+      containerRef.current.style.paddingBottom = `${h + 8}px`;
+    };
+    applyBottomReserve();
+    const onResize = () => requestAnimationFrame(applyBottomReserve);
+    window.addEventListener('resize', onResize);
 
   // Type-safe Save-Data detection
     const saveData = typeof navigator !== "undefined" && (navigator as Navigator & { connection?: { saveData?: boolean } }).connection?.saveData;
@@ -201,7 +210,7 @@ export default function FunctionCallingLoader({ onComplete }: FunctionCallingLoa
         }
       });
 
-  const tl = gsap.timeline({ defaults: { ease: "none" } , onComplete: () => {
+      const tl = gsap.timeline({ defaults: { ease: "none" } , onComplete: () => {
         const hero = document.getElementById("hero-title");
         const finalize = () => {
       gsap.to(containerRef.current, { opacity: 0, duration: cfg.overlay.fade, delay: cfg.overlay.delayAfterType, ease: "power2.inOut", onComplete: () => { setIsVisible(false); onComplete?.(); } });
@@ -215,9 +224,9 @@ export default function FunctionCallingLoader({ onComplete }: FunctionCallingLoa
           hero.appendChild(resultLineRef.current);
           // will-change during FLIP for smoother paint
           gsap.set(resultLineRef.current, { willChange: 'transform' });
-          Flip.from(state, { duration: cfg.flip.duration, ease: "power3.inOut", onComplete: () => { if (resultLineRef.current) gsap.set(resultLineRef.current, { willChange: 'auto' }); } });
+          Flip.from(state, { duration: cfg.flip.duration, ease: "power2.inOut", onComplete: () => { if (resultLineRef.current) gsap.set(resultLineRef.current, { willChange: 'auto' }); } });
 
-          if (resultLabelRef.current) gsap.set(resultLabelRef.current, { opacity: 0 });
+          // Keep the Result: label visible through FLIP; start typing shortly after
           if (nameRef.current) nameRef.current.textContent = "";
           if (caretRef.current) {
             gsap.set(caretRef.current, { opacity: 1 });
@@ -229,6 +238,8 @@ export default function FunctionCallingLoader({ onComplete }: FunctionCallingLoa
           const base = cfg.hero.base;
           const jitter = cfg.hero.jitter;
           let acc = 0;
+          // slight delay after FLIP before typing for smoother handoff
+          acc += 0.06;
           for (let i = 0; i < typed.length; i++) {
             const ch = typed[i];
             let d = base + Math.random() * jitter;
@@ -242,7 +253,8 @@ export default function FunctionCallingLoader({ onComplete }: FunctionCallingLoa
 
           gsap.delayedCall(acc + 0.15, () => {
             if (caretRef.current) { resultCaretBlinking.current = false; gsap.to(caretRef.current, { opacity: 0, duration: 0.2 }); }
-            if (resultLineRef.current) gsap.to(resultLineRef.current, { opacity: 0, duration: 0.3, onComplete: () => { if (resultLineRef.current) resultLineRef.current.remove(); } });
+            // Fade out the Result line gracefully at the end
+            if (resultLineRef.current) gsap.to(resultLineRef.current, { opacity: 0, duration: 0.4, ease: "power2.out", onComplete: () => { if (resultLineRef.current) resultLineRef.current.remove(); } });
             if (originals.length) gsap.to(originals, { opacity: 1, duration: 0.4, ease: "power2.out" });
             finalize();
           });
@@ -316,7 +328,8 @@ export default function FunctionCallingLoader({ onComplete }: FunctionCallingLoa
     window.addEventListener("keydown", onKey);
     document.addEventListener("visibilitychange", onVis);
     return () => {
-      window.removeEventListener("keydown", onKey);
+  window.removeEventListener("keydown", onKey);
+  window.removeEventListener('resize', onResize);
       document.removeEventListener("visibilitychange", onVis);
       ctx.revert();
     };
@@ -411,11 +424,11 @@ export default function FunctionCallingLoader({ onComplete }: FunctionCallingLoa
       </div>
 
       {/* Bottom prompt input bar */}
-      <div ref={promptBarRef} className="pointer-events-none fixed bottom-0 left-0 right-0 w-full">
-        <div className="mx-auto w-full max-w-2xl px-6 pb-6">
-          <div className="border border-white/15 bg-black/80 backdrop-blur rounded-xl px-4 py-3 flex items-center gap-2">
-            <span className="text-white/50 text-xs">Prompt</span>
-            <span className="flex-1 font-sans tracking-wide">
+      <div ref={promptBarRef} className="pointer-events-none fixed bottom-0 left-0 right-0 w-full" style={{ paddingBottom: 'max(1rem, env(safe-area-inset-bottom, 0px))' }}>
+        <div className="mx-auto w-full max-w-2xl px-4 sm:px-6 pb-2 sm:pb-4">
+          <div className="border border-white/15 bg-black/80 backdrop-blur rounded-xl px-3 sm:px-4 py-2.5 sm:py-3 flex items-center gap-2">
+            <span className="text-white/50 text-[11px] sm:text-xs">Prompt</span>
+            <span className="flex-1 font-sans tracking-wide text-sm sm:text-base">
               <span ref={promptBarTextRef} />
               <span ref={promptBarCaretRef} aria-hidden className="inline-block ml-1 opacity-0 select-none">|</span>
             </span>
