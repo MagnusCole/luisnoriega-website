@@ -6,6 +6,7 @@ import BuyBuildScale from "@/components/BuyBuildScale";
 import GsapRevealClient from "@/components/motion/GsapRevealClient";
 import ScrollScenes from "@/components/motion/ScrollScenesClient";
 import Why from "@/components/blocks/Why";
+import LeadForm from "@/components/ui/LeadForm";
 
 export default function Home() {
   return (
@@ -97,12 +98,13 @@ export default function Home() {
         </section>
         {/* Hablemos */}
         <section id="hablemos" className="container py-16 border-t border-border">
-          <div className="flex flex-wrap items-center justify-between gap-4">
+          <div className="grid gap-8 md:grid-cols-2 md:items-start">
             <div>
               <h2 className="h3">Hablemos</h2>
               <p className="mt-2 text-muted-foreground">Si piensas retirarte o quieres coinvertir en LATAM, conversemos.</p>
+              <p className="mt-3 text-sm text-muted-foreground">También puedes escribir a <a className="underline" href="mailto:hola@luisnoriega.com">hola@luisnoriega.com</a></p>
             </div>
-            <a href="mailto:hola@luisnoriega.com" className="vf-hover vf-weight inline-flex items-center justify-center rounded-full border border-border px-6 py-3 font-medium hover:bg-white/5 transition">Escríbeme</a>
+            <LeadForm source="home:hablemos" />
           </div>
         </section>
     </>

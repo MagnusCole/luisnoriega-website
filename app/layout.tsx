@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter, JetBrains_Mono } from "next/font/google";
 import Link from "next/link";
+import Navbar from "@/components/Navbar";
 import { Analytics } from "@vercel/analytics/react";
 import RouteTransition from "@/components/motion/RouteTransition";
 import SmoothScroll from "@/components/motion/SmoothScroll";
@@ -59,43 +60,7 @@ export const metadata: Metadata = {
   },
 };
 
-function Navbar() {
-  return (
-    <header className="sticky top-0 z-40 backdrop-blur supports-[backdrop-filter]:bg-background/70 border-b border-border data-[scroll=true]:backdrop-saturate-150 data-[scroll=true]:bg-background/80">
-      <div className="mx-auto max-w-7xl px-6 py-4 flex items-center justify-between">
-        <Link href="/" className="font-semibold tracking-tight text-lg">
-          Luis Noriega
-        </Link>
-        <nav className="flex items-center gap-6 text-sm">
-          <Link
-            href="/"
-            className="vf-hover vf-weight hover:opacity-80 transition will-change-transform"
-          >
-            Home
-          </Link>
-          <Link
-            href="/portafolio"
-            className="vf-hover vf-weight hover:opacity-80 transition will-change-transform"
-          >
-            Portafolio
-          </Link>
-          <a
-            href="#sobre-mi"
-            className="vf-hover vf-weight hover:opacity-80 transition will-change-transform hidden md:inline"
-          >
-            About
-          </a>
-          <a
-            href="#hablemos"
-            className="vf-hover vf-weight hover:opacity-80 transition will-change-transform"
-          >
-            Hablemos
-          </a>
-        </nav>
-      </div>
-    </header>
-  );
-}
+// Navbar moved to components/Navbar with aria-current detection
 
 function Footer() {
   return (
@@ -158,10 +123,10 @@ export default function RootLayout({
         className={`${inter.variable} ${jetbrains.variable} antialiased bg-background text-foreground`}
       >
         <a href="#contenido" className="skip-link">Saltar al contenido</a>
-        <BrandLoader />
-        <CursorDot />
-  <WorkBanner />
-        <Navbar />
+  <BrandLoader />
+  <CursorDot />
+  {process.env.NODE_ENV !== "production" && <WorkBanner />}
+  <Navbar />
         <script
           dangerouslySetInnerHTML={{
             __html: `(() => {
