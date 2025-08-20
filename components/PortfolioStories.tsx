@@ -35,6 +35,20 @@ export default function PortfolioStories() {
             { yPercent: 10, opacity: 0 },
             { yPercent: 0, opacity: 1, duration: 0.8, ease: "power3.out", scrollTrigger: { trigger: el, start: "top 70%" } }
           );
+          // stagger metrics counters
+          const metrics = el.querySelectorAll(".story-metric");
+          if (metrics.length) {
+            gsap.fromTo(
+              metrics,
+              { y: 10, opacity: 0 },
+              { y: 0, opacity: 1, duration: 0.5, ease: "power2.out", stagger: 0.08, scrollTrigger: { trigger: el, start: "top 65%" } }
+            );
+          }
+          // subtle bg parallax
+          const bglayer = el.querySelector(".story-bg");
+          if (bglayer) {
+            gsap.to(bglayer, { yPercent: -8, ease: "none", scrollTrigger: { trigger: el, start: "top bottom", end: "bottom top", scrub: true } });
+          }
         });
       });
     }, ref);
@@ -44,7 +58,8 @@ export default function PortfolioStories() {
   return (
     <div ref={ref} className="mt-12 space-y-24">
       {/* AQXION story */}
-      <section id="caso-aqxion" className="story border-t border-border pt-10">
+      <section id="caso-aqxion" className="story border-t border-border pt-10 relative overflow-hidden">
+        <div className="story-bg pointer-events-none absolute inset-0 opacity-10" style={{ background: "radial-gradient(600px 200px at 20% 30%, rgba(255,255,255,0.08), transparent)" }} />
         <div className="grid gap-8 md:grid-cols-12 md:items-center">
           <div className="md:col-span-6">
             <h2 className="story-title h4">AQXION — Holding de adquisición</h2>
@@ -52,11 +67,11 @@ export default function PortfolioStories() {
             <ul className="mt-6 grid grid-cols-2 gap-4">
               <li>
                 <p className="caption">Holdings</p>
-                <p className="h5"><Counter to={1} /></p>
+                <p className="h5 story-metric"><Counter to={1} /></p>
               </li>
               <li>
                 <p className="caption">Empresas</p>
-                <p className="h5"><Counter to={2} /></p>
+                <p className="h5 story-metric"><Counter to={2} /></p>
               </li>
             </ul>
           </div>
@@ -74,7 +89,8 @@ export default function PortfolioStories() {
       </section>
 
       {/* B2B Lead-Gen story */}
-      <section id="caso-b2b" className="story border-t border-border pt-10">
+      <section id="caso-b2b" className="story border-t border-border pt-10 relative overflow-hidden">
+        <div className="story-bg pointer-events-none absolute inset-0 opacity-10" style={{ background: "radial-gradient(600px 200px at 80% 40%, rgba(255,255,255,0.08), transparent)" }} />
         <div className="grid gap-8 md:grid-cols-12 md:items-center">
           <div className="md:col-span-6">
             <h2 className="story-title h4">Lead‑Gen B2B — Automatización</h2>
@@ -82,11 +98,11 @@ export default function PortfolioStories() {
             <ul className="mt-6 grid grid-cols-2 gap-4">
               <li>
                 <p className="caption">SQL</p>
-                <p className="h5"><Counter to={35} prefix="+" suffix="%" /></p>
+                <p className="h5 story-metric"><Counter to={35} prefix="+" suffix="%" /></p>
               </li>
               <li>
                 <p className="caption">CAC</p>
-                <p className="h5"><Counter to={18} prefix="-" suffix="%" /></p>
+                <p className="h5 story-metric"><Counter to={18} prefix="-" suffix="%" /></p>
               </li>
             </ul>
           </div>

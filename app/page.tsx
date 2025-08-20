@@ -5,6 +5,7 @@ import { Card } from "@/components/ui/Card";
 import BuyBuildScale from "@/components/BuyBuildScale";
 import GsapRevealClient from "@/components/GsapRevealClient";
 import ScrollScenes from "@/components/ScrollScenesClient";
+import Why from "@/components/Why";
 
 export default function Home() {
   return (
@@ -24,6 +25,7 @@ export default function Home() {
           </div>
         </div>
       </section>
+  <Why />
       {/* Sobre mí breve */}
       <section className="container py-16">
         <div className="grid gap-8 md:grid-cols-12">
