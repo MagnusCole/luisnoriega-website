@@ -12,7 +12,6 @@ type Locale = "es" | "en";
 
 export default function FunctionCallingLoader({ onComplete }: FunctionCallingLoaderProps) {
   const containerRef = useRef<HTMLDivElement>(null);
-  const userRef = useRef<HTMLDivElement>(null);
   const aiRef = useRef<HTMLDivElement>(null);
 
   // Lines in AI code block
@@ -29,6 +28,10 @@ export default function FunctionCallingLoader({ onComplete }: FunctionCallingLoa
   const caretRef = useRef<HTMLSpanElement>(null);
   const nameRef = useRef<HTMLSpanElement>(null);
   const typingRef = useRef<HTMLSpanElement>(null);
+  // Prompt input (bottom bar)
+  const promptBarRef = useRef<HTMLDivElement>(null);
+  const promptBarTextRef = useRef<HTMLSpanElement>(null);
+  const promptBarCaretRef = useRef<HTMLSpanElement>(null);
 
   const [isVisible, setIsVisible] = useState(true);
   const [logsOpen, setLogsOpen] = useState(false);
@@ -136,11 +139,34 @@ export default function FunctionCallingLoader({ onComplete }: FunctionCallingLoa
         if (check2Ref.current) check2Ref.current.textContent = T.composed;
         if (resultLabelRef.current) resultLabelRef.current.textContent = T.result;
         if (nameRef.current) nameRef.current.textContent = "LUIS NORIEGA";
+        if (promptBarTextRef.current) promptBarTextRef.current.textContent = T.prompt;
+        if (promptBarCaretRef.current) gsap.set(promptBarCaretRef.current, { opacity: 0 });
         gsap.to(containerRef.current, { opacity: 0, duration: 0.5, delay: 0.6, onComplete: () => { setIsVisible(false); onComplete?.(); } });
         return;
       }
 
-      // Show bubbles
+      // Type prompt at bottom, then show bubbles above
+      // Compute typing schedule for prompt
+      const prompt = T.prompt;
+      const baseP = 0.04;
+      const jitterP = 0.045;
+      let accP = 0;
+      // Prepare prompt bar
+      if (promptBarTextRef.current) promptBarTextRef.current.textContent = "";
+      if (promptBarCaretRef.current) {
+        gsap.set(promptBarCaretRef.current, { opacity: 1 });
+        gsap.to(promptBarCaretRef.current, { opacity: 0.25, duration: 0.5, repeat: -1, yoyo: true, ease: "none" });
+      }
+      for (let i = 0; i < prompt.length; i++) {
+        const ch = prompt[i];
+        const d = baseP + Math.random() * jitterP;
+        accP += d;
+        gsap.delayedCall(accP, () => {
+          if (!promptBarTextRef.current) return;
+          promptBarTextRef.current.textContent = (promptBarTextRef.current.textContent || "") + ch;
+        });
+      }
+
       const tl = gsap.timeline({ defaults: { ease: "none" } , onComplete: () => {
         const hero = document.getElementById("hero-title");
         const saveData = typeof navigator !== "undefined" && (navigator as Navigator & { connection?: { saveData?: boolean } }).connection?.saveData;
@@ -188,8 +214,9 @@ export default function FunctionCallingLoader({ onComplete }: FunctionCallingLoa
         }
       }});
 
-      tl.fromTo(userRef.current, { opacity: 0, y: 8 }, { opacity: 1, y: 0, duration: 0.42, ease: "power2.out" })
-        .fromTo(aiRef.current, { opacity: 0, y: 8 }, { opacity: 1, y: 0, duration: 0.42, ease: "power2.out" }, "+=0.2")
+      // Wait for bottom typing to finish, then start AI bubble above (no prompt echo)
+      tl.to({}, { duration: accP })
+        .fromTo(aiRef.current, { opacity: 0, y: 8 }, { opacity: 1, y: 0, duration: 0.42, ease: "power2.out" })
         .add(() => { setPhase(locale === "es" ? "Pensando" : "Thinking"); showTyping(true); })
         .to(planningRef.current, { text: T.planning, duration: 0.5 })
         .add(() => { setPhase(locale === "es" ? "Llamando" : "Calling"); })
@@ -254,7 +281,7 @@ export default function FunctionCallingLoader({ onComplete }: FunctionCallingLoa
         aria-label={locale === 'es' ? 'Repetir (tecla R)' : 'Re-run (key R)'}
       >Re-run</button>
 
-      <div className="w-full max-w-2xl px-6">
+  <div className="w-full max-w-2xl px-6">
         <div className="border border-white/10 rounded-xl overflow-hidden">
           {/* Header */}
           <div className="px-5 py-3 border-b border-white/10 flex items-center gap-3 text-white/70 text-sm">
@@ -264,13 +291,6 @@ export default function FunctionCallingLoader({ onComplete }: FunctionCallingLoa
 
           {/* Chat area */}
           <div className="p-5 space-y-5">
-            {/* User bubble */}
-            <div ref={userRef} className="flex justify-end">
-              <div className="border border-white/20 rounded-lg px-4 py-2 text-sm bg-transparent">
-                Prompt: “{T.prompt}”
-              </div>
-            </div>
-
             {/* AI bubble with monospace code block */}
             <div ref={aiRef} className="flex justify-start">
               <div className="rounded-lg px-4 py-3 text-sm bg-black border border-white/15 w-full max-w-[90%]">
@@ -325,6 +345,19 @@ export default function FunctionCallingLoader({ onComplete }: FunctionCallingLoa
               </div>
             </div>
 
+          </div>
+        </div>
+      </div>
+
+      {/* Bottom prompt input bar */}
+      <div ref={promptBarRef} className="pointer-events-none fixed bottom-0 left-0 right-0 w-full">
+        <div className="mx-auto w-full max-w-2xl px-6 pb-6">
+          <div className="border border-white/15 bg-black/80 backdrop-blur rounded-xl px-4 py-3 flex items-center gap-2">
+            <span className="text-white/50 text-xs">Prompt</span>
+            <span className="flex-1 font-sans tracking-wide">
+              <span ref={promptBarTextRef} />
+              <span ref={promptBarCaretRef} className="inline-block ml-1 opacity-0 select-none">|</span>
+            </span>
           </div>
         </div>
       </div>
