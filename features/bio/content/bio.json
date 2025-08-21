@@ -1,0 +1,20 @@
+{
+  "name": "Luis Noriega",
+  "title": "Product Designer",
+  "location": "México",
+  "description": "Diseñador de productos con pasión por crear experiencias digitales que conecten con las personas. Me especializo en diseño de interfaces, investigación de usuarios y visión estratégica de producto.",
+  "tagline": "Diseño, producto y visión.",
+  "avatar": "/images/luis.png",
+  "social": {
+    "email": "hola@luisnoriega.com",
+    "linkedin": "https://linkedin.com/in/luisnoriega",
+    "twitter": "https://twitter.com/luisnoriega",
+    "github": "https://github.com/luisnoriega"
+  },
+  "highlights": [
+    "5+ años diseñando productos digitales",
+    "Especialista en design systems",
+    "Enfoque user-centered design",
+    "Experiencia en startups y empresas"
+  ]
+}

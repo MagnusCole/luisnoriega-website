@@ -1,7 +1,8 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Work_Sans, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
-import SmoothScroller from "@/components/motion/SmoothScroller";
+import SmoothScroller from "@/shared/motion/scrollers/SmoothScroller";
+import { SiteHeader, SiteFooter } from "@/shared/layout";
 
 const workSans = Work_Sans({
   variable: "--font-sans",
@@ -46,6 +47,9 @@ export const metadata: Metadata = {
     description: "Portfolio personal de Luis Noriega.",
     images: ["/og"],
   },
+};
+
+export const viewport: Viewport = {
   themeColor: [
     { media: "(prefers-color-scheme: light)", color: "#ffffff" },
     { media: "(prefers-color-scheme: dark)", color: "#000000" },
@@ -94,9 +98,11 @@ export default function RootLayout({
         <SmoothScroller>
           <div id="smooth-wrapper">
             <div id="smooth-content">
+              <SiteHeader />
               <main id="contenido" role="main">
                 {children}
               </main>
+              <SiteFooter />
             </div>
           </div>
         </SmoothScroller>

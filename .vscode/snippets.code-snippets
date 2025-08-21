@@ -1,0 +1,168 @@
+{
+  "React Component": {
+    "prefix": "rfc",
+    "body": [
+      "\"use client\";",
+      "import { ${2:FC} } from 'react';",
+      "",
+      "interface ${1:ComponentName}Props {",
+      "  ${3:// props}",
+      "}",
+      "",
+      "export default function ${1:ComponentName}({ ${4:props} }: ${1:ComponentName}Props) {",
+      "  return (",
+      "    <div className=\"${5:classNames}\">",
+      "      $0",
+      "    </div>",
+      "  );",
+      "}"
+    ],
+    "description": "Create a React functional component"
+  },
+  "Section Component": {
+    "prefix": "section",
+    "body": [
+      "\"use client\";",
+      "",
+      "export default function ${1:SectionName}() {",
+      "  return (",
+      "    <section id=\"${2:id}\" className=\"section container py-16\">",
+      "      <h2 className=\"text-2xl font-black tracking-tight\">",
+      "        ${3:Section Title}",
+      "      </h2>",
+      "      $0",
+      "    </section>",
+      "  );",
+      "}"
+    ],
+    "description": "Create a section component"
+  },
+  "Motion Component": {
+    "prefix": "motion",
+    "body": [
+      "\"use client\";",
+      "import { useRef, useEffect } from 'react';",
+      "import { gsap } from '@/lib/motion/gsap';",
+      "",
+      "interface ${1:ComponentName}Props {",
+      "  ${2:// props}",
+      "}",
+      "",
+      "export default function ${1:ComponentName}({ ${3:props} }: ${1:ComponentName}Props) {",
+      "  const ref = useRef<HTMLDivElement>(null);",
+      "",
+      "  useEffect(() => {",
+      "    if (!ref.current) return;",
+      "    ",
+      "    // GSAP animation",
+      "    gsap.${4:to}(ref.current, {",
+      "      ${5:// animation properties}",
+      "    });",
+      "  }, []);",
+      "",
+      "  return (",
+      "    <div ref={ref} className=\"${6:classNames}\">",
+      "      $0",
+      "    </div>",
+      "  );",
+      "}"
+    ],
+    "description": "Create a motion component with GSAP"
+  }
+  ,
+  "React Hook": {
+    "prefix": "hook",
+    "body": [
+      "import { useEffect, useRef, useState } from 'react';",
+      "",
+      "export function use${1:HookName}(${2:initial}: ${3:type}) {",
+      "  const [state, setState] = useState(${2:initial});",
+      "  const ref = useRef<${4:HTMLElement} | null>(null);",
+      "",
+      "  useEffect(() => {",
+      "    // ...",
+      "    return () => {",
+      "      // cleanup",
+      "    }",
+      "  }, []);",
+      "",
+      "  return { state, setState, ref };",
+      "}"
+    ],
+    "description": "Crea un custom React hook"
+  },
+  "Next App Route": {
+    "prefix": "nxroute",
+    "body": [
+      "import { NextResponse } from 'next/server';",
+      "",
+      "export async function GET() {",
+      "  return NextResponse.json({ ok: true });",
+      "}"
+    ],
+    "description": "Crea una route handler (app/xxx/route.ts)"
+  },
+  "Next Page": {
+    "prefix": "nxpage",
+    "body": [
+      "export default function ${1:PageName}Page() {",
+      "  return (",
+      "    <main className=\"container py-10\">",
+      "      <h1 className=\"text-2xl font-bold\">${1:PageName}</h1>",
+      "    </main>",
+      "  );",
+      "}"
+    ],
+    "description": "Crea una página simple en app/"
+  },
+  "UI Card": {
+    "prefix": "uicard",
+    "body": [
+      "interface ${1:CardName}Props {",
+      "  title: string;",
+      "  subtitle?: string;",
+      "  children?: React.ReactNode;",
+      "}",
+      "",
+      "export function ${1:CardName}({ title, subtitle, children }: ${1:CardName}Props) {",
+      "  return (",
+      "    <div className=\"rounded-xl border border-border bg-background/50 p-4\">",
+      "      <div className=\"mb-2\">",
+      "        <h4 className=\"font-semibold\">{title}</h4>",
+      "        {subtitle && <p className=\"text-sm text-muted-foreground\">{subtitle}</p>} ",
+      "      </div>",
+      "      {children}",
+      "    </div>",
+      "  );",
+      "}"
+    ],
+    "description": "Plantilla de tarjeta UI"
+  },
+  "Type Module": {
+    "prefix": "typemod",
+    "body": [
+      "// Domain types",
+      "export interface ${1:Entity} {",
+      "  id: string;",
+      "}",
+      "",
+      "export interface ${1:Entity}Content {",
+      "  items: ${1:Entity}[];",
+      "}"
+    ],
+    "description": "Plantilla para crear un módulo de tipos"
+  },
+  "Vitest Test": {
+    "prefix": "test",
+    "body": [
+      "import { describe, it, expect } from 'vitest';",
+      "",
+      "describe('${1:subject}', () => {",
+      "  it('should ${2:work}', () => {",
+      "    expect(${3:1 + 1}).toBe(${4:2});",
+      "  });",
+      "});"
+    ],
+    "description": "Test básico con Vitest/Jest-compatible"
+  }
+}

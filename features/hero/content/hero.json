@@ -1,0 +1,17 @@
+{
+  "title": "Hola",
+  "subtitle": "¿Qué quieres crear hoy?",
+  "description": "Product Designer & Creative Developer from México",
+  "cta": {
+    "text": "Explora mi trabajo",
+    "href": "#projects"
+  },
+  "scrollIndicator": {
+    "enabled": true,
+    "ariaLabel": "Scroll down to see more content"
+  },
+  "background": {
+    "type": "solid",
+    "color": "black"
+  }
+}

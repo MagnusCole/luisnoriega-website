@@ -1,0 +1,94 @@
+{
+  "contact_info": {
+    "email": "hola@luisnoriega.com",
+    "location": "México",
+    "timezone": "GMT-6",
+    "availability": "Disponible para proyectos freelance",
+    "response_time": "24-48 horas"
+  },
+  "services": [
+    {
+      "id": "ui_ux_design",
+      "title": "Diseño UI/UX",
+      "description": "Diseño completo de interfaces y experiencias de usuario, desde research hasta prototipo final.",
+      "duration": "2-8 semanas",
+      "starting_price": "Consultar"
+    },
+    {
+      "id": "design_systems",
+      "title": "Design Systems",
+      "description": "Creación e implementación de sistemas de diseño escalables para equipos y productos.",
+      "duration": "4-12 semanas", 
+      "starting_price": "Consultar"
+    },
+    {
+      "id": "user_research",
+      "title": "User Research",
+      "description": "Investigación de usuarios, testing de usabilidad y análisis de comportamiento.",
+      "duration": "1-4 semanas",
+      "starting_price": "Consultar"
+    },
+    {
+      "id": "product_strategy",
+      "title": "Estrategia de Producto",
+      "description": "Consultoría estratégica para definición de producto y roadmap de diseño.",
+      "duration": "1-2 semanas",
+      "starting_price": "Consultar"
+    }
+  ],
+  "process": [
+    {
+      "step": 1,
+      "title": "Descubrimiento",
+      "description": "Entendemos tu producto, usuarios y objetivos de negocio."
+    },
+    {
+      "step": 2,
+      "title": "Research & Análisis",
+      "description": "Investigamos usuarios, competencia y definimos requirements."
+    },
+    {
+      "step": 3,
+      "title": "Diseño & Prototipo",
+      "description": "Creamos wireframes, diseños finales y prototipos interactivos."
+    },
+    {
+      "step": 4,
+      "title": "Testing & Iteración",
+      "description": "Validamos con usuarios reales y refinamos la solución."
+    },
+    {
+      "step": 5,
+      "title": "Entrega & Handoff",
+      "description": "Documentamos y entregamos assets listos para desarrollo."
+    }
+  ],
+  "social_links": [
+    {
+      "platform": "LinkedIn",
+      "url": "https://linkedin.com/in/luisnoriega",
+      "username": "@luisnoriega"
+    },
+    {
+      "platform": "Dribbble", 
+      "url": "https://dribbble.com/luisnoriega",
+      "username": "@luisnoriega"
+    },
+    {
+      "platform": "Behance",
+      "url": "https://behance.net/luisnoriega",
+      "username": "@luisnoriega"
+    },
+    {
+      "platform": "Twitter",
+      "url": "https://twitter.com/luisnoriega",
+      "username": "@luisnoriega"
+    }
+  ],
+  "cta": {
+    "title": "¿Tienes un proyecto en mente?",
+    "subtitle": "",
+    "primary_button": "Enviar mensaje",
+    "secondary_button": "Ver mi calendario"
+  }
+}

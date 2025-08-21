@@ -111,13 +111,26 @@
   text-shadow: 0 0 1px var(--headline-shadow);
 }
 
-/* Optional soft glow (desktop only) */
+/* Optional soft glow (desktop only) - enhanced for nebula */
 @media (min-width: 768px) and (hover: hover) {
   .headline-glow {
     text-shadow:
-      0 0 2px var(--headline-shadow),
-      0 0 18px color-mix(in oklab, var(--foreground) 10%, transparent),
-      0 0 36px color-mix(in oklab, var(--foreground) 6%, transparent);
+      0 0 4px var(--headline-shadow),
+      0 0 8px color-mix(in oklab, var(--foreground) 20%, transparent),
+      0 0 24px color-mix(in oklab, var(--foreground) 12%, transparent),
+      0 0 48px color-mix(in oklab, var(--foreground) 8%, transparent);
+  }
+  
+  /* Creator text - behind nebula effect */
+  .hero-creator-text {
+    opacity: 0.4;
+    filter: blur(0.5px);
+    mix-blend-mode: screen;
+    text-shadow:
+      0 0 2px color-mix(in oklab, var(--foreground) 30%, transparent),
+      0 0 6px color-mix(in oklab, var(--foreground) 15%, transparent),
+      0 0 12px color-mix(in oklab, var(--foreground) 8%, transparent),
+      0 0 24px color-mix(in oklab, var(--foreground) 4%, transparent);
   }
 }
 
@@ -291,17 +304,4 @@ header[data-scroll="true"] {
 }
 #smooth-content {
   will-change: transform;
-}
-
-/* Cursor spotlight overlay (desktop only) */
-@media (hover: hover) and (pointer: fine) {
-  .cursor-spotlight {
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-    background: radial-gradient(280px 280px at var(--mx, 50%) var(--my, 50%), rgba(255,255,255,0.04), transparent 65%);
-    opacity: 1;
-    mix-blend-mode: screen;
-    z-index: 1;
-  }
 }

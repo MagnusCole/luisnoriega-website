@@ -22,8 +22,8 @@ const eslintConfig = [
         paths: [
           { name: "gsap", message: "Usa `lib/motion/gsap`" },
           { name: "gsap/ScrollTrigger", message: "Usa `lib/motion/gsap`" },
-          { name: "three", message: "Importa Three solo desde components/three/*" },
-          { name: "three/*", message: "Importa Three solo desde components/three/*" }
+          { name: "three", message: "Importa Three solo desde lib/three/*" },
+          { name: "three/*", message: "Importa Three solo desde lib/three/*" }
         ]
       }]
     }
@@ -31,6 +31,13 @@ const eslintConfig = [
   // Allow the wrapper itself to import gsap/ScrollTrigger
   {
     files: ["lib/motion/gsap.ts"],
+    rules: {
+      "no-restricted-imports": "off"
+    }
+  },
+  // Allow Three.js wrapper to import three
+  {
+    files: ["lib/three/index.ts"],
     rules: {
       "no-restricted-imports": "off"
     }

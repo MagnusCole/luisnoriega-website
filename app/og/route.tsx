@@ -5,7 +5,7 @@ export const runtime = "edge";
 export async function GET(req: Request) {
   // Use a system font to avoid remote fetch & Buffer on Edge
   const { searchParams } = new URL(req.url);
-  const title = searchParams.get("title") || "Luis Noriega — Portafolio & M&A";
+  const title = searchParams.get("title") || "Luis Noriega — Portafolio Personal";
   const kpi = searchParams.get("kpi");
 
   return new ImageResponse(

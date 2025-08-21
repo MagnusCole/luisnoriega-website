@@ -1,0 +1,67 @@
+{
+  "projects": [
+    {
+      "id": "proyecto-1",
+      "title": "App de Fintech",
+      "description": "Diseño completo de una aplicación móvil para gestión financiera personal. Desde research hasta prototipo final.",
+      "image": "/images/projects/fintech-app.png",
+      "tags": ["UI/UX", "Mobile", "Fintech", "User Research"],
+      "status": "completed",
+      "year": 2024,
+      "duration": "3 meses",
+      "role": "Lead Designer",
+      "highlights": [
+        "Incremento del 40% en engagement",
+        "Reducción del 60% en tiempo de onboarding",
+        "Implementación de design system"
+      ],
+      "links": {
+        "live": "https://ejemplo.com",
+        "case_study": "/projects/fintech-app"
+      }
+    },
+    {
+      "id": "proyecto-2", 
+      "title": "E-commerce Platform",
+      "description": "Rediseño completo de plataforma de comercio electrónico con enfoque en conversión y experiencia de usuario.",
+      "image": "/images/projects/ecommerce.png",
+      "tags": ["Web Design", "E-commerce", "Conversion", "A/B Testing"],
+      "status": "completed",
+      "year": 2023,
+      "duration": "6 meses",
+      "role": "Senior Designer",
+      "highlights": [
+        "Aumento del 25% en conversiones",
+        "Mejora del 50% en user satisfaction",
+        "Implementación de checkout optimizado"
+      ],
+      "links": {
+        "case_study": "/projects/ecommerce-platform"
+      }
+    },
+    {
+      "id": "proyecto-3",
+      "title": "SaaS Dashboard",
+      "description": "Interfaz para plataforma de analytics empresarial con visualización de datos complejos.",
+      "image": "/images/projects/saas-dashboard.png", 
+      "tags": ["Dashboard", "Data Viz", "SaaS", "B2B"],
+      "status": "in_progress",
+      "year": 2024,
+      "duration": "4 meses",
+      "role": "Product Designer",
+      "highlights": [
+        "Sistema de componentes escalable",
+        "Visualizaciones interactivas",
+        "Workflow optimizado para usuarios enterprise"
+      ],
+      "links": {
+        "prototype": "https://figma.com/proto/..."
+      }
+    }
+  ],
+  "categories": [
+    { "id": "mobile", "name": "Mobile Apps", "count": 1 },
+    { "id": "web", "name": "Web Design", "count": 2 },
+    { "id": "saas", "name": "SaaS Products", "count": 1 }
+  ]
+}
