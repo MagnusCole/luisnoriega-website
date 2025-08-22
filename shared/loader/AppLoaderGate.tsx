@@ -26,9 +26,18 @@ export default function AppLoaderGate({
 
   useEffect(() => {
     if (PRM()) return; // motion reduction: skip entirely
+    
+    // Always show the loader when mode is "always"
+    if (mode === "always") {
+      setShow(true);
+      return;
+    }
+    
+    // For "once" mode, check localStorage
     if (mode === "once") {
       try {
-        if (localStorage.getItem(storageKey)) return; // already seen
+        const hasSeenLoader = localStorage.getItem(storageKey);
+        if (hasSeenLoader) return; // already seen
       } catch {
         // ignore storage errors
       }
@@ -37,9 +46,11 @@ export default function AppLoaderGate({
   }, [mode, storageKey]);
 
   const handleComplete = () => {
+    // Only save to localStorage if mode is "once"
     if (mode === "once") {
       try { localStorage.setItem(storageKey, "1"); } catch { /* ignore */ }
     }
+    // Always set show to false when complete
     setShow(false);
   };
 

@@ -14,18 +14,18 @@ export interface FunctionCallingLoaderProps {
 // Centralized timing presets (normal vs fast)
 const TIMING = {
   normal: {
+    userPrompt: 1.4,
+    aiResponse: 1.8,
+    progress: 1.2,
+    fadeDelay: 0.8,
+    fadeOut: 0.8,
+  },
+  fast: {
     userPrompt: 0.8,
-    aiResponse: 1.2,
+    aiResponse: 1.0,
     progress: 0.8,
     fadeDelay: 0.4,
     fadeOut: 0.6,
-  },
-  fast: {
-    userPrompt: 0.4,
-    aiResponse: 0.6,
-    progress: 0.4,
-    fadeDelay: 0.2,
-    fadeOut: 0.4,
   },
 } as const;
 
@@ -71,25 +71,15 @@ export default function FunctionCallingLoader({ onComplete, forceFast, skipLocal
     [locale]
   );
 
-  // Decide fast mode: user flag OR Save-Data OR hidden tab
+  // Decide fast mode: only if explicitly forced (not automatic detection)
   const fastMode = useMemo(() => {
-    if (forceFast) return true;
-    if (typeof navigator !== "undefined") {
-      const anyNav = navigator as Navigator & { connection?: { saveData?: boolean } };
-      if (anyNav.connection?.saveData) return true;
-    }
-    if (typeof document !== "undefined" && document.visibilityState === "hidden") return true;
-    return false;
+    return Boolean(forceFast); // Only fast if explicitly requested
   }, [forceFast]);
 
-  // Early skip if key stored
+  // Early skip if key stored - but only if not forced to always show
   useEffect(() => {
-    if (!skipLocalStorageKey) return;
-    if (typeof window === "undefined") return;
-    if (localStorage.getItem(skipLocalStorageKey) === "1") {
-      setVisible(false);
-      onComplete?.();
-    }
+    // Don't skip if mode is "always" - let AppLoaderGate handle this
+    return;
   }, [skipLocalStorageKey, onComplete]);
 
   useEffect(() => {
@@ -113,10 +103,10 @@ export default function FunctionCallingLoader({ onComplete, forceFast, skipLocal
       
       // Type character by character
       const chars = text.split("");
-      const delay = duration / chars.length;
+      const charDelay = duration / chars.length;
       
       chars.forEach((char, i) => {
-        gsap.delayedCall(delay * i, () => {
+        gsap.delayedCall(charDelay * i, () => {
           if (node) node.textContent += char;
         });
       });
@@ -125,15 +115,15 @@ export default function FunctionCallingLoader({ onComplete, forceFast, skipLocal
     // Animation sequence
     tl
       // Show user bubble first
-      .fromTo(userBubbleRef.current, { opacity: 0, y: 8 }, { opacity: 1, y: 0, duration: 0.4, ease: "power2.out" })
+      .fromTo(userBubbleRef.current, { opacity: 0, y: 8 }, { opacity: 1, y: 0, duration: 0.5, ease: "power2.out" })
       // Type user prompt
       .call(() => typeText(userTextRef, TEXT.userPrompt, tcfg.userPrompt))
-      .to({}, { duration: tcfg.userPrompt + 0.2 })
+      .to({}, { duration: tcfg.userPrompt + 0.5 }) // Extra pause after user types
       // Show AI bubble
-      .fromTo(aiBubbleRef.current, { opacity: 0, y: 8 }, { opacity: 1, y: 0, duration: 0.4, ease: "power2.out" })
+      .fromTo(aiBubbleRef.current, { opacity: 0, y: 8 }, { opacity: 1, y: 0, duration: 0.5, ease: "power2.out" })
       // Type AI response
       .call(() => typeText(aiTextRef, TEXT.aiResponse, tcfg.aiResponse))
-      .to({}, { duration: tcfg.aiResponse + 0.3 })
+      .to({}, { duration: tcfg.aiResponse + 0.5 }) // Extra pause after AI response
       // Progress animation
       .call(() => {
         const frameDur = tcfg.progress / PROGRESS_FRAMES.length;
