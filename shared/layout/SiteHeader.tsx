@@ -40,19 +40,19 @@ export function SiteHeader() {
           <ul className="flex items-center gap-6 text-sm font-medium">
             <li>
               <button
-                onClick={() => scrollToSection("#bio")}
+                onClick={() => scrollToSection("#hero")}
                 className={`transition-all duration-300 hover:scale-105 ${
                   scrolled 
                     ? "text-foreground/80 hover:text-foreground" 
                     : "text-white/80 hover:text-white drop-shadow-lg"
                 }`}
               >
-                About
+                Home
               </button>
             </li>
             <li>
               <button
-                onClick={() => scrollToSection("#projects")}
+                onClick={() => scrollToSection("#work")}
                 className={`transition-all duration-300 hover:scale-105 ${
                   scrolled 
                     ? "text-foreground/80 hover:text-foreground" 
@@ -64,14 +64,26 @@ export function SiteHeader() {
             </li>
             <li>
               <button
-                onClick={() => scrollToSection("#books")}
+                onClick={() => scrollToSection("#portfolio")}
                 className={`transition-all duration-300 hover:scale-105 ${
                   scrolled 
                     ? "text-foreground/80 hover:text-foreground" 
                     : "text-white/80 hover:text-white drop-shadow-lg"
                 }`}
               >
-                Books
+                Portfolio
+              </button>
+            </li>
+            <li>
+              <button
+                onClick={() => scrollToSection("#skills")}
+                className={`transition-all duration-300 hover:scale-105 ${
+                  scrolled 
+                    ? "text-foreground/80 hover:text-foreground" 
+                    : "text-white/80 hover:text-white drop-shadow-lg"
+                }`}
+              >
+                Skills
               </button>
             </li>
             <li>

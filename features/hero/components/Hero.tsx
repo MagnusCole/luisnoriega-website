@@ -9,6 +9,7 @@ export default function Hero() {
   
   return (
     <section
+      id="hero"
       ref={rootRef as React.RefObject<HTMLElement>}
       className="hero-section relative min-h-screen flex items-center justify-center bg-black text-white overflow-hidden"
     >

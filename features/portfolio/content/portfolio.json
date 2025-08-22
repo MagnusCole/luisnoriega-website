@@ -1,0 +1,73 @@
+{
+  "title": "Portfolio",
+  "subtitle": "Empresas que fundé y lidero.",
+  "companies": [
+    {
+      "id": "aqxion",
+      "name": "AQXION",
+      "description": "Sistemas de crecimiento B2B para empresas y profesionales.",
+      "type": "SaaS Platform",
+      "founded": "2023",
+      "status": "Active",
+      "role": "Founder & CEO",
+      "logo": "/images/portfolio/aqxion-logo.svg",
+      "screenshot": "/images/portfolio/aqxion-dashboard.jpg",
+      "website": "https://aqxion.com",
+      "highlights": [
+        "Sistemas de automatización B2B",
+        "CRM integrado",
+        "Analytics en tiempo real",
+        "Crecimiento escalable"
+      ],
+      "technologies": ["React", "Node.js", "PostgreSQL", "AWS"],
+      "placeholder": true
+    },
+    {
+      "id": "adquisicion",
+      "name": "Adquisición",
+      "description": "Holding para comprar y hacer crecer negocios en LATAM.",
+      "type": "Investment Holding",
+      "founded": "2024",
+      "status": "Active",
+      "role": "Founder & Managing Partner", 
+      "logo": "/images/portfolio/adquisicion-logo.svg",
+      "conceptual": "/images/portfolio/adquisicion-graph.jpg",
+      "website": "https://adquisicion.com",
+      "highlights": [
+        "Adquisición estratégica",
+        "Crecimiento operacional",
+        "Expansión LATAM",
+        "Portfolio diversificado"
+      ],
+      "sectors": ["Tech", "E-commerce", "Services", "Manufacturing"],
+      "placeholder": true
+    }
+  ],
+  "layout": {
+    "style": "showcase",
+    "cards": "large",
+    "columns": {
+      "mobile": 1,
+      "tablet": 1,
+      "desktop": 2
+    },
+    "spacing": "generous"
+  },
+  "animation": {
+    "reveal": {
+      "stagger": 0.2,
+      "translateY": 20,
+      "duration": 0.8,
+      "ease": "power2.out"
+    },
+    "hover": {
+      "scale": 1.01,
+      "duration": 0.4,
+      "shadow": "elevated"
+    },
+    "performance": {
+      "force3D": true,
+      "prmCompliant": true
+    }
+  }
+}

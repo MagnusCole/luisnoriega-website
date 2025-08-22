@@ -1,174 +1,166 @@
 "use client";
-import certificationsData from "../content/certifications.json";
+import skillsData from "../content/skills.json";
 import { WireframePlaceholder } from "@/shared/ui";
-import type { CertificationsContent, SkillLevel } from "@/lib/types";
-import { useRef } from "react";
-import { gsap, useGSAP } from "@/lib/motion/gsap";
-import { PRM } from "@/lib/a11y/prm";
+import { useSkillsReveal } from "../motion/skillsReveal";
 
-type Aggregated = { name: string; count: number; level: SkillLevel };
-
-// Normalize skill names (simple case-insensitive trim)
-const normalize = (s: string) => s.trim().toLowerCase();
-
-function aggregateFromCerts(data: CertificationsContent): Aggregated[] {
-  const map = new Map<string, number>();
-  for (const cert of data.certifications) {
-    for (const raw of cert.skills || []) {
-      const key = normalize(raw);
-      map.set(key, (map.get(key) ?? 0) + 1);
-    }
-  }
-  // Under‑promise levels: counts >=4 → intermediate, 1–3 → basic
-  const agg: Aggregated[] = Array.from(map.entries())
-    .map(([key, count]) => {
-      const level: SkillLevel = count >= 4 ? "intermediate" : "basic";
-      return { name: key.replace(/\b\w/g, c => c.toUpperCase()), count, level };
-    })
-    .sort((a, b) => b.count - a.count);
-  // Keep a modest top slice
-  return agg.slice(0, 10);
+interface Skill {
+  name: string;
+  category: string;
 }
 
-function currentWebStack(): Aggregated[] {
-  // Conservative levels for the tech used in this site
-  return [
-    { name: "Next.js", level: "intermediate", count: 1 },
-    { name: "React", level: "intermediate", count: 1 },
-    { name: "TypeScript", level: "basic", count: 1 },
-    { name: "TailwindCSS", level: "intermediate", count: 1 },
-    { name: "GSAP", level: "intermediate", count: 1 },
-  ];
+interface Certification {
+  id: string;
+  title: string;
+  issuer: string;
+  platform?: string;
+  date: string;
+  grade?: string;
+  credential_id: string;
+  skills: string[];
+  image: string;
+  verify_url?: string;
+  status: string;
 }
 
-function LevelBadge({ level }: { level: SkillLevel }) {
-  const color = level === "advanced" ? "bg-emerald-500" : level === "intermediate" ? "bg-yellow-500" : "bg-slate-400";
-  const label = level === "advanced" ? "Avanzado" : level === "intermediate" ? "Intermedio" : "Básico";
+interface SkillsContent {
+  title: string;
+  subtitle: string;
+  note: string;
+  skills: {
+    technical: Skill[];
+  };
+  certifications: Certification[];
+}
+
+function SkillCard({ skill }: { skill: Skill }) {
   return (
-    <span className="inline-flex items-center gap-2 text-xs text-muted-foreground">
-      <span className={`inline-block w-1.5 h-1.5 rounded-full ${color}`} aria-hidden />
-      {label}
-    </span>
+    <div className="skill-card bg-white/5 rounded-lg border border-white/10 p-4 backdrop-blur-sm">
+      <div className="space-y-2">
+        <h4 className="text-lg font-semibold text-white">{skill.name}</h4>
+        <p className="text-sm text-white/60">{skill.category}</p>
+      </div>
+    </div>
+  );
+}
+
+function CertificationCard({ cert }: { cert: Certification }) {
+  return (
+    <article className="cert-card bg-white/5 rounded-xl border border-white/10 overflow-hidden backdrop-blur-sm">
+      <div className="relative h-32 w-full">
+        <WireframePlaceholder 
+          label={cert.title}
+          className="h-full rounded-t-xl bg-gray-900/20"
+          variant="cert"
+          style={{
+            backgroundColor: "#0a0a0a",
+            border: "1px solid #333"
+          }}
+        />
+      </div>
+      <div className="p-4 space-y-3">
+        <h4 className="text-sm font-semibold leading-snug text-white">{cert.title}</h4>
+        <p className="text-xs text-white/60">
+          {cert.issuer}{cert.platform ? ` • ${cert.platform}` : ""}
+        </p>
+        <p className="text-xs text-white/40">
+          {new Date(cert.date).toLocaleDateString()}
+          {cert.grade && ` • ${cert.grade}`}
+        </p>
+        {cert.verify_url && (
+          <a 
+            href={cert.verify_url} 
+            target="_blank" 
+            rel="noopener noreferrer" 
+            className="inline-flex text-xs text-white/60 hover:text-white underline underline-offset-4 transition-colors duration-200"
+          >
+            Verificar →
+          </a>
+        )}
+      </div>
+    </article>
   );
 }
 
 export default function Skills() {
-  const content = certificationsData as unknown as CertificationsContent;
-  const certSkills = aggregateFromCerts(content);
-  const webSkills = currentWebStack();
-
-  // Refs for GSAP reveals
-  const rootRef = useRef<HTMLElement | null>(null);
-  const titleRef = useRef<HTMLHeadingElement | null>(null);
-  const descRef = useRef<HTMLParagraphElement | null>(null);
-  const listsRef = useRef<HTMLDivElement | null>(null);
-  const certsRef = useRef<HTMLDivElement | null>(null);
-
-  useGSAP(() => {
-    if (PRM()) return;
-    const ctx = gsap.context(() => {
-      if (titleRef.current) {
-        gsap.fromTo(
-          titleRef.current,
-          { y: 28, autoAlpha: 0 },
-          { y: 0, autoAlpha: 1, duration: 0.6, ease: "power2.out",
-            scrollTrigger: { trigger: rootRef.current, start: "top 85%", end: "top 45%", scrub: 0.6 }
-          }
-        );
-      }
-      if (descRef.current) {
-        gsap.fromTo(
-          descRef.current,
-          { y: 16, autoAlpha: 0, filter: "blur(2px)" },
-          { y: 0, autoAlpha: 1, filter: "blur(0px)", duration: 0.5, ease: "power2.out",
-            scrollTrigger: { trigger: rootRef.current, start: "top 80%", end: "+=20%", scrub: 0.6 }
-          }
-        );
-      }
-      if (listsRef.current) {
-        gsap.from(listsRef.current.children, {
-          y: 18, autoAlpha: 0, stagger: 0.08, ease: "power2.out",
-          scrollTrigger: { trigger: rootRef.current, start: "top 70%", end: "+=30%", scrub: 0.6 }
-        });
-      }
-      if (certsRef.current) {
-        const children = certsRef.current.children;
-        gsap.from(children, {
-          y: 20, autoAlpha: 0, stagger: 0.05, ease: "power2.out",
-          scrollTrigger: { trigger: certsRef.current, start: "top 85%", end: "+=40%", scrub: 0.6 }
-        });
-      }
-    }, rootRef);
-    return () => ctx.revert();
-  }, { scope: rootRef });
+  const content = skillsData as SkillsContent;
+  const { rootRef, titleRef, subtitleRef, skillsRef, certsRef, noteRef } = useSkillsReveal();
 
   return (
-    <section id="skills" ref={rootRef as React.RefObject<HTMLElement>} className="section container py-24 md:py-32">
-      <h2 ref={titleRef} className="font-light tracking-tight leading-[0.9] [text-wrap:balance]" style={{ fontSize: 'clamp(3rem, 8vw, 8rem)' }}>
-        Habilidades
-      </h2>
-      <p ref={descRef} className="mt-4 text-base md:text-lg text-muted-foreground max-w-prose">
-        Aprendizaje continuo, sin límites. A continuación un mapa actual y el stack usado en este sitio.
-      </p>
-
-      <div ref={listsRef} className="mt-10 grid gap-8 md:grid-cols-2">
-        <div>
-          <h3 className="text-sm font-semibold text-muted-foreground mb-3">Mapa actual (derivado de certificados)</h3>
-          <ul className="space-y-2">
-            {certSkills.map((s) => (
-              <li key={s.name} className="flex items-center justify-between rounded-lg border border-border px-4 py-2 bg-background/40">
-                <span className="text-sm">{s.name}</span>
-                <LevelBadge level={s.level} />
-              </li>
-            ))}
-          </ul>
+    <section 
+      id="skills"
+      ref={rootRef}
+      className="skills-section relative py-20 lg:py-32 bg-black text-white"
+    >
+      <div className="container max-w-[1400px] mx-auto px-[clamp(2rem,8vw,8rem)]">
+        
+        {/* Header */}
+        <div className="mb-16 lg:mb-24">
+          <h2 
+            ref={titleRef}
+            className="text-4xl lg:text-6xl font-bold font-['Inter'] tracking-tight mb-6"
+          >
+            {content.title}
+          </h2>
+          <p 
+            ref={subtitleRef}
+            className="text-lg lg:text-xl text-white/60 max-w-3xl"
+          >
+            {content.subtitle}
+          </p>
         </div>
 
-        <div>
-          <h3 className="text-sm font-semibold text-muted-foreground mb-3">Web actual (este sitio)</h3>
-          <ul className="space-y-2">
-            {webSkills.map((s) => (
-              <li key={s.name} className="flex items-center justify-between rounded-lg border border-border px-4 py-2 bg-background/40">
-                <span className="text-sm">{s.name}</span>
-                <LevelBadge level={s.level} />
-              </li>
-            ))}
-          </ul>
-        </div>
-      </div>
-
-      <p className="mt-6 text-xs text-muted-foreground">Niveles orientativos; la ambición es &quot;∞&quot;.</p>
-
-      {/* Full certifications below skills */}
-      <div className="mt-16">
-        <h3 className="font-light tracking-tight leading-[0.9] [text-wrap:balance]" style={{ fontSize: 'clamp(2.25rem, 6vw, 6rem)' }}>
-          Certificados
-        </h3>
-        <div ref={certsRef} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {content.certifications.map((cert) => (
-            <article key={cert.id} className="rounded-xl border border-border bg-background/40 overflow-hidden">
-              <div className="relative h-28 w-full">
-                <WireframePlaceholder 
-                  label={cert.title}
-                  className="h-full rounded-t-xl"
-                  variant="cert"
-                />
+        {/* Technical Skills */}
+        <div className="mb-20 lg:mb-32">
+          <h3 className="text-2xl lg:text-3xl font-semibold text-white mb-8">
+            Skills Técnicas
+          </h3>
+          <div 
+            ref={skillsRef}
+            className="skills-grid grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4"
+          >
+            {content.skills.technical.map((skill) => (
+              <div 
+                key={skill.name}
+                className="skill-wrapper opacity-0"
+                style={{ willChange: "transform, opacity" }}
+              >
+                <SkillCard skill={skill} />
               </div>
-              <div className="p-4 space-y-2">
-                <h4 className="text-sm font-semibold leading-snug">{cert.title}</h4>
-                <p className="text-xs text-muted-foreground">
-                  {cert.issuer}{cert.platform ? ` • ${cert.platform}` : ""}
-                </p>
-                <p className="text-xs text-muted-foreground">{new Date(cert.date).toLocaleDateString()}</p>
-                {cert.verify_url && (
-                  <a href={cert.verify_url} target="_blank" rel="noopener noreferrer" className="inline-flex text-xs underline underline-offset-4">
-                    Verificar
-                  </a>
-                )}
-              </div>
-            </article>
-          ))}
+            ))}
+          </div>
         </div>
+
+        {/* Certifications */}
+        <div className="mb-12">
+          <h3 className="text-2xl lg:text-3xl font-semibold text-white mb-8">
+            Certificaciones
+          </h3>
+          <div 
+            ref={certsRef}
+            className="certifications-grid grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
+          >
+            {content.certifications.map((cert) => (
+              <div 
+                key={cert.id}
+                className="cert-wrapper opacity-0"
+                style={{ willChange: "transform, opacity" }}
+              >
+                <CertificationCard cert={cert} />
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Critical Note */}
+        <div 
+          ref={noteRef}
+          className="critical-note text-center py-8 border-t border-white/10 opacity-0"
+        >
+          <p className="text-sm lg:text-base text-white/60 italic max-w-4xl mx-auto">
+            {content.note}
+          </p>
+        </div>
+
       </div>
     </section>
   );

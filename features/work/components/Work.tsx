@@ -84,6 +84,7 @@ export default function Work() {
 
   return (
     <section 
+      id="work"
       ref={rootRef as React.RefObject<HTMLElement>}
       className="work-section relative py-20 lg:py-32 bg-black text-white"
     >
