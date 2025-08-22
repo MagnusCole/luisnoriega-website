@@ -73,11 +73,12 @@ export default function RootLayout({
         />
 
         {/* Preload hero image for performance */}
-        <link 
-          rel="preload" 
-          as="image" 
-          href="/images/luis-hero.jpg"
-          type="image/jpeg"
+        {/* Preload hero image (matches actual .png asset) */}
+        <link
+          rel="preload"
+          as="image"
+          href="/images/luis-hero.png"
+          type="image/png"
         />
 
         {/* JSON-LD: Person */}
@@ -97,7 +98,8 @@ export default function RootLayout({
         />
       </head>
       <body
-        className={`${workSans.variable} ${jetbrains.variable} antialiased bg-background text-foreground`}
+        className={`${workSans.variable} ${jetbrains.variable} antialiased text-foreground`}
+        style={{ backgroundColor: '#000', color: 'var(--foreground, #fff)' }}
       >
         {/* Skip to content, visible on focus */}
         <a href="#contenido" className="skip-link">

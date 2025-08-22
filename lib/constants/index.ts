@@ -10,17 +10,3 @@ export const SITE_CONFIG = {
     github: "luisnoriega"
   }
 } as const;
-
-export const NAVIGATION_ITEMS = [
-  { href: "#bio", label: "Bio" },
-  { href: "#projects", label: "Proyectos" },
-  { href: "#certs", label: "Certificaciones" },
-  { href: "#books", label: "Libros" },
-  { href: "#contact", label: "Contacto" }
-] as const;
-
-export const ANIMATION_DURATIONS = {
-  fast: 0.3,
-  normal: 0.6,
-  slow: 1.0
-} as const;

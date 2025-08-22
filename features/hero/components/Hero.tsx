@@ -3,6 +3,10 @@ import Image from "next/image";
 import heroContent from "../content/hero.json";
 import { useHeroReveal } from "../motion/heroReveal";
 import WireframePlaceholder from "@/shared/ui/WireframePlaceholder";
+import dynamic from "next/dynamic";
+
+// Dynamically import heavy WebGL component to avoid SSR issues & reduce initial bundle
+const LuisCanvas = dynamic(() => import("./LuisCanvas"), { ssr: false, loading: () => null });
 
 export default function Hero() {
   const { rootRef, nameRef, subtitleRef, photoRef } = useHeroReveal();
@@ -11,9 +15,9 @@ export default function Hero() {
     <section
       id="hero"
       ref={rootRef as React.RefObject<HTMLElement>}
-      className="hero-section relative min-h-screen flex items-center justify-center bg-black text-white overflow-hidden"
+      className="hero-section relative min-h-screen flex items-center justify-center text-white overflow-hidden bg-black"
     >
-      <div className="container max-w-[1400px] mx-auto px-[clamp(2rem,8vw,8rem)] py-8">
+      <div className="container max-w-[1400px] mx-auto px-[clamp(2rem,8vw,8rem)] py-8 relative z-10">
         <div className="grid grid-cols-1 lg:grid-cols-[1.2fr_0.8fr] gap-8 lg:gap-16 items-center min-h-[80vh]">
           
           {/* Content Column */}
@@ -57,15 +61,15 @@ export default function Hero() {
                   }}
                 />
               ) : (
-                <div className="w-full h-full rounded-lg overflow-hidden relative">
+                <div className="w-full h-full rounded-lg overflow-hidden relative bg-black">
+                  {/* WebGL Layer */}
+                  <LuisCanvas className="absolute inset-0" intensity={1} />
+                  {/* Fallback still image below (will show while canvas loading) */}
                   <Image
                     src={heroContent.photo.src}
                     alt={heroContent.photo.alt}
                     fill
-                    className="object-cover"
-                    style={{
-                      filter: "grayscale(100%) contrast(1.1) brightness(0.9)"
-                    }}
+                    className="object-cover opacity-30 mix-blend-screen"
                     priority
                     sizes="(max-width: 768px) 280px, (max-width: 1024px) 360px, 480px"
                   />
@@ -79,4 +83,4 @@ export default function Hero() {
     </section>
   );
 }
- 
+

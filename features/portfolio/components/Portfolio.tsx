@@ -1,6 +1,7 @@
 "use client";
 import portfolioContent from "../content/portfolio.json";
 import { usePortfolioReveal } from "../motion/portfolioReveal";
+// Atmosphere removed – background unified to pure black.
 
 interface CompanyCardProps {
   company: typeof portfolioContent.companies[0];
@@ -106,9 +107,9 @@ export default function Portfolio() {
     <section 
       id="portfolio"
       ref={rootRef}
-      className="portfolio-section relative py-20 lg:py-32 bg-black text-white"
+      className="portfolio-section relative py-20 lg:py-32 text-white overflow-hidden bg-black"
     >
-      <div className="container max-w-[1400px] mx-auto px-[clamp(2rem,8vw,8rem)]">
+      <div className="container relative z-10 max-w-[1400px] mx-auto px-[clamp(2rem,8vw,8rem)]">
         
         {/* Header */}
         <div className="mb-16 lg:mb-24">

@@ -7,7 +7,7 @@ export function SiteHeader() {
   const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 8);
+    const onScroll = () => setScrolled(window.scrollY > 32);
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
@@ -17,86 +17,48 @@ export function SiteHeader() {
     <header
       role="banner"
       data-scrolled={scrolled}
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ease-out ${
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ease-out ${
         scrolled
-          ? "backdrop-blur-xl bg-background/80 border-b border-border/40 shadow-lg shadow-background/10"
+          ? "backdrop-blur-md bg-black/60 border-b border-white/10"
           : "bg-transparent"
       }`}
     >
-      <div className="container flex items-center justify-between h-14 sm:h-16">
-        {/* Logo */}
+      <div className="container flex items-center justify-between h-16 sm:h-20">
+        {/* Logo minimalista */}
         <button
           onClick={() => scrollToSection("#hero")}
-          className={`font-light tracking-tight text-lg uppercase transition-all duration-300 hover:scale-105 ${
-            scrolled ? "text-foreground" : "text-white drop-shadow-lg"
-          }`}
+          className={`font-light tracking-wider text-xl transition-all duration-200 ${
+            scrolled ? "text-white" : "text-white"
+          } hover:opacity-70`}
           aria-label="Ir al inicio"
         >
           LN
         </button>
 
-        {/* Navegación */}
-        <nav aria-label="Principal">
-          <ul className="flex items-center gap-6 text-sm font-medium">
+        {/* Navegación simplificada */}
+        <nav aria-label="Navegación principal">
+          <ul className="flex items-center gap-8 text-sm">
             <li>
-              <button
-                onClick={() => scrollToSection("#hero")}
-                className={`transition-all duration-300 hover:scale-105 ${
-                  scrolled 
-                    ? "text-foreground/80 hover:text-foreground" 
-                    : "text-white/80 hover:text-white drop-shadow-lg"
-                }`}
+              <a
+                href="#portfolio"
+                onClick={(e)=>{e.preventDefault();scrollToSection('#portfolio');}}
+                className={`transition-opacity duration-200 ${
+                  scrolled ? "text-white/90" : "text-white/90"
+                } hover:opacity-60 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/50 rounded-sm`}
               >
-                Home
-              </button>
+                Trabajo
+              </a>
             </li>
             <li>
-              <button
-                onClick={() => scrollToSection("#work")}
-                className={`transition-all duration-300 hover:scale-105 ${
-                  scrolled 
-                    ? "text-foreground/80 hover:text-foreground" 
-                    : "text-white/80 hover:text-white drop-shadow-lg"
-                }`}
+              <a
+                href="#contact"
+                onClick={(e)=>{e.preventDefault();scrollToSection('#contact');}}
+                className={`transition-opacity duration-200 ${
+                  scrolled ? "text-white/90" : "text-white/90"
+                } hover:opacity-60 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/50 rounded-sm`}
               >
-                Work
-              </button>
-            </li>
-            <li>
-              <button
-                onClick={() => scrollToSection("#portfolio")}
-                className={`transition-all duration-300 hover:scale-105 ${
-                  scrolled 
-                    ? "text-foreground/80 hover:text-foreground" 
-                    : "text-white/80 hover:text-white drop-shadow-lg"
-                }`}
-              >
-                Portfolio
-              </button>
-            </li>
-            <li>
-              <button
-                onClick={() => scrollToSection("#skills")}
-                className={`transition-all duration-300 hover:scale-105 ${
-                  scrolled 
-                    ? "text-foreground/80 hover:text-foreground" 
-                    : "text-white/80 hover:text-white drop-shadow-lg"
-                }`}
-              >
-                Skills
-              </button>
-            </li>
-            <li>
-              <button
-                onClick={() => scrollToSection("#contact")}
-                className={`transition-all duration-300 hover:scale-105 ${
-                  scrolled 
-                    ? "text-foreground/80 hover:text-foreground" 
-                    : "text-white/80 hover:text-white drop-shadow-lg"
-                }`}
-              >
-                Contact
-              </button>
+                Contacto
+              </a>
             </li>
           </ul>
         </nav>

@@ -14,7 +14,9 @@ export function usePortfolioReveal(): PortfolioRefs {
   useEffect(() => {
     if (!companiesRef.current) return;
     
-    const cards = companiesRef.current.querySelectorAll('.company-card-wrapper');
+    const cards = companiesRef.current.querySelectorAll<HTMLElement>(
+      '.company-card-wrapper'
+    );
     
     // Set initial state
     gsap.set(cards, {
@@ -45,43 +47,48 @@ export function usePortfolioReveal(): PortfolioRefs {
     });
 
     // Add hover effects
-    cards.forEach((card) => {
-      const cardElement = card as HTMLElement;
-      const cardInner = cardElement.querySelector('.company-card-inner');
-      
+    // Store handlers for proper cleanup
+    const cleanupHandlers: Array<() => void> = [];
+
+    cards.forEach((cardElement) => {
+      const cardInner = cardElement.querySelector<HTMLElement>(
+        '.company-card-inner'
+      );
       if (!cardInner) return;
 
-      let hoverTl: gsap.core.Timeline;
-
-      cardElement.addEventListener('mouseenter', () => {
+      let hoverTl: gsap.core.Timeline | null = null;
+      const onEnter = () => {
+        hoverTl?.kill();
         hoverTl = gsap.timeline();
         hoverTl.to(cardInner, {
           scale: 1.01,
           duration: 0.3,
-          ease: "power2.out",
-          force3D: true
+          ease: 'power2.out',
+          force3D: true,
         });
-      });
-
-      cardElement.addEventListener('mouseleave', () => {
-        if (hoverTl) hoverTl.kill();
+      };
+      const onLeave = () => {
+        hoverTl?.kill();
         gsap.to(cardInner, {
           scale: 1,
           duration: 0.3,
-          ease: "power2.out",
-          force3D: true
+          ease: 'power2.out',
+          force3D: true,
         });
+      };
+      cardElement.addEventListener('mouseenter', onEnter);
+      cardElement.addEventListener('mouseleave', onLeave);
+      cleanupHandlers.push(() => {
+        cardElement.removeEventListener('mouseenter', onEnter);
+        cardElement.removeEventListener('mouseleave', onLeave);
+        hoverTl?.kill();
       });
     });
 
     // Cleanup function
     return () => {
-      tl.kill();
-      cards.forEach((card) => {
-        const cardElement = card as HTMLElement;
-        cardElement.removeEventListener('mouseenter', () => {});
-        cardElement.removeEventListener('mouseleave', () => {});
-      });
+  tl.kill();
+  cleanupHandlers.forEach((fn) => fn());
     };
 
   }, []);

@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
-import { useFooterReveal } from "@/shared/motion";
-import { scrollToSection } from "@/shared/motion/scrollers/scrollAnimations";
+import { useFooterReveal } from "../motion";
+import { scrollToSection } from "../motion/scrollers/scrollAnimations";
 
 export function SiteFooter() {
   const year = new Date().getFullYear();
@@ -11,20 +11,9 @@ export function SiteFooter() {
     <footer
       ref={rootRef}
       role="contentinfo"
-      className="relative min-h-screen flex flex-col items-center justify-center text-center border-t border-border bg-black text-white"
+      className="relative min-h-screen flex flex-col items-center justify-center text-center text-white overflow-hidden"
     >
-  {/* Fondo limpio: sin partículas */}
-      {/* Barra de progreso de scroll (decorativa) */}
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute top-0 left-0 right-0 h-[2px] bg-white/10 overflow-hidden"
-      >
-        <div
-          className="h-full bg-white/70 origin-left transform-gpu"
-          style={{ transform: "scaleX(var(--scroll-progress, 0))" }}
-        />
-      </div>
-      {/* Nombre gigante */}
+      {/* Título minimalista */}
       <h2
         ref={titleRef}
         className="font-light uppercase leading-[0.9] [text-wrap:balance]"
@@ -37,26 +26,27 @@ export function SiteFooter() {
         FIN
       </h2>
 
-      {/* CTA + Navegación secundaria */}
+      {/* Navegación minimalista */}
       <div ref={linksRef} className="mt-10 flex flex-col items-center gap-4 text-base">
-        <nav className="flex flex-wrap items-center justify-center gap-6 text-sm text-white/80">
-          <button type="button" onClick={() => scrollToSection('#hero')} className="underline-offset-4 hover:underline">Inicio</button>
-          <button type="button" onClick={() => scrollToSection('#bio')} className="underline-offset-4 hover:underline">Bio</button>
-          <button type="button" onClick={() => scrollToSection('#projects')} className="underline-offset-4 hover:underline">Proyectos</button>
-          <button type="button" onClick={() => scrollToSection('#books')} className="underline-offset-4 hover:underline">Libros</button>
-          <button type="button" onClick={() => scrollToSection('#certifications')} className="underline-offset-4 hover:underline">Certificaciones</button>
-          <button type="button" onClick={() => scrollToSection('#contact')} className="underline-offset-4 hover:underline">Contacto</button>
+        <nav className="flex flex-wrap items-center justify-center gap-6 text-sm text-white/80" aria-label="Navegación de secciones">
+          <a href="#hero" onClick={(e)=>{e.preventDefault();scrollToSection('#hero');}} className="underline-offset-4 hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-white/40 rounded-sm">Inicio</a>
+          <a href="#portfolio" onClick={(e)=>{e.preventDefault();scrollToSection('#portfolio');}} className="underline-offset-4 hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-white/40 rounded-sm">Portfolio</a>
+          <a href="#contact" onClick={(e)=>{e.preventDefault();scrollToSection('#contact');}} className="underline-offset-4 hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-white/40 rounded-sm">Contacto</a>
         </nav>
       </div>
 
-      {/* Línea inferior */}
-      <div ref={bottomRef} className="absolute bottom-6 w-full text-sm text-muted-foreground">
-        <div className="flex flex-col items-center gap-2">
-          <p>© {year} Luis Noriega. Todos los derechos reservados.</p>
-          <div className="flex items-center gap-3 text-xs">
+      {/* Footer mínimo */}
+      <div ref={bottomRef} className="absolute bottom-8 w-full">
+        <div className="flex flex-col items-center gap-4 text-xs text-white/40">
+          <p>© {year} Luis Noriega</p>
+          <div className="flex items-center gap-3">
             <span className="text-white/50">Hecho con ❤️ por Luis</span>
             <span className="text-white/30">·</span>
-            <Link href="/sitemap.xml" className="underline-offset-4 hover:underline">Sitemap</Link>
+            <Link href="/sitemap.xml" className="hover:text-white/60 transition-colors">
+              Sitemap
+            </Link>
+            <span className="text-white/30">·</span>
+            <span>Lima, Perú</span>
           </div>
         </div>
       </div>
