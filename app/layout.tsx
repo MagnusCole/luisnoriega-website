@@ -1,8 +1,9 @@
 import type { Metadata, Viewport } from "next";
 import { Work_Sans, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
-import SmoothScroller from "@/shared/motion/scrollers/SmoothScroller";
+// SmoothScroller removed to keep interactions lightweight
 import { SiteHeader, SiteFooter } from "@/shared/layout";
+import { AppLoaderGate } from "@/shared/loader";
 
 const workSans = Work_Sans({
   variable: "--font-sans",
@@ -95,17 +96,13 @@ export default function RootLayout({
           Saltar al contenido
         </a>
 
-        <SmoothScroller>
-          <div id="smooth-wrapper">
-            <div id="smooth-content">
-              <SiteHeader />
-              <main id="contenido" role="main">
-                {children}
-              </main>
-              <SiteFooter />
-            </div>
-          </div>
-        </SmoothScroller>
+        <AppLoaderGate mode="always" forceFast={false}>
+          <SiteHeader />
+          <main id="contenido" role="main">
+            {children}
+          </main>
+          <SiteFooter />
+        </AppLoaderGate>
       </body>
     </html>
   );

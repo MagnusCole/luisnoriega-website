@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import { useFooterReveal, FooterParticles } from "@/shared/motion";
+import { useFooterReveal } from "@/shared/motion";
 import { scrollToSection } from "@/shared/motion/scrollers/scrollAnimations";
 
 export function SiteFooter() {
@@ -13,8 +13,7 @@ export function SiteFooter() {
       role="contentinfo"
       className="relative min-h-screen flex flex-col items-center justify-center text-center border-t border-border bg-black text-white"
     >
-  {/* Partículas discretas (solo desktop, PRM respetado) */}
-  <FooterParticles />
+  {/* Fondo limpio: sin partículas */}
       {/* Barra de progreso de scroll (decorativa) */}
       <div
         aria-hidden="true"

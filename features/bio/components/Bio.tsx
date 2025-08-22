@@ -1,7 +1,7 @@
 "use client";
 import Image from 'next/image';
 import bioData from '../content/bio.json';
-import { useBioReveal, BioParticles } from '@/shared/motion';
+import { useBioReveal } from '@/shared/motion';
 
 export default function Bio() {
 	const { name, tagline, avatar } = bioData as {
@@ -18,8 +18,7 @@ export default function Bio() {
 			ref={rootRef as React.RefObject<HTMLElement>}
 			className="section container relative grid items-center gap-12 lg:grid-cols-2 py-24 md:py-32"
 		>
-			{/* Partículas de fondo (lado de la imagen) */}
-			<BioParticles />
+			{/* Fondo limpio: sin partículas */}
 
 			{/* Texto XXL y CTA */}
 			<div className="relative z-10">

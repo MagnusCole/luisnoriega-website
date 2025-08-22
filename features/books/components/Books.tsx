@@ -1,39 +1,17 @@
 "use client";
 import booksData from '../content/books.json';
-import { useRef } from 'react';
-import { gsap, useGSAP } from '@/lib/motion/gsap';
-import ProjectField from '@/components/three/ProjectField';
+import { useBooksReveal } from "../motion/booksReveal";
+import { WireframePlaceholder } from "@/shared/ui";
 
 export default function Books() {
 	const { recommended_books } = booksData;
 	const featuredBook = recommended_books[0];
 
-	const rootRef = useRef<HTMLElement | null>(null);
-	const titleRef = useRef<HTMLHeadingElement | null>(null);
-	const gridRef = useRef<HTMLDivElement | null>(null);
-
-	useGSAP(() => {
-		const ctx = gsap.context(() => {
-			if (titleRef.current) {
-				gsap.fromTo(titleRef.current, { y: 28, autoAlpha: 0 }, {
-					y: 0, autoAlpha: 1, duration: 0.6, ease: 'power2.out',
-					scrollTrigger: { trigger: rootRef.current, start: 'top 85%', end: 'top 45%', scrub: 0.6 }
-				});
-			}
-			if (gridRef.current) {
-				gsap.from(gridRef.current.children, {
-					y: 18, autoAlpha: 0, stagger: 0.08, ease: 'power2.out',
-					scrollTrigger: { trigger: gridRef.current, start: 'top 85%', end: '+=40%', scrub: 0.6 }
-				});
-			}
-		}, rootRef);
-		return () => ctx.revert();
-	}, { scope: rootRef });
+	const { rootRef, titleRef, gridRef } = useBooksReveal();
 
 	return (
 		<section id="books" ref={rootRef as React.RefObject<HTMLElement>} className="section container py-24 md:py-32 relative">
-			{/* Three background reuse */}
-			<ProjectField className="absolute inset-0 -z-10" />
+			{/* Fondo limpio: sin Three */}
 			<h2 ref={titleRef} className="font-light tracking-tight leading-[0.9] [text-wrap:balance]" style={{ fontSize: 'clamp(3rem, 8vw, 8rem)' }}>
 				Libros
 			</h2>
@@ -43,11 +21,12 @@ export default function Books() {
 
 			{/* Libro destacado */}
 			<div ref={gridRef} className="mt-10 grid gap-6 md:grid-cols-[180px,1fr] items-start">
-				<div className="aspect-[3/4] rounded-xl bg-muted/30 grid place-content-center text-sm text-muted-foreground overflow-hidden">
-					<span className="text-center px-3 leading-tight font-medium">
-						{featuredBook.title}
-					</span>
-				</div>
+				<WireframePlaceholder 
+					aspectRatio="3/4" 
+					label={featuredBook.title}
+					className="rounded-xl"
+					variant="book"
+				/>
 
 				<article className="rounded-2xl bg-foreground text-background p-6 lg:p-8 shadow-sm">
 					<div className="flex items-start justify-between mb-2">
@@ -91,6 +70,14 @@ export default function Books() {
 					<div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
 						{recommended_books.slice(1, 4).map((book) => (
 							<div key={book.id} className="border border-border rounded-xl p-4 hover:bg-muted/5 transition-colors">
+								<div className="mb-3">
+									<WireframePlaceholder 
+										aspectRatio="3/4" 
+										label={book.title}
+										className="rounded-lg h-32"
+										variant="book"
+									/>
+								</div>
 								<h4 className="font-medium text-sm leading-tight mb-1">{book.title}</h4>
 								<p className="text-xs text-muted-foreground mb-2">por {book.author}</p>
 								<div className="flex items-center justify-between">

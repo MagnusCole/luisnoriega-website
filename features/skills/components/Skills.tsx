@@ -1,6 +1,6 @@
 "use client";
-import Image from "next/image";
 import certificationsData from "../content/certifications.json";
+import { WireframePlaceholder } from "@/shared/ui";
 import type { CertificationsContent, SkillLevel } from "@/lib/types";
 import { useRef } from "react";
 import { gsap, useGSAP } from "@/lib/motion/gsap";
@@ -147,11 +147,13 @@ export default function Skills() {
         <div ref={certsRef} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {content.certifications.map((cert) => (
             <article key={cert.id} className="rounded-xl border border-border bg-background/40 overflow-hidden">
-              {cert.image && (
-                <div className="relative h-28 w-full bg-black">
-                  <Image src={cert.image} alt={cert.title} fill className="object-contain p-3" sizes="(min-width:1024px) 33vw, (min-width:640px) 50vw, 100vw" />
-                </div>
-              )}
+              <div className="relative h-28 w-full">
+                <WireframePlaceholder 
+                  label={cert.title}
+                  className="h-full rounded-t-xl"
+                  variant="cert"
+                />
+              </div>
               <div className="p-4 space-y-2">
                 <h4 className="text-sm font-semibold leading-snug">{cert.title}</h4>
                 <p className="text-xs text-muted-foreground">

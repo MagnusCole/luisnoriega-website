@@ -1,37 +1,14 @@
 "use client";
 import projectsData from '../content/projects.json';
-import { useRef } from 'react';
-import { gsap, useGSAP } from '@/lib/motion/gsap';
-import ProjectField from '@/components/three/ProjectField';
+import { useProjectsReveal } from "../motion/projectsReveal";
 
 export default function Projects() {
 	const { projects } = projectsData;
-	const rootRef = useRef<HTMLElement | null>(null);
-	const titleRef = useRef<HTMLHeadingElement | null>(null);
-	const gridRef = useRef<HTMLDivElement | null>(null);
-
-	useGSAP(() => {
-		const ctx = gsap.context(() => {
-			if (titleRef.current) {
-				gsap.fromTo(titleRef.current, { y: 28, autoAlpha: 0 }, {
-					y: 0, autoAlpha: 1, duration: 0.6, ease: 'power2.out',
-					scrollTrigger: { trigger: rootRef.current, start: 'top 80%', end: 'top 40%', scrub: 0.6 }
-				});
-			}
-			if (gridRef.current) {
-				gsap.from(gridRef.current.children, {
-					y: 18, autoAlpha: 0, stagger: 0.08, ease: 'power2.out',
-					scrollTrigger: { trigger: rootRef.current, start: 'top 70%', end: '+=40%', scrub: 0.6 }
-				});
-			}
-		}, rootRef);
-		return () => ctx.revert();
-	}, { scope: rootRef });
+	const { rootRef, titleRef, gridRef } = useProjectsReveal();
 
 	return (
 		<section id="projects" ref={rootRef as React.RefObject<HTMLElement>} className="section container py-24 md:py-32 relative">
-			{/* Three background */}
-			<ProjectField className="absolute inset-0 -z-10" />
+			{/* Fondo limpio: sin Three */}
 			<h2 ref={titleRef} className="font-light tracking-tight leading-[0.9] [text-wrap:balance]" style={{ fontSize: 'clamp(3rem, 8vw, 8rem)' }}>
 				Proyectos
 			</h2>
