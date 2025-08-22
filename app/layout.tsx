@@ -26,27 +26,71 @@ export const metadata: Metadata = {
     template: "%s · Luis Noriega",
   },
   description:
-    "Portfolio personal de Luis Noriega. Diseño, producto y visión cósmica.",
+    "Portfolio personal de Luis Noriega: diseño de producto, UX, interfazes limpias, interacción y estrategia.",
+  keywords: [
+    "Luis Noriega",
+    "Luis Noriega portfolio",
+    "diseñador de producto",
+    "product designer",
+    "UX UI",
+    "diseño de interfaces",
+    "portfolio Luis Noriega",
+    "diseñador Colombia",
+    "frontend minimalista",
+  ],
+  authors: [{ name: "Luis Noriega", url: "https://www.luisnoriega.com" }],
+  creator: "Luis Noriega",
+  publisher: "Luis Noriega",
+  alternates: {
+    canonical: "https://www.luisnoriega.com",
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-snippet": -1,
+      "max-image-preview": "large",
+      "max-video-preview": -1,
+    },
+  },
   openGraph: {
     type: "website",
     url: "https://www.luisnoriega.com",
-    title: "Luis Noriega — Portafolio Personal",
-    description: "Portfolio personal de Luis Noriega.",
+    title: "Luis Noriega — Product Designer",
+    description:
+      "Portfolio personal de Luis Noriega: diseño de producto, UX, interfazes limpias, interacción y estrategia.",
     siteName: "Luis Noriega",
+    locale: "es_ES",
     images: [
       {
         url: "/og",
         width: 1200,
         height: 630,
-        alt: "Luis Noriega",
+        alt: "Luis Noriega — Portfolio",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Luis Noriega — Portafolio Personal",
-    description: "Portfolio personal de Luis Noriega.",
+    title: "Luis Noriega — Product Designer",
+    description:
+      "Portfolio personal de Luis Noriega: diseño de producto, UX, interfazes limpias, interacción y estrategia.",
     images: ["/og"],
+  },
+  icons: {
+    icon: "/favicon.ico",
+    shortcut: "/favicon.ico",
+    apple: "/favicon.ico",
+  },
+  category: "portfolio",
+  verification: {
+    // Add real tokens when available
+    google: "",
+    other: {
+      plausible: ["luisnoriega.com"],
+    },
   },
 };
 
@@ -93,6 +137,9 @@ export default function RootLayout({
               url: "https://www.luisnoriega.com",
               jobTitle: "Product Designer",
               image: "https://www.luisnoriega.com/og",
+              sameAs: [
+                "https://www.linkedin.com/in/noriega-luis/"
+              ]
             }),
           }}
         />
@@ -101,6 +148,7 @@ export default function RootLayout({
         className={`${workSans.variable} ${jetbrains.variable} antialiased text-foreground`}
         style={{ backgroundColor: '#000', color: 'var(--foreground, #fff)' }}
       >
+  {/* Progress bar removed */}
         {/* Skip to content, visible on focus */}
         <a href="#contenido" className="skip-link">
           Saltar al contenido

@@ -5,20 +5,31 @@ import { gsap } from "@/lib/motion/gsap";
  * Works seamlessly with ScrollSmoother
  */
 export const scrollToSection = (sectionId: string) => {
-  const target = document.querySelector(sectionId);
+  const target = document.querySelector(sectionId) as HTMLElement | null;
   if (!target) {
     console.warn(`Section "${sectionId}" not found`);
     return;
   }
 
-  // Use GSAP ScrollTo for smooth scrolling that works with ScrollSmoother
+  const headerOffset = 80;
+  const targetY = target.getBoundingClientRect().top + window.scrollY - headerOffset;
+  const currentY = window.scrollY;
+  const distance = Math.abs(targetY - currentY);
+
+  // Early exit: if already within 8px of target, just set scroll instantly
+  if (distance < 8) {
+    window.scrollTo({ top: targetY });
+    return;
+  }
+
+  // Adaptive duration: shorter for small distances, capped for long
+  const base = 0.18; // seconds minimal
+  const duration = Math.min(1.0, base + (distance / 1200));
+
   gsap.to(window, {
-    duration: 1.2,
-    scrollTo: {
-      y: target,
-      offsetY: 80 // Account for fixed header height
-    },
-    ease: "power2.inOut"
+    duration,
+    scrollTo: { y: targetY },
+    ease: distance < 300 ? 'power1.out' : 'power2.inOut'
   });
 };
 

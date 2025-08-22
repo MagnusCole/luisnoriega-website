@@ -1,4 +1,10 @@
-export { default as SmoothScroller } from './scrollers/SmoothScroller';
+// Motion system simplificado: solo utilidades de scroll programático
 export * from './scrollers/scrollAnimations';
-export * from './reveals/footerReveal';
-export * from './reveals/baseReveal';
+
+// No-op stub (legacy compatibility) – se puede eliminar en próximo sprint
+export const useFooterReveal = () => ({
+	rootRef: { current: null },
+	titleRef: { current: null },
+	linksRef: { current: null },
+	bottomRef: { current: null }
+});

@@ -5,14 +5,12 @@ import { PRM } from '@/lib/a11y/prm';
 export type HeroRevealRefs = {
   rootRef: React.RefObject<HTMLElement | null>;
   nameRef: React.RefObject<HTMLHeadingElement | null>;
-  subtitleRef: React.RefObject<HTMLParagraphElement | null>;
   photoRef: React.RefObject<HTMLDivElement | null>;
 };
 
 export function useHeroReveal(): HeroRevealRefs {
   const rootRef = useRef<HTMLElement | null>(null);
   const nameRef = useRef<HTMLHeadingElement | null>(null);
-  const subtitleRef = useRef<HTMLParagraphElement | null>(null);
   const photoRef = useRef<HTMLDivElement | null>(null);
 
   useGSAP(
@@ -20,7 +18,7 @@ export function useHeroReveal(): HeroRevealRefs {
       if (PRM()) return;
       
       // Force3D para activar aceleración de hardware
-      gsap.set([nameRef.current, subtitleRef.current, photoRef.current], {
+  gsap.set([nameRef.current, photoRef.current], {
         force3D: true
       });
 
@@ -37,13 +35,7 @@ export function useHeroReveal(): HeroRevealRefs {
         }
         
         // Animación del subtítulo con delay
-        if (subtitleRef.current) {
-          tl.fromTo(subtitleRef.current,
-            { opacity: 0, y: 30 },
-            { opacity: 0.8, y: 0, duration: 0.6 },
-            0.3 // delay de 0.3s
-          );
-        }
+  // Subtitle removed
         
         // Animación de la foto
         if (photoRef.current) {
@@ -56,7 +48,7 @@ export function useHeroReveal(): HeroRevealRefs {
 
         // Cleanup después de animación inicial
         tl.eventCallback("onComplete", () => {
-          gsap.set([nameRef.current, subtitleRef.current], { 
+          gsap.set([nameRef.current], { 
             clearProps: "will-change" 
           });
         });
@@ -97,5 +89,5 @@ export function useHeroReveal(): HeroRevealRefs {
     { scope: rootRef }
   );
 
-  return { rootRef, nameRef, subtitleRef, photoRef };
+  return { rootRef, nameRef, photoRef };
 }

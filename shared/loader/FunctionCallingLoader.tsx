@@ -1,6 +1,5 @@
 "use client";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { gsap } from "@/lib/motion/gsap";
 import { PRM } from "@/lib/a11y/prm";
 
 export interface FunctionCallingLoaderProps {
@@ -11,39 +10,37 @@ export interface FunctionCallingLoaderProps {
   skipLocalStorageKey?: string;
 }
 
-// Centralized timing presets (normal vs fast)
+// Timing (brand splash -> prompt sim -> progress)
 const TIMING = {
   normal: {
-    userPrompt: 1.4,
-    aiResponse: 1.8,
-    progress: 1.2,
-    fadeDelay: 0.8,
-    fadeOut: 0.8,
+    brandHold: 900,
+    promptType: 1400,
+    aiType: 1600,
+    progress: 900,
+    fadeOut: 500,
+    between: 240,
   },
   fast: {
-    userPrompt: 0.8,
-    aiResponse: 1.0,
-    progress: 0.8,
-    fadeDelay: 0.4,
-    fadeOut: 0.6,
+    brandHold: 500,
+    promptType: 900,
+    aiType: 1000,
+    progress: 600,
+    fadeOut: 400,
+    between: 160,
   },
 } as const;
 
-// Progress frames for loading animation
-const PROGRESS_FRAMES = [
-  "[██░░░░░░] 25%",
-  "[████░░░░] 50%",
-  "[██████░░] 75%",
-  "[█████████] 100%",
-];
+// Progress frames (unicode bars) – minimal footprint
+const PROGRESS_FRAMES = ["▁", "▃", "▅", "▇", "█"]; // will repeat to fake fill
 
 export default function FunctionCallingLoader({ onComplete, forceFast, skipLocalStorageKey }: FunctionCallingLoaderProps) {
   const rootRef = useRef<HTMLDivElement>(null);
-  const userBubbleRef = useRef<HTMLDivElement>(null);
-  const aiBubbleRef = useRef<HTMLDivElement>(null);
+  const brandRef = useRef<HTMLDivElement>(null);
+  const stageRef = useRef<HTMLDivElement>(null);
   const userTextRef = useRef<HTMLSpanElement>(null);
-  const aiTextRef = useRef<HTMLParagraphElement>(null);
-  const progressRef = useRef<HTMLParagraphElement>(null);
+  const aiTextRef = useRef<HTMLSpanElement>(null);
+  const progressRef = useRef<HTMLSpanElement>(null);
+  const barRef = useRef<HTMLDivElement>(null);
 
   const [visible, setVisible] = useState(true);
 
@@ -53,23 +50,17 @@ export default function FunctionCallingLoader({ onComplete, forceFast, skipLocal
     []
   );
 
-  const TEXT = useMemo(
-    () =>
-      locale === "es"
-        ? {
-            userPrompt: "Quiero ver el portafolio de Luis Noriega",
-            aiResponse: "Entendido. Cargando el portafolio...",
-            agent: "Agente IA",
-            skip: "Saltar",
-          }
-        : {
-            userPrompt: "Show me Luis Noriega's portfolio",
-            aiResponse: "Understood. Loading portfolio...",
-            agent: "AI Agent",
-            skip: "Skip",
-          },
-    [locale]
-  );
+  const TEXT = useMemo(() => locale === 'es' ? {
+    userPrompt: 'acceder a portfolio LN',
+    aiResponse: 'inicializando entorno · IA',
+    skip: 'Omitir',
+    brand: 'LN'
+  } : {
+    userPrompt: 'access LN portfolio',
+    aiResponse: 'initializing environment · AI',
+    skip: 'Skip',
+    brand: 'LN'
+  }, [locale]);
 
   // Decide fast mode: only if explicitly forced (not automatic detection)
   const fastMode = useMemo(() => {
@@ -83,122 +74,112 @@ export default function FunctionCallingLoader({ onComplete, forceFast, skipLocal
   }, [skipLocalStorageKey, onComplete]);
 
   useEffect(() => {
-    if (!visible) return; // already skipped
-    if (!rootRef.current || PRM()) {
-      setVisible(false);
-      onComplete?.();
-      return;
-    }
+    if (!visible) return;
+    if (!rootRef.current || PRM()) { setVisible(false); onComplete?.(); return; }
+    const t = fastMode ? TIMING.fast : TIMING.normal;
 
-    const tcfg = fastMode ? TIMING.fast : TIMING.normal;
-    const tl = gsap.timeline({ defaults: { ease: "none" } });
+    let cancelled = false;
+    const run = async () => {
+      // Stage 1: brand splash
+      await new Promise(r => setTimeout(r, t.brandHold));
+      if (cancelled) return;
+      if (brandRef.current) brandRef.current.classList.add('fade-out');
+      await new Promise(r => setTimeout(r, 280));
+      if (cancelled) return;
+      if (stageRef.current) stageRef.current.classList.remove('opacity-0');
 
-    // Helper to set text with typewriter effect
-    const typeText = (ref: React.RefObject<HTMLElement | null>, text: string, duration: number) => {
-      const node = ref.current;
-      if (!node) return;
-      
-      // Reset content
-      node.textContent = "";
-      
-      // Type character by character
-      const chars = text.split("");
-      const charDelay = duration / chars.length;
-      
-      chars.forEach((char, i) => {
-        gsap.delayedCall(charDelay * i, () => {
-          if (node) node.textContent += char;
-        });
-      });
-    };
+      // Type helper
+      const type = async (el: HTMLElement | null, text: string, dur: number) => {
+        if (!el) return;
+        el.textContent = '';
+        const chars = text.split('');
+        const delay = dur / chars.length;
+        for (let i=0;i<chars.length;i++) {
+          if (cancelled) return;
+          el.textContent += chars[i];
+          await new Promise(r => setTimeout(r, delay));
+        }
+      };
 
-    // Animation sequence
-    tl
-      // Show user bubble first
-      .fromTo(userBubbleRef.current, { opacity: 0, y: 8 }, { opacity: 1, y: 0, duration: 0.5, ease: "power2.out" })
-      // Type user prompt
-      .call(() => typeText(userTextRef, TEXT.userPrompt, tcfg.userPrompt))
-      .to({}, { duration: tcfg.userPrompt + 0.5 }) // Extra pause after user types
-      // Show AI bubble
-      .fromTo(aiBubbleRef.current, { opacity: 0, y: 8 }, { opacity: 1, y: 0, duration: 0.5, ease: "power2.out" })
-      // Type AI response
-      .call(() => typeText(aiTextRef, TEXT.aiResponse, tcfg.aiResponse))
-      .to({}, { duration: tcfg.aiResponse + 0.5 }) // Extra pause after AI response
-      // Progress animation
-      .call(() => {
-        const frameDur = tcfg.progress / PROGRESS_FRAMES.length;
-        PROGRESS_FRAMES.forEach((frame, index) => {
-          gsap.delayedCall(frameDur * index, () => {
-            if (progressRef.current) progressRef.current.textContent = frame;
-          });
-        });
-      })
-      .to({}, { duration: tcfg.progress + tcfg.fadeDelay })
-      .to(rootRef.current, {
-        opacity: 0,
-        duration: tcfg.fadeOut,
-        onComplete: () => {
-          if (skipLocalStorageKey) {
-            try { localStorage.setItem(skipLocalStorageKey, "1"); } catch {}
-          }
+      await type(userTextRef.current, TEXT.userPrompt, t.promptType);
+      await new Promise(r => setTimeout(r, t.between));
+      await type(aiTextRef.current, TEXT.aiResponse, t.aiType);
+      await new Promise(r => setTimeout(r, t.between));
+
+      // Progress simulation
+      const total = t.progress;
+      const start = performance.now();
+      const frames = PROGRESS_FRAMES;
+      const loop = (now: number) => {
+        if (cancelled) return;
+        const elapsed = now - start;
+        const ratio = Math.min(1, elapsed / total);
+        if (barRef.current) barRef.current.style.transform = `scaleX(${ratio})`;
+        if (progressRef.current) {
+          const idx = Math.floor(ratio * (frames.length * 4));
+            progressRef.current.textContent = frames[idx % frames.length];
+        }
+        if (ratio < 1) requestAnimationFrame(loop); else finish();
+      };
+      const finish = () => {
+        if (cancelled) return;
+        if (rootRef.current) rootRef.current.classList.add('loader-fade');
+        setTimeout(() => {
+          if (cancelled) return;
+          if (skipLocalStorageKey) { try { localStorage.setItem(skipLocalStorageKey, '1'); } catch {} }
           setVisible(false);
           onComplete?.();
-        },
-      });
-
-    return () => {
-      tl.kill();
+        }, t.fadeOut);
+      };
+      requestAnimationFrame(loop);
     };
+    run();
+    return () => { cancelled = true; };
   }, [fastMode, onComplete, visible, TEXT, skipLocalStorageKey]);
 
   if (!visible || PRM()) return null;
 
   return (
-    <div ref={rootRef} className="fixed inset-0 z-[100] bg-black text-white grid place-items-center will-change-opacity">
-      <div className="w-full max-w-xl px-6">
-        <div className="border border-white/10 rounded-xl bg-black/80 backdrop-blur">
-          {/* Header */}
-          <div className="px-5 py-3 border-b border-white/10 flex items-center gap-3 text-white/70 text-sm">
-            <div className="w-2 h-2 rounded-full bg-white/40" aria-hidden />
-            <span>{TEXT.agent}</span>
-          </div>
-
-          {/* Chat area */}
-          <div className="p-5 space-y-4">
-            {/* User bubble */}
-            <div ref={userBubbleRef} className="flex justify-end opacity-0">
-              <div className="bg-blue-600 text-white rounded-lg px-4 py-2 max-w-[80%]">
-                <span ref={userTextRef} className="text-sm"></span>
-              </div>
-            </div>
-
-            {/* AI bubble */}
-            <div ref={aiBubbleRef} className="flex justify-start opacity-0">
-              <div className="bg-white/10 border border-white/20 rounded-lg px-4 py-3 max-w-[80%]">
-                <div className="space-y-2">
-                  <p ref={aiTextRef} className="text-sm"></p>
-                  <p ref={progressRef} className="font-mono text-xs text-white/70"></p>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {skipLocalStorageKey && (
-            <div className="px-5 pb-3">
-              <button
-                type="button"
-                onClick={() => {
-                  try { localStorage.setItem(skipLocalStorageKey, "1"); } catch {}
-                  setVisible(false);
-                  onComplete?.();
-                }}
-                className="text-xs text-white/70 hover:text-white transition-colors"
-              >
-                {TEXT.skip}
-              </button>
-            </div>
-          )}
+    <div ref={rootRef} className="fixed inset-0 z-[100] bg-black text-white font-sans">
+      {/* Brand splash */}
+      <div ref={brandRef} className="absolute inset-0 flex items-center justify-center select-none">
+        <div className="text-center space-y-4">
+          <h1 className="text-[clamp(4rem,15vw,10rem)] font-black tracking-tight leading-none brand-stroke techno-title" data-fill={TEXT.brand}>
+            {TEXT.brand}
+          </h1>
+          <div className="h-px w-40 mx-auto bg-gradient-to-r from-white/0 via-white/60 to-white/0 animate-pulse" />
         </div>
+      </div>
+      {/* Prompt stage */}
+      <div ref={stageRef} className="absolute inset-0 flex flex-col items-center justify-center gap-10 opacity-0 transition-opacity duration-500">
+        <div className="w-full max-w-2xl px-6">
+          <div className="space-y-6">
+            <p className="text-sm text-white/40 font-mono uppercase tracking-widest">prompt</p>
+            <p className="text-2xl md:text-3xl font-light text-white/90 min-h-[2.5em]">
+              <span ref={userTextRef} />
+              <span className="inline-block w-3 h-6 align-middle bg-white/70 ml-1 animate-blink" />
+            </p>
+            <p className="text-sm text-white/40 font-mono uppercase tracking-widest mt-10">system</p>
+            <p className="text-xl md:text-2xl font-medium text-white/80 min-h-[2.2em]">
+              <span ref={aiTextRef} />
+            </p>
+            <div className="mt-10 space-y-3">
+              <div className="h-[3px] w-full bg-white/10 overflow-hidden rounded">
+                <div ref={barRef} className="h-full w-full origin-left scale-x-0 bg-gradient-to-r from-white via-white to-white/30 transition-transform duration-150 ease-out" />
+              </div>
+              <span ref={progressRef} className="font-mono text-xs text-white/50 tracking-wider" />
+            </div>
+          </div>
+        </div>
+        {skipLocalStorageKey && (
+          <button
+            type="button"
+            onClick={() => { try { localStorage.setItem(skipLocalStorageKey, '1'); } catch {}; setVisible(false); onComplete?.(); }}
+            className="text-xs text-white/50 hover:text-white transition-colors font-mono tracking-wide"
+          >
+            {TEXT.skip}
+          </button>
+        )}
       </div>
     </div>
   );
