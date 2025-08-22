@@ -1,0 +1,149 @@
+{
+  "title": "Work",
+  "subtitle": "Algunas piezas en las que he trabajado y experimentado.",
+  "cards": [
+    {
+      "id": "hero-xxl-scroll",
+      "title": "Hero XXL Scroll",
+      "description": "Tipografía gigante que se desplaza con el scroll: impacto sin ruido.",
+      "tags": ["GSAP", "UX"],
+      "status": "En curso",
+      "statusDetail": "v1 estable",
+      "validation": "dirección de arte + microinteracciones medibles",
+      "media": {
+        "cover": "/work/hero-xxl-scroll.jpg",
+        "preview": "/work/hero-xxl-scroll.mp4",
+        "blur": "/work/_blur-hero-xxl-scroll.jpg"
+      },
+      "specs": {
+        "duration": "6-8s",
+        "loop": true,
+        "aspect": "16:10"
+      }
+    },
+    {
+      "id": "stroke-to-fill-intro",
+      "title": "Stroke-to-Fill Intro", 
+      "description": "El título se dibuja y se rellena: gesto de bienvenida preciso.",
+      "tags": ["GSAP", "Typography"],
+      "status": "Listo",
+      "statusDetail": "iteración futura: accesibilidad PRM avanzada",
+      "validation": "dominio de tempo/ritmo tipográfico",
+      "media": {
+        "cover": "/work/stroke-to-fill.jpg",
+        "preview": "/work/stroke-to-fill.mp4",
+        "blur": "/work/_blur-stroke-to-fill.jpg"
+      },
+      "specs": {
+        "duration": "6-8s",
+        "loop": true,
+        "aspect": "16:10"
+      }
+    },
+    {
+      "id": "particles-nebula",
+      "title": "Particles Nebula",
+      "description": "Partículas discretas, pausadas off-screen y adaptadas a cada pantalla.",
+      "tags": ["Three.js", "Performance"],
+      "status": "Prototipo funcional",
+      "statusDetail": "DPR-aware",
+      "validation": "three.js con presupuesto de performance",
+      "media": {
+        "cover": "/work/particles-nebula.jpg",
+        "preview": "/work/particles-nebula.mp4",
+        "blur": "/work/_blur-particles-nebula.jpg"
+      },
+      "specs": {
+        "duration": "6-8s",
+        "loop": true,
+        "aspect": "16:10"
+      }
+    },
+    {
+      "id": "smooth-scroll-reveals",
+      "title": "Smooth Scroll & Reveals",
+      "description": "Entradas suaves que guían la lectura sin distraer.",
+      "tags": ["GSAP", "ScrollTrigger"],
+      "status": "Listo",
+      "statusDetail": "reveals con stagger 0.06–0.1s",
+      "validation": "lectura guiada sin circo",
+      "media": {
+        "cover": "/work/smooth-reveals.jpg",
+        "preview": "/work/smooth-reveals.mp4",
+        "blur": "/work/_blur-smooth-reveals.jpg"
+      },
+      "specs": {
+        "duration": "6-8s",
+        "loop": true,
+        "aspect": "16:10"
+      }
+    },
+    {
+      "id": "holographic-card-stack",
+      "title": "Holographic Card Stack",
+      "description": "Capas translúcidas con profundidad 3D controlada y limpia.",
+      "tags": ["UI", "3D CSS"],
+      "status": "En curso",
+      "statusDetail": "micro-3D y jerarquía visual",
+      "validation": "micro-3D y jerarquía visual",
+      "media": {
+        "cover": "/work/holo-cards.jpg",
+        "preview": "/work/holo-cards.mp4",
+        "blur": "/work/_blur-holo-cards.jpg"
+      },
+      "specs": {
+        "duration": "6-8s",
+        "loop": true,
+        "aspect": "16:10"
+      }
+    },
+    {
+      "id": "self-portrait",
+      "title": "Self-Portrait",
+      "description": "Una foto clara para probar que existo. La versión artística vive como experimento.",
+      "tags": ["Identity", "Photo"],
+      "status": "Listo",
+      "statusDetail": "v1 simple / Experimento glitch opcional",
+      "validation": "tono humano + coherencia con tu marca",
+      "media": {
+        "cover": "/work/self-portrait.jpg",
+        "preview": "/work/self-portrait-glitch.mp4",
+        "blur": "/work/_blur-self-portrait.jpg"
+      },
+      "specs": {
+        "duration": "6-8s",
+        "loop": true,
+        "aspect": "16:10",
+        "note": "Proyecto 0"
+      }
+    }
+  ],
+  "grid": {
+    "layout": "masonry",
+    "cols": {
+      "mobile": 1,
+      "tablet": 2,
+      "desktop": 3
+    },
+    "gap": "clamp(1rem, 3vw, 2rem)"
+  },
+  "animation": {
+    "reveal": {
+      "stagger": 0.1,
+      "fade": true,
+      "translate": "12-16px",
+      "trigger": "20-30%"
+    },
+    "hover": {
+      "tilt": "1-2°",
+      "scale": 1.02,
+      "shadow": "subtle",
+      "bounce": false
+    },
+    "performance": {
+      "oneActivePerViewport": true,
+      "pauseOffScreen": true,
+      "prmCompliant": true
+    }
+  }
+}

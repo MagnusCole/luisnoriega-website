@@ -1,5 +1,5 @@
 import Hero from "@/features/hero";
-import Bio from "@/features/bio";
+import Work from "@/features/work";
 import Certifications from "@/features/skills";  
 import Projects from "@/features/projects";
 import Books from "@/features/books";
@@ -10,7 +10,7 @@ export default function Home() {
   return (
     <>
       <Hero />
-      <Bio />
+      <Work />
       <Certifications />
       <Projects />
       <Books />

@@ -1,14 +1,10 @@
 {
-  "title": "Hola",
-  "subtitle": "¿Qué quieres crear hoy?",
-  "description": "Product Designer & Creative Developer from México",
-  "cta": {
-    "text": "Explora mi trabajo",
-    "href": "#projects"
-  },
-  "scrollIndicator": {
-    "enabled": true,
-    "ariaLabel": "Scroll down to see more content"
+  "name": "LUIS\nNORIEGA",
+  "subtitle": "Este es mi espacio de proyectos y experimentos.",
+  "photo": {
+    "src": "/images/luis.png",
+    "alt": "Luis Noriega - Portrait",
+    "placeholder": false
   },
   "background": {
     "type": "solid",

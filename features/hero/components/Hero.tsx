@@ -1,30 +1,79 @@
 "use client";
+import Image from "next/image";
 import heroContent from "../content/hero.json";
 import { useHeroReveal } from "../motion/heroReveal";
+import WireframePlaceholder from "@/shared/ui/WireframePlaceholder";
 
 export default function Hero() {
-  const { rootRef, titleRef, subtitleRef } = useHeroReveal();
+  const { rootRef, nameRef, subtitleRef, photoRef } = useHeroReveal();
+  
   return (
     <section
       ref={rootRef as React.RefObject<HTMLElement>}
-      className="hero relative min-h-screen overflow-hidden flex items-center justify-center text-white pt-14 sm:pt-16 bg-black"
+      className="hero-section relative min-h-screen flex items-center justify-center bg-black text-white overflow-hidden"
     >
-      <div className="container relative z-[10] text-center">
-        <h1
-          ref={titleRef}
-          className="text-6xl sm:text-7xl md:text-8xl lg:text-9xl font-bold tracking-tight text-white/90"
-          style={{ textRendering: "optimizeLegibility", WebkitFontSmoothing: "antialiased" }}
-        >
-          {heroContent.title}
-        </h1>
-        <p ref={subtitleRef} className="mt-6 text-lg sm:text-xl text-white/60 max-w-2xl mx-auto">
-          {heroContent.subtitle}
-        </p>
-      </div>
-      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 text-white/40" aria-hidden="true">
-        <svg className="w-6 h-6 animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
-        </svg>
+      <div className="container max-w-[1400px] mx-auto px-[clamp(2rem,8vw,8rem)] py-8">
+        <div className="grid grid-cols-1 lg:grid-cols-[1.2fr_0.8fr] gap-8 lg:gap-16 items-center min-h-[80vh]">
+          
+          {/* Content Column */}
+          <div className="space-y-8">
+            <h1
+              ref={nameRef}
+              className="hero-name font-['Inter'] font-extrabold text-[clamp(4rem,12vw,9rem)] leading-[0.85] tracking-[-0.02em] whitespace-pre-line opacity-0"
+              style={{ 
+                textRendering: "optimizeLegibility", 
+                WebkitFontSmoothing: "antialiased",
+                willChange: "transform, opacity"
+              }}
+            >
+              {heroContent.name}
+            </h1>
+            
+            <p
+              ref={subtitleRef}
+              className="hero-subtitle font-['Inter'] font-normal text-[clamp(1.25rem,2.5vw,1.75rem)] leading-[1.4] text-white/80 max-w-2xl opacity-0"
+              style={{ willChange: "transform, opacity" }}
+            >
+              {heroContent.subtitle}
+            </p>
+          </div>
+
+          {/* Photo Column */}
+          <div className="flex justify-center lg:justify-end">
+            <div
+              ref={photoRef}
+              className="hero-photo relative w-[280px] h-[350px] sm:w-[360px] sm:h-[450px] lg:w-[480px] lg:h-[600px] opacity-0"
+              style={{ willChange: "transform, opacity" }}
+            >
+              {heroContent.photo.placeholder ? (
+                <WireframePlaceholder
+                  variant="portrait"
+                  className="w-full h-full rounded-lg"
+                  style={{
+                    filter: "grayscale(100%) contrast(1.1) brightness(0.9)",
+                    aspectRatio: "4/5",
+                    objectFit: "cover"
+                  }}
+                />
+              ) : (
+                <div className="w-full h-full rounded-lg overflow-hidden relative">
+                  <Image
+                    src={heroContent.photo.src}
+                    alt={heroContent.photo.alt}
+                    fill
+                    className="object-cover"
+                    style={{
+                      filter: "grayscale(100%) contrast(1.1) brightness(0.9)"
+                    }}
+                    priority
+                    sizes="(max-width: 768px) 280px, (max-width: 1024px) 360px, 480px"
+                  />
+                </div>
+              )}
+            </div>
+          </div>
+          
+        </div>
       </div>
     </section>
   );

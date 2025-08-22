@@ -72,6 +72,14 @@ export default function RootLayout({
           src="https://plausible.io/js/script.js"
         />
 
+        {/* Preload hero image for performance */}
+        <link 
+          rel="preload" 
+          as="image" 
+          href="/images/luis-hero.jpg"
+          type="image/jpeg"
+        />
+
         {/* JSON-LD: Person */}
         <script
           type="application/ld+json"

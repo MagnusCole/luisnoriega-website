@@ -4,7 +4,8 @@ interface WireframePlaceholderProps {
   label?: string;
   className?: string;
   aspectRatio?: string;
-  variant?: "default" | "book" | "cert" | "image";
+  variant?: "default" | "book" | "cert" | "image" | "portrait";
+  style?: React.CSSProperties;
 }
 
 export default function WireframePlaceholder({ 
@@ -13,9 +14,11 @@ export default function WireframePlaceholder({
   label = "Image", 
   className = "",
   aspectRatio,
-  variant = "default"
+  variant = "default",
+  style: customStyle
 }: WireframePlaceholderProps) {
-  const style = aspectRatio ? { aspectRatio } : { width, height };
+  const baseStyle = aspectRatio ? { aspectRatio } : { width, height };
+  const style = { ...baseStyle, ...customStyle };
   
   const getIcon = () => {
     switch (variant) {
@@ -29,6 +32,13 @@ export default function WireframePlaceholder({
         return (
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="w-6 h-6">
             <path d="M15 6v12a3 3 0 1 0 3-3H6a3 3 0 1 0 3 3V6a3 3 0 1 0-3 3h12a3 3 0 1 0-3-3"/>
+          </svg>
+        );
+      case "portrait":
+        return (
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="w-8 h-8">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+            <circle cx="12" cy="7" r="4"/>
           </svg>
         );
       default:
