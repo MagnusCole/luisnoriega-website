@@ -4,6 +4,8 @@ export const dynamic = "force-static";
 
 const pages = [
   { loc: "https://www.luisnoriega.com/", priority: 1.0 },
+  { loc: "https://www.luisnoriega.com/quien-es-luis-noriega", priority: 0.9 },
+  { loc: "https://www.luisnoriega.com/facts", priority: 0.8 },
 ];
 
 export async function GET() {
