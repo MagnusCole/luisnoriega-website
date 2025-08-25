@@ -41,8 +41,8 @@ export function SiteHeader() {
       style={{ borderBottom: '1px solid transparent' }}
     >
       <div className="container flex items-center justify-center h-16 sm:h-20">
-        {/* Navegación minimal sólo enlaces */}
-        <nav aria-label="Navegación principal" className="flex">
+  {/* Navegación minimal sólo enlaces (oculta visualmente pero accesible) */}
+  <nav aria-label="Navegación principal" className="flex visually-hidden">
           <ul className="flex items-center gap-10 text-sm tracking-wide">
             <li>
               <a

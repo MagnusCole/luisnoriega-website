@@ -187,6 +187,16 @@ html {
   transition: transform var(--motion-dur-fast) var(--motion-ease-smooth);
   transform: translateY(-8px);
 }
+
+/* Visually hidden but accessible to screen readers */
+.visually-hidden {
+  position: absolute !important;
+  height: 1px; width: 1px;
+  overflow: hidden;
+  clip: rect(1px, 1px, 1px, 1px);
+  white-space: nowrap;
+  border: 0; padding: 0; margin: -1px;
+}
 .skip-link:focus {
   top: 8px;
   transform: translateY(0);
