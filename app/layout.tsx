@@ -14,7 +14,7 @@ const avatar = `${siteUrl}/images/luis-hero.png`;
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: {
-    default: "Luis Noriega – Emprendedor & CEO de AQXION",
+  default: "Luis Noriega – Emprendedor & CEO de AQXION (Lima, Perú)",
     template: "%s · Luis Noriega",
   },
   description:
@@ -23,9 +23,9 @@ export const metadata: Metadata = {
   alternates: {
     canonical: `${siteUrl}/`,
     languages: {
-      "es-PE": `${siteUrl}/`,
-      "es": `${siteUrl}/`,
-      "en": `${siteUrl}/en`,
+  "es-PE": `${siteUrl}/`,
+  "es": `${siteUrl}/es`,
+  "en": `${siteUrl}/en`,
     },
   },
   robots: {

@@ -13,6 +13,13 @@ export default function Home() {
         </div>
       </section>
 
+      <section id="sobre-mi" className="container mx-auto px-6 py-12 prose lg:prose-lg text-foreground">
+        <h2>¿Quién es Luis Noriega?</h2>
+        <p>
+          Luis Noriega es emprendedor y CEO de AQXION, con base en Lima, Perú. <a href="/quien-es-luis-noriega" className="underline font-medium">Lee mi perfil completo →</a>
+        </p>
+      </section>
+
       <Hero />
       <Portfolio />
     </>

@@ -45,7 +45,11 @@ export function SiteFooter() {
               Sitemap
             </Link>
             <span className="text-white/30">·</span>
-            <span>Lima, Perú</span>
+            <Link href="/facts" className="hover:text-white/60 transition-colors">
+              Datos verificados
+            </Link>
+            <span className="text-white/30">·</span>
+            <span className="text-white/40">Lima, Perú · luisnoriega.com</span>
           </div>
         </div>
       </div>

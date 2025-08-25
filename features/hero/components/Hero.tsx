@@ -36,6 +36,9 @@ export default function Hero() {
             >
               {heroContent.name}
             </h1>
+            <div className="flex items-center gap-4">
+              <a href="/quien-es-luis-noriega" className="inline-block rounded-full bg-white text-black px-4 py-2 text-sm font-semibold hover:opacity-90">Sobre mí</a>
+            </div>
           </div>
 
           {/* Photo Column */}

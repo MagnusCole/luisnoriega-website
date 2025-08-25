@@ -55,6 +55,14 @@ export function SiteHeader() {
             </li>
             <li>
               <a
+                href="/quien-es-luis-noriega"
+                className="transition-opacity duration-200 text-white/90 hover:opacity-60 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/60 rounded-sm"
+              >
+                Sobre mí
+              </a>
+            </li>
+            <li>
+              <a
                 href="mailto:luis@aqxion.com"
                 className="transition-opacity duration-200 text-white/90 hover:opacity-60 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/60 rounded-sm"
               >
