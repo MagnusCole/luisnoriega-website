@@ -30,7 +30,13 @@ export default function FactsPage() {
     url: `${siteUrl}/facts`,
     author: { "@type": "Person", name: "Luis Noriega" },
     claimReviewed: "Luis Noriega es un emprendedor peruano y fundador de AQXION",
-    itemReviewed: { "@type": "CreativeWork", name: "Datos sobre Luis Noriega", url: `${siteUrl}/facts` },
+    itemReviewed: {
+      "@type": "CreativeWork",
+      name: "Datos sobre Luis Noriega",
+      url: `${siteUrl}/facts`,
+      author: { "@type": "Person", name: "Luis Noriega" },
+      datePublished: "2025-08-24",
+    },
     reviewRating: {
       "@type": "Rating",
       ratingValue: 1,
